@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.0.0 · Last update: 23/09/2026 17:48 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.0.0 · Last update: 23/09/2026 18:05 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -100,10 +100,11 @@
   button:disabled{opacity:.32}
 
   .ver{
-    margin-top:11px;text-align:center;
+    margin-top:11px;
+    display:flex;align-items:center;justify-content:center;gap:9px;
     font-size:10.5px;letter-spacing:.3px;color:#454c5a;
   }
-  .ver .tagico{margin-right:7px;font-size:11px;vertical-align:-1px}
+  .ver .tagico{font-size:11px;line-height:1}
 
   .done{border-color:rgba(74,222,128,.45)}
   .done .row .v,.done .state{color:var(--ok)}
@@ -185,7 +186,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver"><span class="tagico">🏷️</span>v1.0.0</div>
+  <div class="ver"><span class="tagico">🏷️</span><span>v1.0.0</span></div>
 
   <div class="ask" id="ask" hidden>
     <div class="ask-in">
