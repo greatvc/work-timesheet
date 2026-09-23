@@ -113,7 +113,7 @@ if ($api !== '') {
 $boot = currentPayload($DATA_DIR, $DATA_FILE);
 ?>
 <!doctype html>
-<!-- Work TimeSheet · v1.0.0 · Last update: 23/09/2026 18:18 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · v1.0.0 · Last update: 23/09/2026 19:19 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -261,7 +261,23 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
   }
   button .ic{font-size:19px;line-height:1}
   button.go,button.brkbtn,#btnReset{font-size:19px;line-height:1;padding:8px 10px}
-  button.go{color:#12161f;background:var(--value);border-color:var(--value)}
+  button.go{
+    color:#10331f;
+    background:#8fd9a8;
+    border-color:#8fd9a8;
+    transition:background .12s ease,border-color .12s ease,filter .15s ease;
+  }
+  button.go:active:not(:disabled){
+    color:#eafff2;
+    background:#1c6b3d;
+    border-color:#1c6b3d;
+  }
+  button.go:disabled{
+    background:#2b313d;
+    border-color:#2b313d;
+    filter:grayscale(1);
+    opacity:.42;
+  }
 
   /* διπλό tap για reset */
   #btnReset{position:relative;overflow:hidden}
@@ -289,8 +305,8 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
   /* --- τελείωσε η βάρδια --- */
   .ver{
     margin-top:11px;
-    display:flex;align-items:center;justify-content:center;gap:9px;
-    font-size:10.5px;letter-spacing:.3px;color:#454c5a;
+    display:flex;align-items:center;justify-content:center;gap:18px;
+    font-size:10.5px;letter-spacing:.3px;color:#6d7583;
   }
   .ver .tagico{font-size:11px;line-height:1}
 
