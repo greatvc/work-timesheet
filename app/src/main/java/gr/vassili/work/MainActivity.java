@@ -3,6 +3,7 @@ package gr.vassili.work;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -28,6 +29,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent() != null && getIntent().getBooleanExtra("fromAlarm", false)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+            KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+            if (km != null) km.requestDismissKeyguard(this, null);
+        }
 
         getWindow().setStatusBarColor(Color.parseColor("#0b0d12"));
         getWindow().setNavigationBarColor(Color.parseColor("#0b0d12"));

@@ -4,4 +4,5 @@ app/build/
 local.properties
 .idea/
 *.iml
-check.github.sh
+check-github.sh
+
