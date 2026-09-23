@@ -68,7 +68,6 @@ function currentPayload(string $dir, string $file): array
     return [
         'now'      => time(),
         'day'      => greekDay((int) date('w')),
-        'weekend'  => in_array((int) date('w'), [0, 6], true),
         'date'     => $today,
         'start'    => $start,
         'end'      => $start ? $start + SHIFT_SECONDS : null,
@@ -114,7 +113,7 @@ if ($api !== '') {
 $boot = currentPayload($DATA_DIR, $DATA_FILE);
 ?>
 <!doctype html>
-<!-- Work TimeSheet · v1.0.0 · Last update: 23/09/2026 18:05 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · v1.0.0 · Last update: 23/09/2026 18:18 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -460,8 +459,14 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
       .catch(function () {});
   }
 
+  var lastDay = new Date().getDate();
+
   function render() {
     var now = serverNow();
+
+    /* πέρασαν τα μεσάνυχτα; τράβα αμέσως καθαρή κατάσταση από τον server */
+    var today = new Date(now * 1000).getDate();
+    if (today !== lastDay) { lastDay = today; sync(); }
 
     elDay.textContent = st.day;
 
