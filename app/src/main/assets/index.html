@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · Last update: 23/09/2026 16:29 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.0.0 · Last update: 23/09/2026 17:34 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -99,6 +99,11 @@
   button:active{transform:translateY(1px)}
   button:disabled{opacity:.32}
 
+  .ver{
+    margin-top:11px;text-align:center;
+    font-size:10.5px;letter-spacing:.3px;color:#454c5a;
+  }
+
   .done{border-color:rgba(74,222,128,.45)}
   .done .row .v,.done .state{color:var(--ok)}
   .done .state{font-size:16.5px;font-weight:800;letter-spacing:.4px;animation:textglow 2.4s ease-in-out infinite}
@@ -178,6 +183,8 @@
     <button id="btnReset" aria-label="Reset"><span class="ic">♻️</span><i class="fill"></i></button>
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
+
+  <div class="ver">🏷️&nbsp;&nbsp;v1.0.0</div>
 
   <div class="ask" id="ask" hidden>
     <div class="ask-in">
@@ -386,6 +393,27 @@
   document.getElementById('askNo').onclick  = closeAsk;
   document.getElementById('askYes').onclick = function () { closeAsk(); disarm(); doBreak(); };
   ask.addEventListener('click', function (e) { if (e.target === ask) closeAsk(); });
+
+  /* --- δοκιμή notification: κράτα πατημένη την κεφαλίδα 1,5" --- */
+  (function () {
+    var head = document.querySelector('.head'), timer = null;
+    function down() {
+      timer = setTimeout(function () {
+        if (!A || !A.schedule) return;
+        A.schedule(9, String(Date.now() + 15000), 'Δοκιμή ειδοποίησης',
+                   'Αν το βλέπεις, τα notifications παίζουν κανονικά.');
+        var old = elState.innerHTML;
+        elState.textContent = 'Δοκιμή σε 15 δευτερόλεπτα…';
+        setTimeout(function () { elState.innerHTML = old; }, 6000);
+      }, 1500);
+    }
+    function up() { clearTimeout(timer); }
+    head.addEventListener('touchstart', down, { passive: true });
+    head.addEventListener('mousedown', down);
+    ['touchend','touchcancel','mouseup','mouseleave'].forEach(function (e) {
+      head.addEventListener(e, up);
+    });
+  })();
 
   st = load();
   if (st.start && now() >= st.start + SHIFT) celebrated = false;
