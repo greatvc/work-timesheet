@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.0.1 · Last update: 24/09/2026 18:14 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.0.1 · Last update: 24/09/2026 18:38 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -39,18 +39,43 @@
     display:block;width:84%;max-width:250px;height:auto;margin:0 auto;
   }
   .head{
-    display:flex;align-items:center;gap:12px;
-    padding:10px 0 9px;margin-bottom:2px;
+    position:relative;
+    display:flex;align-items:center;
+    min-height:74px;
+    padding:8px 0 9px;margin-bottom:2px;
     border-bottom:1px solid var(--line);
   }
-  .head .worker{display:block;height:72px;width:auto;flex:none}
-  .headcol{
-    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  .head .worker{
+    position:absolute;left:0;top:50%;transform:translateY(-50%);
+    height:60px;width:auto;z-index:1;
   }
-  .day{font-size:21px;font-weight:800;letter-spacing:.2px;color:#e7eaf0}
-  .bigclock{
-    font-size:30px;font-weight:700;letter-spacing:.5px;color:var(--value);
-    font-variant-numeric:tabular-nums;line-height:1;
+  .daybox{
+    position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+    text-align:center;
+  }
+  .daybox canvas{
+    position:absolute;left:0;top:-4px;width:100%;height:104px;
+    pointer-events:none;z-index:3;
+  }
+  .day{
+    position:relative;z-index:2;display:inline-block;
+    font-size:25px;font-weight:900;letter-spacing:.4px;line-height:1.2;
+    color:#e7eaf0;transition:color .4s ease,text-shadow .4s ease;
+  }
+
+  /* διάθεση της ημέρας */
+  .day.d-mon{color:#ff2b2b;text-shadow:0 0 14px rgba(255,43,43,.6),0 0 28px rgba(255,43,43,.25)}
+  .day.d-tue{color:#ff8a80;text-shadow:0 0 10px rgba(255,138,128,.38)}
+  .day.d-wed{color:#f0b429;text-shadow:0 0 10px rgba(240,180,41,.35)}
+  .day.d-thu{color:#9fe0b4;text-shadow:0 0 10px rgba(159,224,180,.3)}
+  .day.d-fri{color:#22e06a;text-shadow:0 0 16px rgba(34,224,106,.75),0 0 34px rgba(34,224,106,.35)}
+  .day.d-sat,.day.d-sun{color:#5ad7a0;text-shadow:0 0 12px rgba(90,215,160,.4)}
+  .day.shake{animation:dayshake .42s ease-in-out 0s 5}
+  @keyframes dayshake{
+    0%,100%{transform:translateX(0) rotate(0)}
+    20%{transform:translateX(-3px) rotate(-1.6deg)}
+    45%{transform:translateX(3px) rotate(1.6deg)}
+    70%{transform:translateX(-2px) rotate(-1deg)}
   }
 
   .row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:5px 0}
@@ -170,9 +195,9 @@
 
   <div class="head">
     <img class="worker" src="worker.png" alt="">
-    <div class="headcol">
+    <div class="daybox" id="daybox">
+      <canvas id="fx"></canvas>
       <span class="day" id="day">&nbsp;</span>
-      <span class="bigclock" id="clock">--<span class="colon" id="colon">:</span>--</span>
     </div>
   </div>
 
@@ -235,8 +260,8 @@
 
   var card     = document.getElementById('card');
   var elDay    = document.getElementById('day');
-  var elClock  = document.getElementById('clock');
-  var elColon  = document.getElementById('colon');
+  var dayBox   = document.getElementById('daybox');
+  var fxCanvas = document.getElementById('fx');
   var elRest   = document.getElementById('rest');
   var elEnd    = document.getElementById('endtime');
   var brkBox   = document.getElementById('brkbox');
@@ -306,6 +331,142 @@
   }
 
   /* ------------------------------ render ------------------------------ */
+  /* ---------------- η ημέρα και η διάθεσή της ---------------- */
+  var DAYCLS = ['d-sun','d-mon','d-tue','d-wed','d-thu','d-fri','d-sat'];
+  var shownDay = null;
+
+  function setDay(w) {
+    if (shownDay === w) return;
+    shownDay = w;
+    elDay.textContent = DAYS[w];
+    elDay.className = 'day ' + DAYCLS[w];
+    playMood(w);
+  }
+
+  var fxStop = null;
+
+  function playMood(w) {
+    if (fxStop) { fxStop(); fxStop = null; }
+    elDay.classList.remove('shake');
+    if (w === 1) fxStop = drips('#e01f28', 10000, 'blood');
+    else if (w === 2) fxStop = drips('#8fd2f0', 10000, 'tear');
+    else if (w === 5) {
+      void elDay.offsetWidth;
+      elDay.classList.add('shake');
+      fxStop = fireworks(2100);
+      setTimeout(function () { elDay.classList.remove('shake'); }, 2100);
+    } else {
+      var c = fxCanvas.getContext('2d');
+      c.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+    }
+  }
+
+  /* καμβάς ακριβώς πάνω από τη λέξη της ημέρας */
+  function fxSetup() {
+    var w = dayBox.clientWidth || 260, h = 104;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    fxCanvas.width = w * dpr; fxCanvas.height = h * dpr;
+    var ctx = fxCanvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var tw = elDay.getBoundingClientRect().width || 120;
+    return { ctx: ctx, w: w, h: h, x0: (w - tw) / 2, tw: tw, base: elDay.offsetHeight - 4 };
+  }
+
+  /* σταγόνες που κυλούν από τα γράμματα */
+  function drips(color, ms, kind) {
+    var s = fxSetup(), drops = [], t0 = performance.now(), raf = null, alive = true;
+
+    function spawn() {
+      drops.push({
+        x: s.x0 + Math.random() * s.tw,
+        y: s.base - 6 + Math.random() * 4,
+        v: 0, grow: 0, r: kind === 'tear' ? 2.0 : 2.4,
+        hang: 220 + Math.random() * 500, born: performance.now()
+      });
+    }
+
+    (function frame(t) {
+      if (!alive) return;
+      var age = t - t0;
+      s.ctx.clearRect(0, 0, s.w, s.h);
+
+      if (age < ms - 1200 && Math.random() < 0.055) spawn();
+
+      for (var i = drops.length - 1; i >= 0; i--) {
+        var d = drops[i];
+        var life = t - d.born;
+        if (life < d.hang) {
+          d.grow = Math.min(1, life / d.hang);          // φουσκώνει πριν πέσει
+        } else {
+          d.v += 0.055; d.y += d.v;
+        }
+        var r = d.r * (0.45 + 0.55 * d.grow);
+        var fade = d.y > s.h - 22 ? Math.max(0, (s.h - d.y) / 22) : 1;
+
+        s.ctx.globalAlpha = fade * (age > ms - 900 ? Math.max(0, (ms - age) / 900) : 1);
+        s.ctx.fillStyle = color;
+        s.ctx.beginPath();
+        s.ctx.moveTo(d.x, d.y - r * 1.7);
+        s.ctx.quadraticCurveTo(d.x + r, d.y, d.x, d.y + r);
+        s.ctx.quadraticCurveTo(d.x - r, d.y, d.x, d.y - r * 1.7);
+        s.ctx.fill();
+        if (kind === 'tear') {
+          s.ctx.globalAlpha *= 0.55;
+          s.ctx.fillStyle = '#eaf7ff';
+          s.ctx.beginPath();
+          s.ctx.arc(d.x - r * 0.3, d.y - r * 0.2, r * 0.3, 0, 6.3);
+          s.ctx.fill();
+        }
+        if (d.y > s.h) drops.splice(i, 1);
+      }
+      s.ctx.globalAlpha = 1;
+
+      if (age < ms) raf = requestAnimationFrame(frame);
+      else s.ctx.clearRect(0, 0, s.w, s.h);
+    })(t0);
+
+    return function () { alive = false; if (raf) cancelAnimationFrame(raf); s.ctx.clearRect(0, 0, s.w, s.h); };
+  }
+
+  /* πυροτεχνήματα πάνω στη λέξη */
+  function fireworks(ms) {
+    var s = fxSetup(), parts = [], t0 = performance.now(), raf = null, alive = true, next = 0;
+    var cols = ['#22e06a','#f0b429','#58b0c8','#ffffff','#f472b6'];
+
+    function burst() {
+      var cx = s.x0 + 10 + Math.random() * Math.max(10, s.tw - 20);
+      var cy = 6 + Math.random() * (s.base - 2);
+      var c = cols[(Math.random() * cols.length) | 0];
+      for (var i = 0; i < 22; i++) {
+        var a = Math.random() * 6.283, sp = 0.7 + Math.random() * 2.1;
+        parts.push({ x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, c: c, born: performance.now() });
+      }
+    }
+
+    (function frame(t) {
+      if (!alive) return;
+      var age = t - t0;
+      s.ctx.clearRect(0, 0, s.w, s.h);
+      if (age > next && age < ms - 400) { burst(); next = age + 340; }
+
+      for (var i = parts.length - 1; i >= 0; i--) {
+        var p = parts[i], life = t - p.born;
+        p.x += p.vx; p.y += p.vy; p.vy += 0.035; p.vx *= 0.985;
+        var a = Math.max(0, 1 - life / 900);
+        if (a <= 0) { parts.splice(i, 1); continue; }
+        s.ctx.globalAlpha = a;
+        s.ctx.fillStyle = p.c;
+        s.ctx.fillRect(p.x - 1.2, p.y - 1.2, 2.4, 2.4);
+      }
+      s.ctx.globalAlpha = 1;
+
+      if (age < ms) raf = requestAnimationFrame(frame);
+      else s.ctx.clearRect(0, 0, s.w, s.h);
+    })(t0);
+
+    return function () { alive = false; if (raf) cancelAnimationFrame(raf); s.ctx.clearRect(0, 0, s.w, s.h); };
+  }
+
   /* έντονο κόκκινο στην αρχή, απαλότερο μετά τις 4 ώρες, κίτρινο στο τελευταίο 40λεπτο */
   function tone(left) {
     var cls = left <= 40 * 60 ? 'soon' : (left <= 4 * 3600 ? 'warm' : 'hot');
@@ -318,10 +479,7 @@
 
     if (st.date && st.date !== ymd(d)) { st = { date: null, start: null, brk: null }; save(); }
 
-    elDay.textContent = DAYS[d.getDay()];
-    elClock.childNodes[0].nodeValue = two(d.getHours());
-    elClock.childNodes[2].nodeValue = two(d.getMinutes());
-    elColon.classList.toggle('off', d.getSeconds() % 2 === 1);
+    setDay(d.getDay());
 
     var end     = st.start ? st.start + SHIFT : null;
     var brkEnd  = st.brk ? st.brk + BREAK : null;
@@ -460,7 +618,9 @@
   if (st.start && now() >= st.start + SHIFT) celebrated = false;
   render();
   setInterval(render, 500);
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) render(); });
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { playMood(new Date().getDay()); render(); }
+  });
 
   /* ------------------ confetti, μόνο μέσα στο card ------------------ */
   function confetti() {

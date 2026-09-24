@@ -5,7 +5,7 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v1.0.1] - 24/9/26
 
 ### 🛠️ Changed
-- 🕐 The clock left the stats rows and now sits on its own under the day name, centred with it in the header column, at 30px. Its "Ώρα" label is gone - a clock doesn't need one.
+- 🎭 Innovative day display according to mood - the day name is now the centrepiece of the card, bigger and bolder, and it carries the temperament of the day: Monday bleeds, Tuesday weeps, Wednesday sulks in amber, Thursday brightens, and Friday goes full green with fireworks. The clock was dropped entirely; the phone already shows it in the status bar.
 - 🎨 The remaining-shift counter now changes colour as the day burns down: hard red with a red glow while there are more than 4 hours left, a softer red below that, and amber in the final 40 minutes. Hours are zero-padded, so it reads 08:30 rather than 8:30.
 - ☕ Break shortened from 30 to 25 minutes, and the dead zone at each end of the shift adjusted from 31 to 27 minutes accordingly - the extra 5 minutes cover walking back and badging in, so a break taken at the limit no longer runs past the clock-out.
 
