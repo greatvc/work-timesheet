@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.0.1 · Last update: 24/09/2026 18:55 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.0.1 · Last update: 24/09/2026 19:04 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -82,6 +82,8 @@
   .row .k{color:var(--label);font-weight:600}
   .row .v{color:var(--value);font-weight:700;font-variant-numeric:tabular-nums;font-size:19px}
   .rest .v{font-size:26px;line-height:1.1;transition:color .6s ease,text-shadow .6s ease}
+  .rcolon{transition:opacity .12s linear}
+  .rcolon.off{opacity:.15}
   .rest .v.hot{color:#ff3b30;text-shadow:0 0 12px rgba(255,59,48,.6),0 0 24px rgba(255,59,48,.25)}
   .rest .v.warm{color:#ef8a84;text-shadow:0 0 8px rgba(239,138,132,.28)}
   .rest .v.soon{color:var(--value);text-shadow:none}
@@ -203,7 +205,7 @@
 
   <div class="row rest">
     <span class="k">Υπόλοιπο</span>
-    <span class="v" id="rest">--:--</span>
+    <span class="v" id="rest">--<span class="rcolon" id="rcolon">:</span>--</span>
   </div>
 
   <div class="row endr">
@@ -263,6 +265,7 @@
   var dayBox   = document.getElementById('daybox');
   var fxCanvas = document.getElementById('fx');
   var elRest   = document.getElementById('rest');
+  var rColon   = document.getElementById('rcolon');
   var elEnd    = document.getElementById('endtime');
   var brkBox   = document.getElementById('brkbox');
   var brkLeft  = document.getElementById('brkleft');
@@ -283,6 +286,10 @@
   var st;
 
   function two(n){ return (n < 10 ? '0' : '') + n; }
+  function setRest(h, m) {
+    elRest.childNodes[0].nodeValue = h;
+    elRest.childNodes[2].nodeValue = m;
+  }
   function now(){ return Date.now() / 1000; }
   function ymd(d){ return d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate()); }
   function hhmm(ts){ var d = new Date(ts * 1000); return two(d.getHours()) + ':' + two(d.getMinutes()); }
@@ -504,6 +511,8 @@
       legend.hidden = true;
     }
 
+    rColon.classList.toggle('off', running && d.getSeconds() % 2 === 1);
+
     imgIdle.hidden = !!st.start;
     imgRun.hidden  = !st.start;
 
@@ -513,7 +522,7 @@
 
     if (!st.start) {
       card.classList.remove('done', 'pop');
-      elRest.textContent = '08:30';
+      setRest('08', '30');
       tone(SHIFT);
       elEnd.textContent  = '--:--';
       elState.innerHTML = '&nbsp;';
@@ -529,7 +538,7 @@
     if (running) {
       card.classList.remove('done', 'pop');
       var mins = Math.ceil((end - n) / 60);
-      elRest.textContent  = two(Math.floor(mins / 60)) + ':' + two(mins % 60);
+      setRest(two(Math.floor(mins / 60)), two(mins % 60));
       tone(end - n);
       elState.textContent = 'Ξεκίνησες ' + hhmm(st.start);
       elSub.innerHTML     = '&nbsp;';
@@ -537,7 +546,7 @@
       btnRs.disabled = false;
     } else {
       card.classList.add('done');
-      elRest.textContent = '00:00';
+      setRest('00', '00');
       if (elState.firstElementChild === null) {
         elState.innerHTML = 'Σχόλασες<span class="party">🎉</span>';
       }
