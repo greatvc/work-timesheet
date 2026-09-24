@@ -48,18 +48,20 @@ public class AlarmReceiver extends BroadcastReceiver {
                 openIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        Notification n = new Notification.Builder(ctx, CHANNEL)
+        Notification.Builder nb = new Notification.Builder(ctx, CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat)
                 .setContentTitle(title)
-                .setContentText(body)
-                .setStyle(new Notification.BigTextStyle().bigText(body))
                 .setAutoCancel(true)
                 .setCategory(Notification.CATEGORY_ALARM)
                 .setContentIntent(open)
-                .setFullScreenIntent(open, true)
-                .build();
+                .setFullScreenIntent(open, true);
 
-        nm.notify(id, n);
+        if (body != null && !body.isEmpty()) {
+            nb.setContentText(body)
+              .setStyle(new Notification.BigTextStyle().bigText(body));
+        }
+
+        nm.notify(id, nb.build());
 
         ctx.getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE)
            .edit().remove("alarm_" + id).apply();

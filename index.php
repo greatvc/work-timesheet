@@ -9,8 +9,8 @@ declare(strict_types=1);
 date_default_timezone_set('Europe/Athens');
 
 const SHIFT_SECONDS = 8 * 3600 + 30 * 60;   // 8 ώρες 30 λεπτά
-const BREAK_SECONDS = 30 * 60;              // 30 λεπτά διάλειμμα
-const BREAK_CUTOFF  = 31 * 60;              // νεκρή ζώνη 31' στην αρχή και στο τέλος της βάρδιας
+const BREAK_SECONDS = 25 * 60;              // 25 λεπτά διάλειμμα
+const BREAK_CUTOFF  = 27 * 60;              // νεκρή ζώνη 27' στην αρχή και στο τέλος της βάρδιας
 
 $DATA_DIR  = __DIR__ . '/data';
 $DATA_FILE = $DATA_DIR . '/shift.json';
@@ -113,7 +113,7 @@ if ($api !== '') {
 $boot = currentPayload($DATA_DIR, $DATA_FILE);
 ?>
 <!doctype html>
-<!-- Work TimeSheet · v1.0.0 · Last update: 23/09/2026 19:19 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · v1.0.1 · Last update: 24/09/2026 16:16 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -259,24 +259,30 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
     -webkit-appearance:none;
     transition:background .15s ease,opacity .15s ease;
   }
-  button .ic{font-size:19px;line-height:1}
-  button.go,button.brkbtn,#btnReset{font-size:19px;line-height:1;padding:8px 10px}
+  button .ic{font-size:40px;line-height:1}
+  button.brkbtn{font-size:19px;line-height:1;padding:8px 10px}
+  #btnReset{padding:3px;line-height:1}
   button.go{
-    color:#10331f;
+    display:flex;align-items:center;justify-content:center;
+    padding:4px;min-height:66px;
     background:#8fd9a8;
     border-color:#8fd9a8;
-    transition:background .12s ease,border-color .12s ease,filter .15s ease;
+    transition:background .12s ease,border-color .12s ease,filter .2s ease,opacity .2s ease;
   }
+  button.go img{display:block;width:auto;pointer-events:none}
+  button.go #imgIdle{height:56px}
+  button.go #imgRun{height:48px}
+  button.go img[hidden]{display:none}
   button.go:active:not(:disabled){
     color:#eafff2;
     background:#1c6b3d;
     border-color:#1c6b3d;
   }
   button.go:disabled{
-    background:#2b313d;
-    border-color:#2b313d;
-    filter:grayscale(1);
-    opacity:.42;
+    background:#33607f;
+    border-color:#33607f;
+    filter:grayscale(.35);
+    opacity:.78;
   }
 
   /* διπλό tap για reset */
@@ -386,7 +392,7 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
   <div class="brkbox" id="brkbox" hidden>
     <div class="row count">
       <span class="k">Διάλειμμα</span>
-      <span class="v" id="brkleft">30:00</span>
+      <span class="v" id="brkleft">25:00</span>
     </div>
     <div class="row">
       <span class="k">Λήγει</span>
@@ -401,12 +407,15 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
   <div class="legend" id="legend" hidden><span class="dot"></span><span id="legendtx"></span></div>
 
   <div class="btns">
-    <button class="go" id="btnStart" title="Έναρξη βάρδιας" aria-label="Έναρξη βάρδιας">💼</button>
+    <button class="go" id="btnStart" title="Έναρξη βάρδιας" aria-label="Έναρξη βάρδιας">
+      <img id="imgIdle" src="work.png" alt="">
+      <img id="imgRun" src="working.png" alt="" hidden>
+    </button>
     <button id="btnReset" title="Reset" aria-label="Reset"><span class="ic">♻️</span><i class="fill"></i></button>
   </div>
   <button class="brkbtn" id="btnBreak" title="Διάλειμμα" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver"><span class="tagico">🏷️</span><span>v1.0.0</span></div>
+  <div class="ver"><span class="tagico">🏷️</span><span>v1.0.1</span></div>
 
   <div class="ask" id="ask" hidden>
     <div class="ask-in">
@@ -439,6 +448,8 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
   var legend   = document.getElementById('legend');
   var legendTx = document.getElementById('legendtx');
   var btnGo    = document.getElementById('btnStart');
+  var imgIdle  = document.getElementById('imgIdle');
+  var imgRun   = document.getElementById('imgRun');
   var btnRs    = document.getElementById('btnReset');
   var btnBk    = document.getElementById('btnBreak');
   var ask      = document.getElementById('ask');
@@ -513,6 +524,9 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
     } else {
       legend.hidden = true;
     }
+
+    imgIdle.hidden = !!st.start;
+    imgRun.hidden  = !st.start;
 
     btnBk.disabled = !running || !!st.brk
       || (now - st.start) < CUTOFF      // όχι μέσα στο πρώτο 31λεπτο

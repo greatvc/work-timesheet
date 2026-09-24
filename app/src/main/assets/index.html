@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.0.0 · Last update: 23/09/2026 19:19 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.0.1 · Last update: 24/09/2026 18:14 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -15,7 +15,7 @@
   html,body{height:100%}
   body{
     margin:0;background:var(--bg);color:#e7eaf0;
-    font:400 14px/1.35 -apple-system,BlinkMacSystemFont,Roboto,"Segoe UI",sans-serif;
+    font:400 15px/1.35 -apple-system,BlinkMacSystemFont,Roboto,"Segoe UI",sans-serif;
     -webkit-tap-highlight-color:transparent;
     display:flex;align-items:center;justify-content:center;padding:16px;
     touch-action:manipulation;
@@ -40,20 +40,26 @@
   }
   .head{
     display:flex;align-items:center;gap:12px;
-    padding:10px 0 8px;margin-bottom:2px;
+    padding:10px 0 9px;margin-bottom:2px;
     border-bottom:1px solid var(--line);
   }
   .head .worker{display:block;height:72px;width:auto;flex:none}
-  .day{
-    flex:1;text-align:center;
-    font-size:19px;font-weight:800;letter-spacing:.2px;color:#e7eaf0;
+  .headcol{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  }
+  .day{font-size:21px;font-weight:800;letter-spacing:.2px;color:#e7eaf0}
+  .bigclock{
+    font-size:30px;font-weight:700;letter-spacing:.5px;color:var(--value);
+    font-variant-numeric:tabular-nums;line-height:1;
   }
 
   .row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:5px 0}
   .row .k{color:var(--label);font-weight:600}
-  .row .v{color:var(--value);font-weight:700;font-variant-numeric:tabular-nums}
-  .clock .v{font-size:22px;letter-spacing:.5px}
-  .rest .v{font-size:19px}
+  .row .v{color:var(--value);font-weight:700;font-variant-numeric:tabular-nums;font-size:19px}
+  .rest .v{font-size:26px;line-height:1.1;transition:color .6s ease,text-shadow .6s ease}
+  .rest .v.hot{color:#ff3b30;text-shadow:0 0 12px rgba(255,59,48,.6),0 0 24px rgba(255,59,48,.25)}
+  .rest .v.warm{color:#ef8a84;text-shadow:0 0 8px rgba(239,138,132,.28)}
+  .rest .v.soon{color:var(--value);text-shadow:none}
   .endr .v{color:var(--soft);font-weight:600}
   .colon{transition:opacity .12s linear}
   .colon.off{opacity:.18}
@@ -65,39 +71,42 @@
   .brkbox[hidden]{display:none}
   .brkbox .k{color:#8fbecb}
   .brkbox .v{color:var(--brk)}
-  .brkbox .count .v{font-size:18px}
+  .brkbox .count .v{font-size:22px}
 
   .sep{height:1px;background:var(--line);margin:10px -2px 8px}
-  .state{color:var(--label);font-size:12.5px;min-height:17px;font-weight:600}
-  .sub{color:var(--dim);font-size:11.5px;margin-top:3px;min-height:15px}
-  .legend{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:11.5px;margin-top:4px}
+  .state{color:var(--label);font-size:13.5px;min-height:19px;font-weight:600}
+  .sub{color:var(--dim);font-size:12.5px;margin-top:3px;min-height:16px}
+  .legend{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:12.5px;margin-top:4px}
   .legend[hidden]{display:none}
   .legend .dot{width:6px;height:6px;border-radius:50%;background:var(--brk);flex:none}
 
   .btns{display:flex;gap:8px;margin-top:12px}
   button{
-    flex:1;font:inherit;font-weight:600;font-size:13px;color:#dfe4ec;
+    flex:1;font:inherit;font-weight:600;font-size:14px;color:#dfe4ec;
     background:#1d2330;border:1px solid var(--line);border-radius:9px;padding:9px 10px;
     -webkit-appearance:none;transition:background .15s ease,opacity .15s ease;
   }
-  button .ic{font-size:19px;line-height:1}
-  button.go,#btnReset{font-size:19px;line-height:1;padding:8px 10px}
+  button .ic{font-size:40px;line-height:1}
+  #btnReset{padding:3px;line-height:1}
   button.go{
-    color:#10331f;
+    display:flex;align-items:center;justify-content:center;
+    padding:4px;
     background:#8fd9a8;
     border-color:#8fd9a8;
-    transition:background .12s ease,border-color .12s ease,filter .15s ease;
+    transition:background .12s ease,border-color .12s ease,filter .2s ease,opacity .2s ease;
   }
+  button.go img{display:block;height:46px;width:auto;pointer-events:none}
+  button.go img[hidden]{display:none}
   button.go:active:not(:disabled){
     color:#eafff2;
     background:#1c6b3d;
     border-color:#1c6b3d;
   }
   button.go:disabled{
-    background:#2b313d;
-    border-color:#2b313d;
-    filter:grayscale(1);
-    opacity:.42;
+    background:#33607f;
+    border-color:#33607f;
+    filter:grayscale(.35);
+    opacity:.78;
   }
 
   #btnReset{position:relative;overflow:hidden}
@@ -118,14 +127,14 @@
   .ver{
     margin-top:11px;
     display:flex;align-items:center;justify-content:center;gap:18px;
-    font-size:10.5px;letter-spacing:.3px;color:#6d7583;
+    font-size:11.5px;letter-spacing:.3px;color:#858d9c;
   }
-  .ver .tagico{font-size:11px;line-height:1}
+  .ver .tagico{font-size:12px;line-height:1}
 
   .done{border-color:rgba(74,222,128,.45)}
   .done .row .v,.done .state{color:var(--ok)}
-  .done .state{font-size:16.5px;font-weight:800;letter-spacing:.4px;animation:textglow 2.4s ease-in-out infinite}
-  .done .state .party{font-size:19px;margin-left:10px;vertical-align:-1px;text-shadow:none}
+  .done .state{font-size:18px;font-weight:800;letter-spacing:.4px;animation:textglow 2.4s ease-in-out infinite}
+  .done .state .party{font-size:21px;margin-left:10px;vertical-align:-1px;text-shadow:none}
   .done.pop{animation:glow 1.6s ease-out 2}
   @keyframes textglow{
     0%,100%{text-shadow:0 0 8px rgba(74,222,128,.35)}
@@ -145,7 +154,7 @@
   }
   .ask[hidden]{display:none}
   .ask-in{width:100%;text-align:center;animation:rise .18s ease-out}
-  .ask-in p{margin:0 0 12px;font-size:13.5px;font-weight:600;color:#e7eaf0}
+  .ask-in p{margin:0 0 12px;font-size:14.5px;font-weight:600;color:#e7eaf0}
   .ask-b{display:flex;gap:8px}
   .ask-b .yes{color:#06222b;background:var(--brk);border-color:var(--brk)}
   @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -161,12 +170,10 @@
 
   <div class="head">
     <img class="worker" src="worker.png" alt="">
-    <span class="day" id="day">&nbsp;</span>
-  </div>
-
-  <div class="row clock">
-    <span class="k">Ώρα</span>
-    <span class="v" id="clock">--<span class="colon" id="colon">:</span>--</span>
+    <div class="headcol">
+      <span class="day" id="day">&nbsp;</span>
+      <span class="bigclock" id="clock">--<span class="colon" id="colon">:</span>--</span>
+    </div>
   </div>
 
   <div class="row rest">
@@ -182,7 +189,7 @@
   <div class="brkbox" id="brkbox" hidden>
     <div class="row count">
       <span class="k">Διάλειμμα</span>
-      <span class="v" id="brkleft">30:00</span>
+      <span class="v" id="brkleft">25:00</span>
     </div>
     <div class="row">
       <span class="k">Λήγει</span>
@@ -197,12 +204,15 @@
   <div class="legend" id="legend" hidden><span class="dot"></span><span id="legendtx"></span></div>
 
   <div class="btns">
-    <button class="go" id="btnStart" aria-label="Έναρξη βάρδιας">💼</button>
+    <button class="go" id="btnStart" aria-label="Έναρξη βάρδιας">
+      <img id="imgIdle" src="work.png" alt="">
+      <img id="imgRun" src="working.png" alt="" hidden>
+    </button>
     <button id="btnReset" aria-label="Reset"><span class="ic">♻️</span><i class="fill"></i></button>
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver"><span class="tagico">🏷️</span><span>v1.0.0</span></div>
+  <div class="ver"><span class="tagico">🏷️</span><span>v1.0.1</span></div>
 
   <div class="ask" id="ask" hidden>
     <div class="ask-in">
@@ -218,8 +228,8 @@
 <script>
 (function () {
   var SHIFT  = 8 * 3600 + 30 * 60;   // 8:30 βάρδια
-  var BREAK  = 30 * 60;              // 30' διάλειμμα
-  var CUTOFF = 31 * 60;              // νεκρή ζώνη στην αρχή και στο τέλος
+  var BREAK  = 25 * 60;              // 25' διάλειμμα
+  var CUTOFF = 27 * 60;              // νεκρή ζώνη στην αρχή και στο τέλος
   var KEY    = 'work-shift';
   var DAYS   = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
 
@@ -239,6 +249,8 @@
   var btnGo    = document.getElementById('btnStart');
   var btnRs    = document.getElementById('btnReset');
   var btnBk    = document.getElementById('btnBreak');
+  var imgIdle  = document.getElementById('imgIdle');
+  var imgRun   = document.getElementById('imgRun');
   var ask      = document.getElementById('ask');
 
   var A = window.Android || null;   // γέφυρα προς το Android
@@ -271,7 +283,7 @@
     var t = Math.floor(now());
     st = { date: ymd(new Date()), start: t, brk: null };
     save();
-    schedule(1, t + SHIFT, 'Σχόλασες 🎉', 'Η βάρδια τελείωσε στις ' + hhmm(t + SHIFT) + '.');
+    schedule(1, t + SHIFT, '🥳  Σχόλασες! 🎉', '');
     celebrated = false;
     render();
   }
@@ -280,7 +292,7 @@
     var t = Math.floor(now());
     st.brk = t;
     save();
-    schedule(2, t + BREAK, 'Τέλος διαλείμματος', 'Το διάλειμμα έληξε στις ' + hhmm(t + BREAK) + '.');
+    schedule(2, t + BREAK, '👉 Το Διάλειμμα Τελείωσε   💼', '');
     render();
   }
 
@@ -294,6 +306,12 @@
   }
 
   /* ------------------------------ render ------------------------------ */
+  /* έντονο κόκκινο στην αρχή, απαλότερο μετά τις 4 ώρες, κίτρινο στο τελευταίο 40λεπτο */
+  function tone(left) {
+    var cls = left <= 40 * 60 ? 'soon' : (left <= 4 * 3600 ? 'warm' : 'hot');
+    if (elRest.className !== 'v ' + cls) elRest.className = 'v ' + cls;
+  }
+
   function render() {
     var n = now();
     var d = new Date();
@@ -327,13 +345,17 @@
       legend.hidden = true;
     }
 
+    imgIdle.hidden = !!st.start;
+    imgRun.hidden  = !st.start;
+
     btnBk.disabled = !running || !!st.brk
       || (n - st.start) < CUTOFF
       || (end - n) < CUTOFF;
 
     if (!st.start) {
       card.classList.remove('done', 'pop');
-      elRest.textContent = '8:30';
+      elRest.textContent = '08:30';
+      tone(SHIFT);
       elEnd.textContent  = '--:--';
       elState.innerHTML = '&nbsp;';
       elSub.innerHTML   = '&nbsp;';
@@ -348,14 +370,15 @@
     if (running) {
       card.classList.remove('done', 'pop');
       var mins = Math.ceil((end - n) / 60);
-      elRest.textContent  = Math.floor(mins / 60) + ':' + two(mins % 60);
+      elRest.textContent  = two(Math.floor(mins / 60)) + ':' + two(mins % 60);
+      tone(end - n);
       elState.textContent = 'Ξεκίνησες ' + hhmm(st.start);
       elSub.innerHTML     = '&nbsp;';
       btnGo.disabled = true;
       btnRs.disabled = false;
     } else {
       card.classList.add('done');
-      elRest.textContent = '0:00';
+      elRest.textContent = '00:00';
       if (elState.firstElementChild === null) {
         elState.innerHTML = 'Σχόλασες<span class="party">🎉</span>';
       }
