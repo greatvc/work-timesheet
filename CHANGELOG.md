@@ -5,13 +5,9 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v1.0.1] - 24/9/26
 
 ### 🛠️ Changed
-- 🔠 Everything one size up, numbers two - the app is meant to be read at a glance from a desk, not squinted at. Day name, labels, status lines and buttons all grew a step; the clock, the remaining-shift counter and the break countdown grew two.
 - 🕐 The clock left the stats rows and now sits on its own under the day name, centred with it in the header column, at 30px. Its "Ώρα" label is gone - a clock doesn't need one.
 - 🎨 The remaining-shift counter now changes colour as the day burns down: hard red with a red glow while there are more than 4 hours left, a softer red below that, and amber in the final 40 minutes. Hours are zero-padded, so it reads 08:30 rather than 8:30.
 - ☕ Break shortened from 30 to 25 minutes, and the dead zone at each end of the shift adjusted from 31 to 27 minutes accordingly - the extra 5 minutes cover walking back and badging in, so a break taken at the limit no longer runs past the clock-out.
-- 💼 The start button swapped its briefcase emoji for two images: a standing figure before the shift starts, a running one after. Its disabled state was softened from a flat grey wash to a muted blue tint with light desaturation - clearly locked, but the running figure stays legible.
-- 🔔 Both notifications are now single-line headlines - "🥳 Σχόλασες! 🎉" and "👉 Το Διάλειμμα Τελείωσε 💼" - so they read fully in the collapsed shade. Previously the headline sat behind the expand arrow while the visible text repeated a time the shade already shows.
-- 🏷️ Version line lifted two tones for readability and given double the spacing after the tag emoji.
 
 ## 🏷️ [v1.0.0] - 23/9/26 &nbsp;&nbsp;&nbsp;![Initial Release](https://img.shields.io/badge/Initial-Release-22c55e?labelColor=124fde)
 
