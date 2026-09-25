@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 14:12 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 14:24 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -186,6 +186,7 @@
     font-size:11.5px;letter-spacing:.3px;color:#858d9c;
   }
   .ver .tagico{font-size:12px;line-height:1}
+  .ver.armed{color:#f5c451;transition:color .2s ease}
 
   .done{border-color:rgba(74,222,128,.45)}
   .done .row .v,.done .state{color:var(--ok)}
@@ -288,7 +289,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver"><span class="tagico">🏷️</span><span>v1.3.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v1.3.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -472,6 +473,26 @@
 
   /* ---------------- αργία: overlay + μπαλόνια ---------------- */
   var balloonStop = null;
+  var TESTKEY = 'work-holitest';
+
+  /* κρυφή δοκιμή: κράτα πατημένη την ετικέτα έκδοσης 1,5" -
+     στο επόμενο άνοιγμα της εφαρμογής παίζει η γιορτή μία φορά */
+  (function () {
+    var ver = document.getElementById('ver'), timer = null;
+    function down() {
+      timer = setTimeout(function () {
+        try { localStorage.setItem(TESTKEY, '1'); } catch (e) {}
+        ver.classList.add('armed');
+        setTimeout(function () { ver.classList.remove('armed'); }, 1400);
+      }, 1500);
+    }
+    function up() { clearTimeout(timer); }
+    ver.addEventListener('touchstart', down, { passive: true });
+    ver.addEventListener('mousedown', down);
+    ['touchend','touchcancel','mouseup','mouseleave'].forEach(function (e) {
+      ver.addEventListener(e, up);
+    });
+  })();
 
   function showHoliday() {
     holiBox.hidden = false;
@@ -833,6 +854,14 @@
   st = load();
   if (st.start && now() >= st.start + SHIFT) celebrated = false;
   render();
+
+  /* η δοκιμαστική γιορτή παίζει μία φορά και καταναλώνεται */
+  try {
+    if (localStorage.getItem(TESTKEY) === '1') {
+      localStorage.removeItem(TESTKEY);
+      showHoliday();
+    }
+  } catch (e) {}
   setInterval(render, 500);
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
