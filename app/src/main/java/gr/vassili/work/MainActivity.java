@@ -106,6 +106,19 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public boolean available() { return true; }
+
+        /* σημαίες που επιβιώνουν ακόμα κι αν η εφαρμογή κλείσει αμέσως μετά */
+        @JavascriptInterface
+        public void setFlag(String key, String value) {
+            getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit().putString("flag_" + key, value == null ? "" : value).commit();
+        }
+
+        @JavascriptInterface
+        public String getFlag(String key) {
+            return getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString("flag_" + key, "");
+        }
     }
 
     /* ---------------- AlarmManager ---------------- */

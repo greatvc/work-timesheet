@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 14:24 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 14:43 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -374,9 +374,19 @@
   function ymd(d){ return d.getFullYear() + '-' + two(d.getMonth() + 1) + '-' + two(d.getDate()); }
   function hhmm(ts){ var d = new Date(ts * 1000); return two(d.getHours()) + ':' + two(d.getMinutes()); }
 
+  /* Το localStorage του WebView γράφεται στον δίσκο με καθυστέρηση: αν η εφαρμογή
+     κλείσει αμέσως μετά, η εγγραφή χάνεται. Οπότε η αλήθεια κρατιέται στις
+     SharedPreferences μέσω της γέφυρας, που γράφουν συγχρονισμένα. */
+  function rawState() {
+    if (A && A.getFlag) {
+      try { var v = A.getFlag('state'); if (v) return v; } catch (e) {}
+    }
+    try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; }
+  }
+
   function load() {
     var raw = {};
-    try { raw = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { raw = {}; }
+    try { raw = JSON.parse(rawState() || '{}') || {}; } catch (e) { raw = {}; }
     if (raw.date !== ymd(new Date())) return { date: null, start: null, brk: null, popBrk: 0, popEnd: 0 };
     return {
       date: raw.date, start: raw.start || null, brk: raw.brk || null,
@@ -385,7 +395,9 @@
   }
 
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
+    var json = JSON.stringify(st);
+    if (A && A.setFlag) { try { A.setFlag('state', json); } catch (e) {} }
+    try { localStorage.setItem(KEY, json); } catch (e) {}
   }
 
   /* ---- notifications μέσω AlarmManager ---- */
@@ -475,13 +487,23 @@
   var balloonStop = null;
   var TESTKEY = 'work-holitest';
 
+  /* η γέφυρα γράφει συγχρονισμένα· το localStorage είναι εφεδρεία για τον browser */
+  function flagSet(v) {
+    if (A && A.setFlag) { try { A.setFlag('holitest', v); return; } catch (e) {} }
+    try { v ? localStorage.setItem(TESTKEY, v) : localStorage.removeItem(TESTKEY); } catch (e) {}
+  }
+  function flagGet() {
+    if (A && A.getFlag) { try { return A.getFlag('holitest'); } catch (e) {} }
+    try { return localStorage.getItem(TESTKEY) || ''; } catch (e) { return ''; }
+  }
+
   /* κρυφή δοκιμή: κράτα πατημένη την ετικέτα έκδοσης 1,5" -
      στο επόμενο άνοιγμα της εφαρμογής παίζει η γιορτή μία φορά */
   (function () {
     var ver = document.getElementById('ver'), timer = null;
     function down() {
       timer = setTimeout(function () {
-        try { localStorage.setItem(TESTKEY, '1'); } catch (e) {}
+        flagSet('1');
         ver.classList.add('armed');
         setTimeout(function () { ver.classList.remove('armed'); }, 1400);
       }, 1500);
@@ -856,12 +878,10 @@
   render();
 
   /* η δοκιμαστική γιορτή παίζει μία φορά και καταναλώνεται */
-  try {
-    if (localStorage.getItem(TESTKEY) === '1') {
-      localStorage.removeItem(TESTKEY);
-      showHoliday();
-    }
-  } catch (e) {}
+  if (flagGet() === '1') {
+    flagSet('');
+    showHoliday();
+  }
   setInterval(render, 500);
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) {
