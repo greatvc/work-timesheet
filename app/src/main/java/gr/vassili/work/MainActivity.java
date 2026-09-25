@@ -24,6 +24,9 @@ import android.webkit.WebView;
 public class MainActivity extends Activity {
 
     public static final String PREFS = "work_alarms";
+
+    /** true όσο η εφαρμογή είναι μπροστά - τότε το alarm δεν βγάζει notification */
+    public static volatile boolean foreground = false;
     private WebView web;
 
     @Override
@@ -57,6 +60,19 @@ public class MainActivity extends Activity {
 
         setContentView(web);
         askNotificationPermission();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        foreground = true;
+        if (web != null) web.evaluateJavascript("window.__wake && window.__wake();", null);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        foreground = false;
     }
 
     private void askNotificationPermission() {

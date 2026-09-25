@@ -20,6 +20,13 @@ public class AlarmReceiver extends BroadcastReceiver {
         String title = intent.getStringExtra("title");
         String body  = intent.getStringExtra("body");
 
+        /* αν η εφαρμογή είναι ανοιχτή μπροστά, το μήνυμα το δείχνει η ίδια */
+        if (MainActivity.foreground) {
+            ctx.getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE)
+               .edit().remove("alarm_" + id).apply();
+            return;
+        }
+
         /* άναψε την οθόνη, όπως κάνουν οι κλήσεις */
         try {
             PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
