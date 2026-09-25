@@ -63,6 +63,7 @@ jobs:
           badge = re.search(r'!\[[^\]]*\]\([^)]*\)', head.group(0))
           print((badge.group(0) + '\n\n' if badge else '') + body)
           PY
+          printf '\n\n📖 **Full Changelog:** see [CHANGELOG](https://github.com/greatvc/work-timesheet/blob/main/CHANGELOG.md)\n' >> RELEASE_NOTES.md
           cat RELEASE_NOTES.md
 
       - name: Name the APK after the tag
