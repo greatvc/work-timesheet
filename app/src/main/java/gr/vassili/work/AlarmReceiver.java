@@ -70,7 +70,9 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         nm.notify(id, nb.build());
 
+        /* το είδε ως notification - η εφαρμογή δεν θα ξαναπεί το ίδιο με popup */
         ctx.getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE)
-           .edit().remove("alarm_" + id).apply();
+           .edit().remove("alarm_" + id)
+                  .putString("flag_notified_" + id, "1").commit();
     }
 }

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 14:57 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 15:21 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -74,25 +74,24 @@
   .holiday{
     position:fixed;inset:0;z-index:50;
     display:flex;align-items:center;justify-content:center;
-    background:rgba(7,9,13,.9);
-    -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
-    animation:fade .4s ease-out;
+    background:rgba(7,9,13,.34);
+    -webkit-backdrop-filter:blur(1.4px);backdrop-filter:blur(1.4px);
+    animation:fade .5s ease-out;
   }
   .holiday[hidden]{display:none}
   .holiday canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
   .holiday img{
     position:relative;z-index:2;
-    width:80%;max-width:330px;height:auto;
-    border-radius:20px;
-    box-shadow:0 0 0 2px rgba(245,196,81,.4),
-               0 20px 55px rgba(0,0,0,.65),
-               0 0 70px rgba(245,196,81,.28);
-    animation:holiIn .55s cubic-bezier(.2,.9,.3,1.25) both,
-              holiShake .46s ease-in-out .5s 3;
+    width:82%;max-width:340px;height:auto;
+    filter:drop-shadow(0 14px 26px rgba(0,0,0,.5))
+           drop-shadow(0 0 20px rgba(245,196,81,.35));
+    animation:holiIn 1.05s cubic-bezier(.18,.85,.28,1.12) both,
+              holiShake .5s ease-in-out 1.15s 3;
   }
   @keyframes holiIn{
-    from{opacity:0;transform:scale(.8) translateY(14px)}
-    to{opacity:1;transform:none}
+    0%{opacity:0;transform:scale(.62) translateY(26px)}
+    55%{opacity:1;transform:scale(1.04) translateY(0)}
+    100%{opacity:.78;transform:scale(1)}   /* κατακάθεται χλωμή, να περνάει η κάρτα από πίσω */
   }
   @keyframes holiShake{
     0%,100%{transform:rotate(0) scale(1)}
@@ -410,6 +409,7 @@
   function doStart() {
     var t = Math.floor(now());
     st = { date: ymd(new Date()), start: t, brk: null, popBrk: 0, popEnd: 0 };
+    flagSet('notified_1', ''); flagSet('notified_2', '');
     save();
     schedule(1, t + SHIFT, '🥳  Σχόλασες! 🎉', '');
     celebrated = false;
@@ -420,6 +420,7 @@
     var t = Math.floor(now());
     st.brk = t;
     st.popBrk = 0;
+    flagSet('notified_2', '');
     save();
     schedule(2, t + BREAK, '👉 Το Διάλειμμα Τελείωσε   💼', '');
     render();
@@ -427,6 +428,7 @@
 
   function doReset() {
     st = { date: null, start: null, brk: null, popBrk: 0, popEnd: 0 };
+    flagSet('notified_1', ''); flagSet('notified_2', '');
     save();
     cancel(1); cancel(2);
     pop.hidden = true;
@@ -489,13 +491,13 @@
   var TESTKEY = 'work-holitest';
 
   /* η γέφυρα γράφει συγχρονισμένα· το localStorage είναι εφεδρεία για τον browser */
-  function flagSet(v) {
-    if (A && A.setFlag) { try { A.setFlag('holitest', v); } catch (e) {} }
-    try { v ? localStorage.setItem(TESTKEY, v) : localStorage.removeItem(TESTKEY); } catch (e) {}
+  function flagSet(key, v) {
+    if (A && A.setFlag) { try { A.setFlag(key, v); } catch (e) {} }
+    try { v ? localStorage.setItem('wf-' + key, v) : localStorage.removeItem('wf-' + key); } catch (e) {}
   }
-  function flagGet() {
-    if (A && A.getFlag) { try { return A.getFlag('holitest'); } catch (e) {} }
-    try { return localStorage.getItem(TESTKEY) || ''; } catch (e) { return ''; }
+  function flagGet(key) {
+    if (A && A.getFlag) { try { return A.getFlag(key) || ''; } catch (e) {} }
+    try { return localStorage.getItem('wf-' + key) || ''; } catch (e) { return ''; }
   }
 
   /* κρυφή δοκιμή: κράτα πατημένη την ετικέτα έκδοσης 1,5" -
@@ -504,8 +506,8 @@
     var ver = document.getElementById('ver'), timer = null;
     function down() {
       timer = setTimeout(function () {
-        flagSet('1');
-        var ok = flagGet() === '1';                    // διαβάζουμε πίσω για επιβεβαίωση
+        flagSet('holitest', '1');
+        var ok = flagGet('holitest') === '1';                    // διαβάζουμε πίσω για επιβεβαίωση
         var via = (A && A.setFlag) ? 'bridge' : 'local';
         ver.classList.add(ok ? 'armed' : 'failed');
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
@@ -752,8 +754,12 @@
 
     /* μηνύματα μέσα στην εφαρμογή, όταν είναι ανοιχτή τη στιγμή που λήγει κάτι */
     if (!document.hidden) {
-      if (hadBrk && !st.popBrk && (n - brkEnd) < 150) { st.popBrk = 1; save(); }
-      if (!!st.start && n >= end && !st.popEnd && (n - end) < 150) { st.popEnd = 1; save(); }
+      if (hadBrk && !st.popBrk && (n - brkEnd) < 150 && flagGet('notified_2') !== '1') {
+        st.popBrk = 1; save();
+      }
+      if (!!st.start && n >= end && !st.popEnd && (n - end) < 150 && flagGet('notified_1') !== '1') {
+        st.popEnd = 1; save();
+      }
     }
 
     var want = pendingPop();
@@ -885,8 +891,8 @@
   render();
 
   /* η δοκιμαστική γιορτή παίζει μία φορά και καταναλώνεται */
-  if (flagGet() === '1') {
-    flagSet('');
+  if (flagGet('holitest') === '1') {
+    flagSet('holitest', '');
     showHoliday();
   }
   setInterval(render, 500);
@@ -895,6 +901,7 @@
       var t = new Date();
       playMood(t.getDay());
       if (HOLIDAYS[ymd(t)]) showHoliday();
+      else if (flagGet('holitest') === '1') { flagSet('holitest', ''); showHoliday(); }
       render();
     }
   });
