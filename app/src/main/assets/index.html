@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 14:43 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 14:57 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -187,6 +187,7 @@
   }
   .ver .tagico{font-size:12px;line-height:1}
   .ver.armed{color:#f5c451;transition:color .2s ease}
+  .ver.failed{color:#ff5a5a;transition:color .2s ease}
 
   .done{border-color:rgba(74,222,128,.45)}
   .done .row .v,.done .state{color:var(--ok)}
@@ -489,7 +490,7 @@
 
   /* η γέφυρα γράφει συγχρονισμένα· το localStorage είναι εφεδρεία για τον browser */
   function flagSet(v) {
-    if (A && A.setFlag) { try { A.setFlag('holitest', v); return; } catch (e) {} }
+    if (A && A.setFlag) { try { A.setFlag('holitest', v); } catch (e) {} }
     try { v ? localStorage.setItem(TESTKEY, v) : localStorage.removeItem(TESTKEY); } catch (e) {}
   }
   function flagGet() {
@@ -504,8 +505,14 @@
     function down() {
       timer = setTimeout(function () {
         flagSet('1');
-        ver.classList.add('armed');
-        setTimeout(function () { ver.classList.remove('armed'); }, 1400);
+        var ok = flagGet() === '1';                    // διαβάζουμε πίσω για επιβεβαίωση
+        var via = (A && A.setFlag) ? 'bridge' : 'local';
+        ver.classList.add(ok ? 'armed' : 'failed');
+        ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
+        setTimeout(function () {
+          ver.classList.remove('armed', 'failed');
+          ver.lastChild.textContent = 'v1.3.0';
+        }, 2500);
       }, 1500);
     }
     function up() { clearTimeout(timer); }

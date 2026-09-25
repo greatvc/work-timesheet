@@ -5,13 +5,15 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v1.3.0] - 25/9/26
 
 ### ✨ Added
-- 🎈 Holiday takeover - every compulsory private-sector public holiday for the rest of 2026 and all of 2027 is baked into the app, minus the ones that fall on a weekend. On such a day the app opens straight into a full-screen celebration: the card dims behind a blur, a festive graphic fades in with a gold rim and shakes itself awake, and balloons drift down across the whole screen for two seconds. It stays put - nothing underneath can be tapped - and replays every time the app is reopened. Wording elsewhere is untouched; the day keeps its usual mood colour.
+
+- 🎈 Holiday takeover - every compulsory private-sector holiday for the rest of 2026 and all of 2027 is baked into the app, minus the ones that fall on a weekend. On such a day the app opens straight into a full-screen celebration: the card dims behind a blur, a festive graphic fades in with a gold rim and shakes itself awake, and balloons drift down across the whole screen for two seconds. It stays put - nothing underneath can be tapped - and replays every time the app is reopened. Wording elsewhere is untouched; the day keeps its usual mood colour.
 - 💾 Shift state is now written through the Android bridge into SharedPreferences with a synchronous commit, with localStorage kept as a fallback. The WebView flushes localStorage to disk lazily, so pressing Έναρξη and leaving the app a second later could lose the start time - that window is closed.
 - 💬 In-app messages when the app is in the foreground. If the break or the shift ends while you are actually looking at the screen, no system notification fires at all - instead the card shows a proper dialog that waits for an OK. The pending state is stored, so leaving the app and coming back brings the same dialog straight back rather than losing it. Notifications still behave exactly as before whenever the app is closed, backgrounded, or the screen is locked.
 
 ## 🏷️ [v1.1.0] - 25/9/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
 
 ### 🛠️ Changed
+
 - 🎭 Innovative day display according to mood - the day name is now the centrepiece of the card, bigger and bolder, and it carries the temperament of the day: Monday bleeds, Tuesday weeps, Wednesday sulks in amber, Thursday brightens, and Friday goes full green with fireworks. The clock was dropped entirely; the phone already shows it in the status bar.
 - 🎨 The remaining-shift counter now changes colour as the day burns down: hard red with a red glow while there are more than 4 hours left, a softer red below that, and amber in the final 40 minutes. Hours are zero-padded, so it reads 08:30 rather than 8:30.
 - ☕ Break shortened from 30 to 25 minutes, and the dead zone at each end of the shift adjusted from 31 to 27 minutes accordingly - the extra 5 minutes cover walking back and badging in, so a break taken at the limit no longer runs past the clock-out.
@@ -19,6 +21,7 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v1.0.0] - 23/9/26 &nbsp;&nbsp;&nbsp;![Initial Release](https://img.shields.io/badge/Initial-Release-22c55e?labelColor=124fde)
 
 ### ✨ Added
+
 - 💼 First working version of **Work TimeSheet** - a discreet shift tracker for an 8h30 workday, shipping as two builds from one codebase: a PHP page (`index.php`, state in `data/shift.json`) and a native Android APK (WebView shell, state in `localStorage`, no server and no network permission at all).
 - ⏱️ Live clock in hours and minutes with a blinking colon, countdown of the remaining shift in hours and minutes, and the calculated clock-out time - press at 09:00 and it reads 17:30.
 - 🍴 30-minute break with its own countdown in minutes and seconds inside a tinted panel, plus a confirmation overlay ("Να ξεκινήσω διάλειμμα;") rendered in-card with a blurred backdrop instead of the browser's native `confirm()`. Once taken, it leaves a bulleted legend showing the exact window, e.g. "Διάλειμμα 13:50 - 14:20".
