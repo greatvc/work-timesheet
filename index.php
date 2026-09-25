@@ -113,7 +113,7 @@ if ($api !== '') {
 $boot = currentPayload($DATA_DIR, $DATA_FILE);
 ?>
 <!doctype html>
-<!-- Work TimeSheet · v1.0.1 · Last update: 24/09/2026 16:16 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · v1.1.0 · Last update: 25/09/2026 11:32 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -415,7 +415,7 @@ $boot = currentPayload($DATA_DIR, $DATA_FILE);
   </div>
   <button class="brkbtn" id="btnBreak" title="Διάλειμμα" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver"><span class="tagico">🏷️</span><span>v1.0.1</span></div>
+  <div class="ver"><span class="tagico">🏷️</span><span>v1.1.0</span></div>
 
   <div class="ask" id="ask" hidden>
     <div class="ask-in">
