@@ -2,11 +2,15 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## 🏷️ [v1.3.0] - 25/9/26
+## 🏷️ [v2.0.0] - 26/9/26 &nbsp;&nbsp;&nbsp;![Major Release](https://img.shields.io/badge/Major-Release-22c55e?labelColor=166534)
 
 ### ✨ Added
+- 🌴 Personal leave. A round button on the card opens a screen where leave is added and deleted - no editing, by design. Each entry is a from/to range plus a type (plain, summer, Christmas, Easter), and a single day is just the same date twice. Weekends can't be picked as endpoints, overlapping ranges are refused, and deletion takes two taps like the reset button.
+- 🧮 Days are counted as actual working days: weekends and public holidays inside a range don't consume leave. Two figures sit under the list - the total available for the year and what's left after everything declared - and the yearly allowance is entered with up/down arrows from 1 to 30, so no keyboard and nothing to validate. Leave taken in January is charged against last year's balance while any of it remains, which is how the carry-over actually works.
+- 🌙 A leave day takes over the screen like a holiday does, with its own graphic per type; the plain one drops moons and stars over a bedroom scene. Leave outranks everything - holidays and weekends included.
 - 🎈 Holiday takeover - every compulsory private-sector public holiday for the rest of 2026 and all of 2027 is baked into the app, minus the ones that fall on a weekend. On such a day the app opens straight into a full-screen celebration: the card dims behind a blur, a festive graphic fades in with a gold rim and shakes itself awake, and balloons drift down across the whole screen for two seconds. It stays put - nothing underneath can be tapped - and replays every time the app is reopened. Wording elsewhere is untouched; the day keeps its usual mood colour.
 - 💾 Shift state is now written through the Android bridge into SharedPreferences with a synchronous commit, with localStorage kept as a fallback. The WebView flushes localStorage to disk lazily, so pressing Έναρξη and leaving the app a second later could lose the start time - that window is closed.
+- 🍿 Weekend takeover - Saturday and Sunday now get the same treatment as a holiday, with a couch-and-popcorn graphic and popcorn tumbling down the screen instead of balloons. The card sits dimmed behind it, so there is nothing to press on a day off. Both share one routine, ready to take Christmas, Easter and personal leave later.
 - 💬 In-app messages when the app is in the foreground. If the break or the shift ends while you are actually looking at the screen, no system notification fires at all - instead the card shows a proper dialog that waits for an OK. The pending state is stored, so leaving the app and coming back brings the same dialog straight back rather than losing it. Notifications still behave exactly as before whenever the app is closed, backgrounded, or the screen is locked.
 
 ## 🏷️ [v1.1.0] - 25/9/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v1.3.0 · Last update: 25/09/2026 15:21 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 26/09/2026 19:24 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -22,7 +22,7 @@
   }
 
   .card{
-    position:relative;overflow:hidden;width:320px;
+    position:relative;overflow:hidden;width:338px;
     background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:0 14px 12px;
     transition:border-color .5s ease,box-shadow .5s ease;
@@ -36,8 +36,21 @@
     border-bottom:1px solid var(--line);
   }
   .banner img{
-    display:block;width:84%;max-width:250px;height:auto;margin:0 auto;
+    display:block;width:60%;max-width:186px;height:auto;margin:0 auto;
   }
+
+  /* στρογγυλό κουμπί αδειών, πάνω αριστερά */
+  .pto{
+    position:absolute;top:9px;right:9px;z-index:6;
+    width:42px;height:42px;padding:0;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:50%;
+    background:#1b2130;border:1px solid #2c3446;
+    transition:background .14s ease,border-color .14s ease,transform .1s ease;
+  }
+  .pto img{display:block;width:26px;height:26px;pointer-events:none}
+  .pto:active:not(:disabled){background:#2a3550;border-color:#4a5a7d;transform:scale(.94)}
+  .pto:disabled{opacity:.35}
   .head{
     position:relative;
     display:flex;align-items:center;
@@ -80,6 +93,7 @@
   }
   .holiday[hidden]{display:none}
   .holiday canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .holiday img[hidden]{display:none}
   .holiday img{
     position:relative;z-index:2;
     width:82%;max-width:340px;height:auto;
@@ -203,6 +217,135 @@
     100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}
   }
 
+  /* ---------- οθόνη αδειών ---------- */
+  .sheet{
+    position:fixed;inset:0;z-index:60;
+    display:flex;align-items:center;justify-content:center;padding:14px;
+    background:rgba(6,8,12,.74);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+    animation:fade .18s ease-out;
+  }
+  .sheet[hidden]{display:none}
+  .sheetbox{
+    width:100%;max-width:342px;max-height:92vh;overflow:auto;
+    background:#151922;border:1px solid #242a36;border-radius:16px;padding:14px;
+    animation:rise .2s ease-out;
+  }
+  .sheethead{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .sheethead img{width:27px;height:27px;display:block}
+  .sheethead span{flex:1;font-size:16px;font-weight:800;letter-spacing:.2px}
+  .xbtn{
+    width:32px;height:32px;border-radius:50%;padding:0;flex:none;font-size:15px;
+    background:#1d2330;border:1px solid #2a3140;color:#9aa3b2;
+  }
+  .warnline{
+    font-size:11.5px;color:#f0b429;background:rgba(240,180,41,.1);
+    border-radius:9px;padding:7px 9px;margin-bottom:10px;
+  }
+  .warnline[hidden]{display:none}
+
+  .lrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #1e2430}
+  .lico{
+    width:35px;height:35px;border-radius:50%;flex:none;
+    display:flex;align-items:center;justify-content:center;font-size:19px;
+  }
+  .lico img{height:24px;width:auto;max-width:24px;display:block;object-fit:contain}
+  .lmain{flex:1;min-width:0;display:flex;align-items:center}
+  .ldate{font-size:13.5px;font-weight:700;color:#e7eaf0}
+  .lsep{font-size:8px;margin:0 10px;line-height:1;opacity:.9}
+  .lsub{font-size:12px;font-weight:600}
+  .ldel{
+    width:32px;height:32px;border-radius:9px;padding:0;flex:none;font-size:14px;
+    background:transparent;border:1px solid transparent;color:#5d6575;
+  }
+  .ldel.arm{color:#ff7183;border-color:#7a2030;background:#2a1118}
+  .empty{padding:18px 2px;text-align:center;color:#5d6575;font-size:12.5px}
+
+  .totals{display:flex;gap:9px;margin:13px 0 11px}
+  .tot{flex:1;border-radius:12px;padding:11px 8px;text-align:center;background:#1a202c}
+  .tot .k{display:block;font-size:13.5px;font-weight:600;color:#9aa5b5;letter-spacing:.2px}
+  .tot .v{display:block;font-size:32px;font-weight:800;margin-top:3px;color:#7fb2ff}
+  .tot.rest{background:rgba(74,222,128,.1)}
+  .tot.over{background:rgba(224,31,40,.14)}
+  .tot.over .k{color:#ff9aa4}
+  .tot.over .v{color:#ff3b30;text-shadow:0 0 14px rgba(255,59,48,.65),0 0 28px rgba(255,59,48,.3)}
+  .tot.over.shake{animation:overshake 1s ease-in-out 1}
+  @keyframes overshake{
+    0%,100%{transform:translateX(0)}
+    15%{transform:translateX(-5px)}
+    30%{transform:translateX(5px)}
+    45%{transform:translateX(-4px)}
+    60%{transform:translateX(4px)}
+    80%{transform:translateX(-2px)}
+  }
+  .tot.rest .k{color:#8ad3aa}
+  .tot.rest .v{color:#4ade80}
+
+  .sheetbtns{display:flex;gap:8px}
+  .sheetbtns button{font-size:14px;padding:11px 10px}
+  .sheetbtns .main{
+    flex:1;font-weight:700;font-size:15px;color:#cfe0ff;background:#1d2a44;border-color:#2f4266;
+    display:flex;align-items:center;justify-content:center;gap:9px;
+  }
+  .sheetbtns .main img{height:26px;width:auto;display:block}
+  .entbtn{
+    width:46px;height:46px;border-radius:50%;padding:0;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    background:#1b2130;border:1px solid #2c3446;
+  }
+  .entbtn img{width:27px;height:27px;display:block}
+  .entbtn:active{background:#2a3550;border-color:#4a5a7d}
+
+  /* φόρμα */
+  .frow{display:flex;gap:9px}
+  .frow label{flex:1;font-size:11.5px;color:#8e97a6}
+  .dwrap{position:relative;margin-top:4px}
+  .dlabel{
+    position:absolute;left:11px;top:50%;transform:translateY(-50%);
+    pointer-events:none;font-size:14.5px;font-weight:600;color:#e7eaf0;
+    font-variant-numeric:tabular-nums;
+  }
+  .fdate{
+    display:block;width:100%;
+    font:inherit;font-size:14px;color:transparent;
+    background:#1b2130;border:1px solid #2c3446;border-radius:9px;padding:9px 8px;
+    color-scheme:dark;
+  }
+  .fdate.bad{border-color:#c04358;background:#2a1118}
+  .hint{font-size:11.5px;color:#5d6575;margin:7px 0 13px}
+  .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px}
+  .chip{gap:9px}
+  .chip{
+    display:flex;align-items:center;gap:7px;padding:9px 10px;
+    border-radius:10px;border:1px solid #2a3140;background:#1a202c;
+    font-size:13px;color:#aab2c0;
+  }
+  .chip img{height:21px;width:auto;max-width:21px;display:block;object-fit:contain}
+  .chip img.egg{width:14px;object-fit:fill}
+  .lico img.egg{width:16px;object-fit:fill}
+  .cem{font-size:21px;line-height:1;display:inline-block}
+  .chip.on{font-weight:700}
+  .dcount{
+    border-radius:11px;padding:14px 10px;text-align:center;margin-bottom:12px;
+    background:rgba(198,150,40,.14);
+  }
+  .dcount b{display:block;font-size:30px;font-weight:800;color:#e0a92e}
+  .dcount span{font-size:14px !important;color:#c9a663 !important;font-weight:600}
+  .ferr{font-size:12px;color:#ff7183;margin-bottom:10px}
+  .ferr[hidden]{display:none}
+
+  /* μετρητής δικαιούμενων */
+  .steptitle{font-size:16px;font-weight:800;text-align:center}
+  .steptitle{margin-bottom:16px}
+  .steprow{display:flex;align-items:center;justify-content:center;gap:18px;margin-bottom:18px}
+  .steprow button{
+    width:48px;height:48px;border-radius:50%;padding:0;flex:none;font-size:20px;
+    background:#1b2130;border:1px solid #2c3446;color:#cfe0ff;
+  }
+  .steprow button:active{background:#2a3550}
+  .entnum{font-size:40px;font-weight:800;color:#7fb2ff;line-height:1.05;text-align:center;min-width:72px}
+  .entrange{font-size:11px;color:#5d6575;text-align:center}
+
   canvas#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
 
   .pop{
@@ -215,6 +358,7 @@
   .pop-in{width:100%;text-align:center;animation:rise .2s ease-out}
   .pop-in p{
     margin:0 0 14px;font-size:19px;font-weight:800;line-height:1.35;color:#e7eaf0;
+    white-space:pre-line;
   }
   .pop-in p.win{color:var(--ok);text-shadow:0 0 14px rgba(74,222,128,.55)}
   .pop-in p.brk{color:var(--brk);text-shadow:0 0 12px rgba(88,176,200,.45)}
@@ -238,10 +382,71 @@
 <div class="holiday" id="holiday" hidden>
   <canvas id="balloons"></canvas>
   <img id="holiimg" src="holiday.png" alt="">
+  <img id="argiaimg" src="argia.png" alt="" hidden>
+  <img id="xmasimg" src="xmas.png" alt="" hidden>
+  <img id="easterimg" src="easter.png" alt="" hidden>
+  <img id="summerimg" src="summer.png" alt="" hidden>
+  <img id="leaveimg" src="pto.png" alt="" hidden>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheetbox">
+
+    <div class="sheethead" id="sheetHead">
+      <img src="leave.png" alt="">
+      <span id="sheetTitle">Οι άδειές μου</span>
+      <button class="xbtn" id="sheetClose" aria-label="Κλείσιμο">✕</button>
+    </div>
+
+    <div id="paneList">
+      <div class="warnline" id="entWarn" hidden></div>
+      <div id="leaveList"></div>
+      <div class="totals">
+        <div class="tot"><span class="k">Σύνολο</span><span class="v" id="totAll">0</span></div>
+        <div class="tot rest"><span class="k">Υπόλοιπο</span><span class="v" id="totRest">0</span></div>
+      </div>
+      <div class="sheetbtns">
+        <button class="main" id="btnAddLeave"><img src="newleave.png" alt="">Νέα άδεια</button>
+        <button class="entbtn" id="btnEnt" aria-label="Δικαιούμενες"><img src="remaining.png" alt=""></button>
+      </div>
+    </div>
+
+    <div id="paneForm" hidden>
+      <div class="frow">
+        <label>Από<span class="dwrap"><input type="date" class="fdate" id="fFrom"><span class="dlabel" id="fFromLbl"></span></span></label>
+        <label>Έως<span class="dwrap"><input type="date" class="fdate" id="fTo"><span class="dlabel" id="fToLbl"></span></span></label>
+      </div>
+      <div class="chips" id="fChips"></div>
+      <div class="dcount"><b id="fDays">0</b><span id="fDaysTx">Ημέρες</span></div>
+      <div class="ferr" id="fErr" hidden></div>
+      <div class="sheetbtns">
+        <button style="flex:1" id="fCancel">Άκυρο</button>
+        <button class="main" id="fSave">Αποθήκευση</button>
+      </div>
+    </div>
+
+    <div id="paneEnt" hidden>
+      <div class="steprow">
+        <button id="entDown" aria-label="Μείωση">▾</button>
+        <div>
+          <div class="entnum" id="entNum">20</div>
+          <div class="entrange">1 – 30</div>
+        </div>
+        <button id="entUp" aria-label="Αύξηση">▴</button>
+      </div>
+      <div class="sheetbtns">
+        <button style="flex:1" id="entCancel">Άκυρο</button>
+        <button class="main" id="entSave">Αποθήκευση</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <div class="card" id="card">
   <canvas id="confetti"></canvas>
+
+  <button class="pto" id="btnPto" aria-label="Άδειες"><img src="ptobtn.png" alt=""></button>
 
   <div class="banner"><img src="flexo.png" alt="Flexopack"></div>
 
@@ -289,7 +494,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v1.3.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v2.0.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -322,6 +527,11 @@
   var dayBox   = document.getElementById('daybox');
   var holiBox  = document.getElementById('holiday');
   var holiImg  = document.getElementById('holiimg');
+  var argiaImg = document.getElementById('argiaimg');
+  var xmasImg  = document.getElementById('xmasimg');
+  var easterImg= document.getElementById('easterimg');
+  var summerImg= document.getElementById('summerimg');
+  var leaveImg = document.getElementById('leaveimg');
   var holiCv   = document.getElementById('balloons');
   var fxCanvas = document.getElementById('fx');
   var elRest   = document.getElementById('rest');
@@ -341,6 +551,7 @@
   var imgRun   = document.getElementById('imgRun');
   var ask      = document.getElementById('ask');
   var pop      = document.getElementById('pop');
+  var btnPto   = document.getElementById('btnPto');
   var popTx    = document.getElementById('poptx');
 
   var A = window.Android || null;   // γέφυρα προς το Android
@@ -357,6 +568,16 @@
     if (st.popEnd === 1) return 'end';
     if (st.popBrk === 1) return 'brk';
     return null;
+  }
+
+  var infoOpen = false;
+
+  /* προσωρινό μήνυμα που δεν κουβαλάει κατάσταση */
+  function showInfo(text) {
+    popTx.textContent = text;
+    popTx.className = 'brk';
+    infoOpen = true;
+    pop.hidden = false;
   }
 
   function showPop(kind) {
@@ -438,21 +659,108 @@
   }
 
   /* ------------------------------ render ------------------------------ */
+  /* ---------------- άδειες ---------------- */
+  var LTYPES = [
+    { id:'plain',  name:'Απλή',             icon:'<img src="pto.png" alt="">', col:'#8fb6ff', bg:'rgba(143,182,255,.13)', kind:'leave'  },
+    { id:'summer', name:'Καλοκαιρινή',      icon:'<span class="cem">🏖️</span>', col:'#f0b429', bg:'rgba(240,180,41,.13)', kind:'summer' },
+    { id:'xmas',   name:'Χριστουγεννιάτικη', icon:'<span class="cem">🎄</span>', col:'#4ade80', bg:'rgba(74,222,128,.13)', kind:'xmas'   },
+    { id:'easter', name:'Πασχαλινή',        icon:'<img class="egg" src="egg.png" alt="">', col:'#ef6b6b', bg:'rgba(239,107,107,.13)', kind:'easter' }
+  ];
+  function ltype(id) {
+    for (var i = 0; i < LTYPES.length; i++) if (LTYPES[i].id === id) return LTYPES[i];
+    return LTYPES[0];
+  }
+
+  var leaves = [], entitle = {};
+
+  function loadLeaveData() {
+    try { leaves = JSON.parse(flagGet('leaves') || '[]') || []; } catch (e) { leaves = []; }
+    try { entitle = JSON.parse(flagGet('entitle') || '{}') || {}; } catch (e) { entitle = {}; }
+  }
+  function saveLeaveData() {
+    flagSet('leaves', JSON.stringify(leaves));
+    flagSet('entitle', JSON.stringify(entitle));
+  }
+
+  function dparse(iso) { var a = iso.split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }
+  function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
+
+  /* εργάσιμες: χωρίς Σαββατοκύριακα, χωρίς αργίες */
+  function workDays(fromIso, toIso) {
+    var d = dparse(fromIso), end = dparse(toIso), n = 0, guard = 0;
+    while (d <= end && guard++ < 800) {
+      if (!isWeekend(d) && !HOLIDAYS[ymd(d)]) n++;
+      d.setDate(d.getDate() + 1);
+    }
+    return n;
+  }
+
+  /* η άδεια χρεώνεται στη χρονιά που ξεκινάει - εκτός αν ξεκινάει Ιανουάριο
+     και έχει μείνει υπόλοιπο από πέρσι */
+  function chargeYear(lv) {
+    var f = dparse(lv.from), y = f.getFullYear();
+    if (f.getMonth() === 0 && carryFrom(y - 1) > 0) return y - 1;
+    return y;
+  }
+  function takenIn(y) {
+    var n = 0;
+    for (var i = 0; i < leaves.length; i++) {
+      var lv = leaves[i];
+      if (dparse(lv.from).getFullYear() === y) n += workDays(lv.from, lv.to);
+    }
+    return n;
+  }
+  function carryFrom(y) {
+    var left = (entitle[y] || 0) - takenIn(y);
+    return left > 0 ? left : 0;
+  }
+  function totalsFor(y) {
+    var total = carryFrom(y - 1) + (entitle[y] || 0), used = 0;
+    for (var i = 0; i < leaves.length; i++) if (chargeYear(leaves[i]) === y) used += workDays(leaves[i].from, leaves[i].to);
+    return { total: total, rest: total - used };
+  }
+
+  function overlaps(fromIso, toIso) {
+    var a1 = dparse(fromIso), a2 = dparse(toIso);
+    for (var i = 0; i < leaves.length; i++) {
+      var b1 = dparse(leaves[i].from), b2 = dparse(leaves[i].to);
+      if (a1 <= b2 && b1 <= a2) return true;
+    }
+    return false;
+  }
+
+  function leaveOn(iso) {
+    var d = dparse(iso);
+    for (var i = 0; i < leaves.length; i++) {
+      if (d >= dparse(leaves[i].from) && d <= dparse(leaves[i].to)) return leaves[i];
+    }
+    return null;
+  }
+
+  var GRMON = ['Ιαν','Φεβ','Μαρ','Απρ','Μαΐ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
+  function human(fromIso, toIso) {
+    var a = dparse(fromIso), b = dparse(toIso);
+    if (fromIso === toIso) return a.getDate() + ' ' + GRMON[a.getMonth()] + ' ' + a.getFullYear();
+    if (a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth())
+      return a.getDate() + ' – ' + b.getDate() + ' ' + GRMON[b.getMonth()] + ' ' + b.getFullYear();
+    return a.getDate() + ' ' + GRMON[a.getMonth()] + ' – ' + b.getDate() + ' ' + GRMON[b.getMonth()] + ' ' + b.getFullYear();
+  }
+
   /* ---------------- η ημέρα και η διάθεσή της ---------------- */
   var DAYCLS = ['d-sun','d-mon','d-tue','d-wed','d-thu','d-fri','d-sat'];
 
   /* υποχρεωτικές αργίες ιδιωτικού τομέα - χωρίς όσες πέφτουν Σαββατοκύριακο */
   var HOLIDAYS = {
-    '2026-10-28': '🇬🇷 28η Οκτωβρίου',
-    '2026-12-25': '🎄 Χριστούγεννα',
-    '2027-01-01': '🎊 Πρωτοχρονιά',
-    '2027-01-06': '⛪ Θεοφάνεια',
-    '2027-03-15': '🪁 Καθαρά Δευτέρα',
-    '2027-03-25': '🇬🇷 25η Μαρτίου',
-    '2027-04-30': '🕯️ Μεγάλη Παρασκευή',
-    '2027-05-03': '🐣 Δευτέρα του Πάσχα',
-    '2027-06-21': '🕊️ Αγίου Πνεύματος',
-    '2027-10-28': '🇬🇷 28η Οκτωβρίου'
+    '2026-10-28': 'holiday',   // 28η Οκτωβρίου
+    '2026-12-25': 'xmas',      // Χριστούγεννα
+    '2027-01-01': 'xmas',      // Πρωτοχρονιά
+    '2027-01-06': 'xmas',      // Θεοφάνεια
+    '2027-03-15': 'holiday',   // Καθαρά Δευτέρα
+    '2027-03-25': 'holiday',   // 25η Μαρτίου
+    '2027-04-30': 'easter',    // Μεγάλη Παρασκευή
+    '2027-05-03': 'easter',    // Δευτέρα του Πάσχα
+    '2027-06-21': 'summer',    // Αγίου Πνεύματος - θερινό ηλιοστάσιο
+    '2027-10-28': 'holiday'    // 28η Οκτωβρίου
   };
   var shownDay = null;
 
@@ -465,7 +773,11 @@
     elDay.className = 'day ' + DAYCLS[w];
     playMood(w);
 
-    if (holi) showHoliday(); else holiBox.hidden = true;
+    var lv = leaveOn(key);
+    if (lv) celebrate(ltype(lv.type).kind);
+    else if (holi) celebrate(holi);
+    else if (w === 0 || w === 6) showWeekend();
+    else holiBox.hidden = true;
   }
 
   var fxStop = null;
@@ -513,7 +825,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v1.3.0';
+          ver.lastChild.textContent = 'v2.0.0';
         }, 2500);
       }, 1500);
     }
@@ -525,33 +837,75 @@
     });
   })();
 
-  function showHoliday() {
+  /* Μία γιορτή, δύο ρόλοι: αργία με μπαλόνια, Σαββατοκύριακο με ποπ κορν.
+     Το ίδιο καλούπι θα δεχτεί αργότερα Χριστούγεννα, Πάσχα και άδειες. */
+  var KINDS = {
+    holiday: { img: holiImg,   fall: 'balloon' },
+    weekend: { img: argiaImg,  fall: 'popcorn' },
+    xmas:    { img: xmasImg,   fall: 'snow'    },
+    easter:  { img: easterImg, fall: 'egg'     },
+    summer:  { img: summerImg, fall: 'sun'     },
+    leave:   { img: leaveImg,  fall: 'moon'    }
+  };
+
+  function celebrate(kind) {
+    var c = KINDS[kind] || KINDS.holiday;
+    for (var k in KINDS) KINDS[k].img.hidden = (KINDS[k] !== c);
+
     holiBox.hidden = false;
-    /* ξαναπαίζουμε τα animation της εικόνας από την αρχή */
-    holiImg.style.animation = 'none';
-    void holiImg.offsetWidth;
-    holiImg.style.animation = '';
+    c.img.style.animation = 'none';
+    void c.img.offsetWidth;
+    c.img.style.animation = '';
+
     if (balloonStop) balloonStop();
-    balloonStop = balloons(2000);
+    balloonStop = confettiFall(2000, c.fall);
   }
 
-  /* μπαλόνια σε όλη την οθόνη, σπορά για 2 δευτερόλεπτα */
-  function balloons(spawnMs) {
+  function showHoliday() { celebrate('holiday'); }
+  function showWeekend() { celebrate('weekend'); }
+
+  /* μπαλόνια ή ποπ κορν σε όλη την οθόνη, σπορά για 2 δευτερόλεπτα */
+  function confettiFall(spawnMs, kind) {
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = window.innerWidth, h = window.innerHeight;
     holiCv.width = w * dpr; holiCv.height = h * dpr;
     var ctx = holiCv.getContext('2d');
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    var cols = ['#e63946','#f5c451','#3fa9f5','#42d17a','#c86bfa','#ff8fab'];
+    var pop = kind === 'popcorn';
+    var cols =
+        pop              ? ['#fff4d6','#ffe9b3','#f8dd9a','#fffaf0']
+      : kind === 'snow'  ? ['#ffffff','#eaf4ff','#d8ecff']
+      : kind === 'egg'   ? ['#d81f2a','#c1121f','#e63946']
+      : kind === 'sun'   ? ['#ffd24a','#ffb52e','#ffe27a']
+      : kind === 'moon'  ? ['#ffd97a','#fff0b8']
+      :                    ['#e63946','#f5c451','#3fa9f5','#42d17a','#c86bfa','#ff8fab'];
     var list = [], t0 = performance.now(), raf = null, alive = true;
 
     function spawn() {
-      var r = 13 + Math.random() * 12;
+      var r = pop ? 7 + Math.random() * 6
+            : kind === 'snow' ? 7 + Math.random() * 6
+            : kind === 'egg'  ? 8 + Math.random() * 5
+            : kind === 'sun'  ? 9 + Math.random() * 7
+            : kind === 'moon' ? 6 + Math.random() * 7
+            : 13 + Math.random() * 12;
+      var lobes = [];
+      if (pop) {
+        for (var k = 0; k < 5; k++) {
+          lobes.push({
+            dx: (Math.random() - .5) * r * 1.1,
+            dy: (Math.random() - .5) * r * 1.1,
+            rr: r * (0.45 + Math.random() * 0.4)
+          });
+        }
+      }
       list.push({
+        glyph: Math.random() < .4 ? '🌙' : '⭐',
         x: Math.random() * w, y: -r * 2.4 - Math.random() * 120,
-        r: r, v: 0.9 + Math.random() * 1.5,
+        r: r, v: (kind === 'snow' ? 0.5 : pop ? 1.4 : 1.0) + Math.random() * (kind === 'snow' ? 0.8 : 1.5),
         sw: Math.random() * 6.283, ss: 0.012 + Math.random() * 0.02,
+        spin: (Math.random() - .5) * 0.12, rot: Math.random() * 6.283,
+        lobes: lobes,
         c: cols[(Math.random() * cols.length) | 0], tilt: (Math.random() - .5) * .5
       });
     }
@@ -570,6 +924,92 @@
 
         ctx.save();
         ctx.translate(x, b.y);
+
+        if (kind === 'moon') {
+          b.rot += b.spin * .4;
+          ctx.rotate(b.rot);
+          ctx.globalAlpha = .95;
+          ctx.font = (b.r * (b.glyph === '🌙' ? 2.9 : 2.1)) + 'px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(b.glyph, 0, 0);
+          ctx.globalAlpha = 1;
+          ctx.restore();
+          if (b.y - b.r > h + 40) list.splice(i, 1);
+          continue;
+        }
+
+        if (kind === 'snow') {
+          b.rot += b.spin * .5;
+          ctx.rotate(b.rot);
+          ctx.globalAlpha = .92;
+          ctx.font = (b.r * 2.4) + 'px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('❄️', 0, 0);
+          ctx.globalAlpha = 1;
+          ctx.restore();
+          if (b.y - b.r > h + 40) list.splice(i, 1);
+          continue;
+        }
+
+        if (kind === 'egg') {
+          b.rot += b.spin;
+          ctx.rotate(b.rot);
+          ctx.fillStyle = b.c;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, b.r * .72, b.r, 0, 0, 6.283);
+          ctx.fill();
+          ctx.fillStyle = 'rgba(255,255,255,.4)';
+          ctx.beginPath();
+          ctx.ellipse(-b.r * .26, -b.r * .34, b.r * .16, b.r * .26, -.5, 0, 6.283);
+          ctx.fill();
+          ctx.restore();
+          if (b.y - b.r > h + 40) list.splice(i, 1);
+          continue;
+        }
+
+        if (kind === 'sun') {
+          b.rot += b.spin * .6;
+          ctx.rotate(b.rot);
+          ctx.strokeStyle = b.c;
+          ctx.lineWidth = Math.max(1.4, b.r * .18);
+          ctx.lineCap = 'round';
+          for (var ray = 0; ray < 8; ray++) {
+            var a2 = ray * Math.PI / 4;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(a2) * b.r * .95, Math.sin(a2) * b.r * .95);
+            ctx.lineTo(Math.cos(a2) * b.r * 1.45, Math.sin(a2) * b.r * 1.45);
+            ctx.stroke();
+          }
+          ctx.fillStyle = b.c;
+          ctx.beginPath();
+          ctx.arc(0, 0, b.r * .78, 0, 6.283);
+          ctx.fill();
+          ctx.restore();
+          if (b.y - b.r > h + 40) list.splice(i, 1);
+          continue;
+        }
+
+        if (pop) {
+          b.rot += b.spin;
+          ctx.rotate(b.rot);
+          ctx.fillStyle = b.c;
+          for (var L = 0; L < b.lobes.length; L++) {
+            var lo = b.lobes[L];
+            ctx.beginPath();
+            ctx.arc(lo.dx, lo.dy, lo.rr, 0, 6.283);
+            ctx.fill();
+          }
+          ctx.fillStyle = 'rgba(214,170,90,.35)';
+          ctx.beginPath();
+          ctx.arc(b.lobes[0].dx, b.lobes[0].dy, b.lobes[0].rr * .5, 0, 6.283);
+          ctx.fill();
+          ctx.restore();
+          if (b.y - b.r > h + 40) list.splice(i, 1);
+          continue;
+        }
+
         ctx.rotate(Math.sin(b.sw) * .12 + b.tilt);
 
         ctx.strokeStyle = 'rgba(255,255,255,.45)';
@@ -763,8 +1203,10 @@
     }
 
     var want = pendingPop();
-    if (want && pop.hidden) showPop(want);
-    else if (!want && !pop.hidden) pop.hidden = true;
+    if (!infoOpen) {
+      if (want && pop.hidden) showPop(want);
+      else if (!want && !pop.hidden) pop.hidden = true;
+    }
 
     imgIdle.hidden = !!st.start;
     imgRun.hidden  = !st.start;
@@ -850,7 +1292,237 @@
     else arm();
   };
 
+  /* ---------------- οθόνη αδειών: χειρισμός ---------------- */
+  var sheet     = document.getElementById('sheet');
+  var paneList  = document.getElementById('paneList');
+  var paneForm  = document.getElementById('paneForm');
+  var paneEnt   = document.getElementById('paneEnt');
+  var sheetTtl  = document.getElementById('sheetTitle');
+  var listEl    = document.getElementById('leaveList');
+  var totAllEl  = document.getElementById('totAll');
+  var totRestEl = document.getElementById('totRest');
+  var entWarn   = document.getElementById('entWarn');
+  var fFrom     = document.getElementById('fFrom');
+  var fTo       = document.getElementById('fTo');
+  var fChips    = document.getElementById('fChips');
+  var fDays     = document.getElementById('fDays');
+  var fDaysTx   = document.getElementById('fDaysTx');
+  var fFromLbl  = document.getElementById('fFromLbl');
+  var fToLbl    = document.getElementById('fToLbl');
+  var fErr      = document.getElementById('fErr');
+  var entNum    = document.getElementById('entNum');
+
+  var formType = 'plain', entVal = 20, delArm = 0, delTimer = null, shakeRest = false;
+
+  function pane(which) {
+    paneList.hidden = which !== 'list';
+    paneForm.hidden = which !== 'form';
+    paneEnt.hidden  = which !== 'ent';
+    document.getElementById('sheetClose').hidden = which !== 'list';
+    sheetTtl.textContent = which === 'form' ? 'Νέα άδεια'
+                         : which === 'ent'  ? 'Σύνολο - ' + new Date().getFullYear()
+                         : 'Οι άδειές μου';
+  }
+
+  function renderLeaves() {
+    var y = new Date().getFullYear(), t = totalsFor(y);
+    totAllEl.textContent  = t.total;
+    totRestEl.textContent = t.rest;
+
+    var restBox = totRestEl.parentNode;
+    restBox.classList.toggle('over', t.rest < 0);
+    if (t.rest < 0 && shakeRest) {
+      shakeRest = false;
+      restBox.classList.remove('shake');
+      void restBox.offsetWidth;
+      restBox.classList.add('shake');
+    }
+
+    if (!entitle[y]) {
+      entWarn.hidden = false;
+      entWarn.textContent = 'Δεν έχεις ορίσει μέρες για το ' + y + ' — πάτα τον μετρητή δίπλα.';
+    } else entWarn.hidden = true;
+
+    if (!leaves.length) {
+      listEl.innerHTML = '<div class="empty">Καμία άδεια δηλωμένη</div>';
+      return;
+    }
+
+    var sorted = leaves.slice().sort(function (a, b) { return a.from < b.from ? -1 : 1; });
+    var html = '';
+    for (var i = 0; i < sorted.length; i++) {
+      var lv = sorted[i], tp = ltype(lv.type), d = workDays(lv.from, lv.to);
+      html += '<div class="lrow">'
+            +   '<span class="lico" style="background:' + tp.bg + ';color:' + tp.col + '">' + tp.icon + '</span>'
+            +   '<span class="lmain">'
+            +     '<span class="ldate">' + human(lv.from, lv.to) + '</span>'
+            +     '<span class="lsep">🔵</span>'
+            +     '<span class="lsub" style="color:' + tp.col + '">' + d + (d === 1 ? ' ημέρα' : ' ημέρες') + '</span>'
+            +   '</span>'
+            +   '<button class="ldel' + (delArm === lv.id ? ' arm' : '') + '" data-id="' + lv.id + '">'
+            +     (delArm === lv.id ? '✓' : '🗑') + '</button>'
+            + '</div>';
+    }
+    listEl.innerHTML = html;
+
+    var dels = listEl.querySelectorAll('.ldel');
+    for (var k = 0; k < dels.length; k++) {
+      dels[k].onclick = function () {
+        var id = +this.getAttribute('data-id');
+        clearTimeout(delTimer);
+        if (delArm === id) {
+          for (var j = 0; j < leaves.length; j++) if (leaves[j].id === id) { leaves.splice(j, 1); break; }
+          delArm = 0;
+          saveLeaveData();
+          shownDay = null;
+          renderLeaves();
+        } else {
+          delArm = id;
+          renderLeaves();
+          delTimer = setTimeout(function () { delArm = 0; renderLeaves(); }, 5000);
+        }
+      };
+    }
+  }
+
+  function renderChips() {
+    var html = '';
+    for (var i = 0; i < LTYPES.length; i++) {
+      var t = LTYPES[i], on = t.id === formType;
+      html += '<div class="chip' + (on ? ' on' : '') + '" data-t="' + t.id + '"'
+            + (on ? ' style="border-color:' + t.col + ';background:' + t.bg + ';color:' + t.col + '"' : '')
+            + '>' + t.icon + t.name + '</div>';
+    }
+    fChips.innerHTML = html;
+    var chips = fChips.querySelectorAll('.chip');
+    for (var k = 0; k < chips.length; k++) {
+      chips[k].onclick = function () { formType = this.getAttribute('data-t'); renderChips(); };
+    }
+  }
+
+  function nextWorkday(d) {
+    var x = new Date(d.getTime());
+    while (isWeekend(x)) x.setDate(x.getDate() + 1);
+    return x;
+  }
+
+  function grDate(iso) {
+    if (!iso) return '';
+    var a = iso.split('-');
+    return a[2] + '/' + a[1] + '/' + a[0];
+  }
+  function stampLabels() {
+    fFromLbl.textContent = grDate(fFrom.value);
+    fToLbl.textContent   = grDate(fTo.value);
+  }
+
+  function checkForm() {
+    stampLabels();
+    var ok = true;
+    fErr.hidden = true;
+    fFrom.classList.remove('bad');
+    fTo.classList.remove('bad');
+
+    if (!fFrom.value || !fTo.value) ok = false;
+    if (ok && isWeekend(dparse(fFrom.value))) { fFrom.classList.add('bad'); ok = false; }
+    if (ok && isWeekend(dparse(fTo.value)))   { fTo.classList.add('bad');   ok = false; }
+    if (ok && dparse(fTo.value) < dparse(fFrom.value)) { fTo.classList.add('bad'); ok = false; }
+
+    var n = ok ? workDays(fFrom.value, fTo.value) : 0;
+    fDays.textContent = n;
+    fDaysTx.textContent = n === 1 ? 'Ημέρα' : 'Ημέρες';
+    return ok;
+  }
+
+  function openForm() {
+    var t = nextWorkday(new Date()), iso = ymd(t);
+    var nx = nextWorkday(new Date(t.getTime() + 86400000));
+    fFrom.value = iso; fTo.value = ymd(nx);
+    formType = 'plain';
+    renderChips();
+    checkForm();
+    pane('form');
+  }
+
+  btnPto.onclick = function () {
+    if (btnPto.disabled) return;
+    loadLeaveData();
+    shakeRest = true;
+    renderLeaves();
+    pane('list');
+    sheet.hidden = false;
+  };
+
+  document.getElementById('sheetClose').onclick = function () { sheet.hidden = true; delArm = 0; };
+  document.getElementById('btnAddLeave').onclick = openForm;
+  document.getElementById('fCancel').onclick = function () { renderLeaves(); pane('list'); };
+  fFrom.onchange = function () {
+    /* το «Έως» ακολουθεί το «Από», ώστε ο επιλογέας να ανοίγει στον σωστό μήνα */
+    if (fFrom.value && !isWeekend(dparse(fFrom.value))) {
+      var nx = dparse(fFrom.value);
+      nx.setDate(nx.getDate() + 1);
+      nx = nextWorkday(nx);
+      if (!fTo.value || dparse(fTo.value) <= dparse(fFrom.value)) fTo.value = ymd(nx);
+    }
+    checkForm();
+  };
+  fTo.onchange = checkForm;
+
+  document.getElementById('fSave').onclick = function () {
+    if (!checkForm()) {
+      fErr.hidden = false;
+      fErr.textContent = 'Διάλεξε έγκυρες ημερομηνίες - όχι Σαββατοκύριακο.';
+      return;
+    }
+    if (overlaps(fFrom.value, fTo.value)) {
+      fErr.hidden = false;
+      fErr.textContent = 'Υπάρχει ήδη άδεια σε αυτές τις ημερομηνίες.';
+      return;
+    }
+    leaves.push({ id: Date.now(), from: fFrom.value, to: fTo.value, type: formType });
+    saveLeaveData();
+    shownDay = null;
+    renderLeaves();
+    pane('list');
+  };
+
+  /* μετρητής δικαιούμενων, μόνο με βελάκια */
+  function openEnt() {
+    var y = new Date().getFullYear();
+    entVal = entitle[y] || 20;
+    entNum.textContent = entVal;
+    pane('ent');
+  }
+  function bump(step) {
+    entVal = Math.min(30, Math.max(1, entVal + step));
+    entNum.textContent = entVal;
+  }
+  function holdable(el, step) {
+    var t1 = null, t2 = null;
+    function start() {
+      bump(step);
+      t1 = setTimeout(function () { t2 = setInterval(function () { bump(step); }, 90); }, 450);
+    }
+    function stop() { clearTimeout(t1); clearInterval(t2); }
+    el.addEventListener('touchstart', function (e) { e.preventDefault(); start(); });
+    el.addEventListener('mousedown', start);
+    ['touchend','touchcancel','mouseup','mouseleave'].forEach(function (ev) { el.addEventListener(ev, stop); });
+  }
+  holdable(document.getElementById('entUp'), 1);
+  holdable(document.getElementById('entDown'), -1);
+
+  document.getElementById('btnEnt').onclick = openEnt;
+  entWarn.onclick = openEnt;
+  document.getElementById('entCancel').onclick = function () { renderLeaves(); pane('list'); };
+  document.getElementById('entSave').onclick = function () {
+    entitle[new Date().getFullYear()] = entVal;
+    saveLeaveData();
+    renderLeaves();
+    pane('list');
+  };
+
   document.getElementById('popOk').onclick = function () {
+    infoOpen = false;
     var k = pendingPop();
     if (k === 'end') st.popEnd = 2;
     else if (k === 'brk') st.popBrk = 2;
@@ -886,6 +1558,7 @@
     });
   })();
 
+  loadLeaveData();
   st = load();
   if (st.start && now() >= st.start + SHIFT) celebrated = false;
   render();
@@ -900,7 +1573,10 @@
     if (!document.hidden) {
       var t = new Date();
       playMood(t.getDay());
-      if (HOLIDAYS[ymd(t)]) showHoliday();
+      var lvt = leaveOn(ymd(t));
+      if (lvt) celebrate(ltype(lvt.type).kind);
+      else if (HOLIDAYS[ymd(t)]) celebrate(HOLIDAYS[ymd(t)]);
+      else if (t.getDay() === 0 || t.getDay() === 6) showWeekend();
       else if (flagGet('holitest') === '1') { flagSet('holitest', ''); showHoliday(); }
       render();
     }
