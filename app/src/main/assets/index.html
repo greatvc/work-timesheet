@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 13:48 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 19:00 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -745,9 +745,13 @@
     return left > 0 ? left : 0;
   }
   function totalsFor(y) {
-    var total = carryFrom(y - 1) + (entitle[y] || 0), used = 0;
-    for (var i = 0; i < leaves.length; i++) if (chargeYear(leaves[i]) === y) used += workDays(leaves[i].from, leaves[i].to);
-    return { total: total, rest: total - used };
+    /* διαθέσιμες = όσες κουβαλήθηκαν από πέρσι + όσες δήλωσες φέτος
+       σύνολο = όσες μέρες άδειας έχεις πάρει, υπόλοιπο = η διαφορά */
+    var avail = carryFrom(y - 1) + (entitle[y] || 0), used = 0;
+    for (var i = 0; i < leaves.length; i++) {
+      if (chargeYear(leaves[i]) === y) used += workDays(leaves[i].from, leaves[i].to);
+    }
+    return { used: used, rest: avail - used };
   }
 
   function overlaps(fromIso, toIso) {
@@ -1422,7 +1426,7 @@
 
   function renderLeaves() {
     var y = new Date().getFullYear(), t = totalsFor(y);
-    totAllEl.textContent  = t.total;
+    totAllEl.textContent  = t.used;
     totRestEl.textContent = t.rest;
 
     var restBox = totRestEl.parentNode;
