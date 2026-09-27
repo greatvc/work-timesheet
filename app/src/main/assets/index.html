@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 26/09/2026 19:24 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 12:08 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -430,7 +430,6 @@
         <button id="entDown" aria-label="Μείωση">▾</button>
         <div>
           <div class="entnum" id="entNum">20</div>
-          <div class="entrange">1 – 30</div>
         </div>
         <button id="entUp" aria-label="Αύξηση">▴</button>
       </div>
@@ -800,6 +799,9 @@
 
   /* ---------------- αργία: overlay + μπαλόνια ---------------- */
   var balloonStop = null;
+  var peek = false;              // η γιορτή παραμερίστηκε προσωρινά
+  var peekReady = false;         // το τριπλό πάτημα πιάνει μόνο αφού ησυχάσει η εικόνα
+  var peekTimer = null;
   var TESTKEY = 'work-holitest';
 
   /* η γέφυρα γράφει συγχρονισμένα· το localStorage είναι εφεδρεία για τον browser */
@@ -849,6 +851,7 @@
   };
 
   function celebrate(kind) {
+    if (peek) return;            // ο χρήστης την παραμέρισε γι' αυτή τη συνεδρία
     var c = KINDS[kind] || KINDS.holiday;
     for (var k in KINDS) KINDS[k].img.hidden = (KINDS[k] !== c);
 
@@ -859,7 +862,30 @@
 
     if (balloonStop) balloonStop();
     balloonStop = confettiFall(2000, c.fall);
+
+    /* 1.05s μπάσιμο + 3 × 0.5s τράνταγμα με καθυστέρηση 1.15s */
+    peekReady = false;
+    clearTimeout(peekTimer);
+    peekTimer = setTimeout(function () { peekReady = true; }, 2750);
   }
+
+  /* τρία γρήγορα πατήματα στην εικόνα: φεύγει η γιορτή για να φτάσεις στις άδειες.
+     Τα κουμπιά της βάρδιας μένουν κλειδωμένα - μόνο το κουμπί αδειών δουλεύει. */
+  (function () {
+    var taps = 0, t = null;
+    holiBox.addEventListener('click', function () {
+      if (!peekReady) { taps = 0; return; }
+      taps++;
+      clearTimeout(t);
+      t = setTimeout(function () { taps = 0; }, 600);
+      if (taps >= 3) {
+        taps = 0;
+        peek = true;
+        if (balloonStop) balloonStop();
+        holiBox.hidden = true;
+      }
+    });
+  })();
 
   function showHoliday() { celebrate('holiday'); }
   function showWeekend() { celebrate('weekend'); }
@@ -1192,6 +1218,9 @@
 
     rColon.classList.toggle('off', running && d.getSeconds() % 2 === 1);
 
+    /* μέρα ρεπό: τίποτα δεν πατιέται, ακόμα κι αν παραμερίστηκε το γραφικό */
+    var offDay = !!leaveOn(ymd(d)) || !!HOLIDAYS[ymd(d)] || d.getDay() === 0 || d.getDay() === 6;
+
     /* μηνύματα μέσα στην εφαρμογή, όταν είναι ανοιχτή τη στιγμή που λήγει κάτι */
     if (!document.hidden) {
       if (hadBrk && !st.popBrk && (n - brkEnd) < 150 && flagGet('notified_2') !== '1') {
@@ -1211,7 +1240,7 @@
     imgIdle.hidden = !!st.start;
     imgRun.hidden  = !st.start;
 
-    btnBk.disabled = !running || !!st.brk
+    btnBk.disabled = offDay || !running || !!st.brk
       || (n - st.start) < CUTOFF
       || (end - n) < CUTOFF;
 
@@ -1222,7 +1251,7 @@
       elEnd.textContent  = '--:--';
       elState.innerHTML = '&nbsp;';
       elSub.innerHTML   = '&nbsp;';
-      btnGo.disabled = false;
+      btnGo.disabled = offDay;
       btnRs.disabled = true;
       if (rsUntil) disarm();
       return;
@@ -1238,7 +1267,7 @@
       elState.textContent = 'Ξεκίνησες ' + hhmm(st.start);
       elSub.innerHTML     = '&nbsp;';
       btnGo.disabled = true;
-      btnRs.disabled = false;
+      btnRs.disabled = offDay;
     } else {
       card.classList.add('done');
       setRest('00', '00');
@@ -1573,6 +1602,7 @@
     if (!document.hidden) {
       var t = new Date();
       playMood(t.getDay());
+      peek = false;
       var lvt = leaveOn(ymd(t));
       if (lvt) celebrate(ltype(lvt.type).kind);
       else if (HOLIDAYS[ymd(t)]) celebrate(HOLIDAYS[ymd(t)]);

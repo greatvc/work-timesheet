@@ -2,9 +2,10 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## 🏷️ [v2.0.0] - 26/9/26 &nbsp;&nbsp;&nbsp;![Major Release](https://img.shields.io/badge/Major-Release-22c55e?labelColor=166534)
+## 🏷️ [v2.0.0] - 27/9/26 &nbsp;&nbsp;&nbsp;![Major Release](https://img.shields.io/badge/Major-Release-22c55e?labelColor=166534)
 
 ### ✨ Added
+
 - 🌴 Personal leave. A round button on the card opens a screen where leave is added and deleted - no editing, by design. Each entry is a from/to range plus a type (plain, summer, Christmas, Easter), and a single day is just the same date twice. Weekends can't be picked as endpoints, overlapping ranges are refused, and deletion takes two taps like the reset button.
 - 🧮 Days are counted as actual working days: weekends and public holidays inside a range don't consume leave. Two figures sit under the list - the total available for the year and what's left after everything declared - and the yearly allowance is entered with up/down arrows from 1 to 30, so no keyboard and nothing to validate. Leave taken in January is charged against last year's balance while any of it remains, which is how the carry-over actually works.
 - 🌙 A leave day takes over the screen like a holiday does, with its own graphic per type; the plain one drops moons and stars over a bedroom scene. Leave outranks everything - holidays and weekends included.
@@ -16,6 +17,7 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v1.1.0] - 25/9/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
 
 ### 🛠️ Changed
+
 - 🎭 Innovative day display according to mood - the day name is now the centrepiece of the card, bigger and bolder, and it carries the temperament of the day: Monday bleeds, Tuesday weeps, Wednesday sulks in amber, Thursday brightens, and Friday goes full green with fireworks. The clock was dropped entirely; the phone already shows it in the status bar.
 - 🎨 The remaining-shift counter now changes colour as the day burns down: hard red with a red glow while there are more than 4 hours left, a softer red below that, and amber in the final 40 minutes. Hours are zero-padded, so it reads 08:30 rather than 8:30.
 - ☕ Break shortened from 30 to 25 minutes, and the dead zone at each end of the shift adjusted from 31 to 27 minutes accordingly - the extra 5 minutes cover walking back and badging in, so a break taken at the limit no longer runs past the clock-out.
@@ -23,6 +25,7 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v1.0.0] - 23/9/26 &nbsp;&nbsp;&nbsp;![Initial Release](https://img.shields.io/badge/Initial-Release-22c55e?labelColor=124fde)
 
 ### ✨ Added
+
 - 💼 First working version of **Work TimeSheet** - a discreet shift tracker for an 8h30 workday, shipping as two builds from one codebase: a PHP page (`index.php`, state in `data/shift.json`) and a native Android APK (WebView shell, state in `localStorage`, no server and no network permission at all).
 - ⏱️ Live clock in hours and minutes with a blinking colon, countdown of the remaining shift in hours and minutes, and the calculated clock-out time - press at 09:00 and it reads 17:30.
 - 🍴 30-minute break with its own countdown in minutes and seconds inside a tinted panel, plus a confirmation overlay ("Να ξεκινήσω διάλειμμα;") rendered in-card with a blurred backdrop instead of the browser's native `confirm()`. Once taken, it leaves a bulleted legend showing the exact window, e.g. "Διάλειμμα 13:50 - 14:20".
