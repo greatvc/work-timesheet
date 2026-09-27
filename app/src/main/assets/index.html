@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 12:45 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 13:32 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -251,9 +251,13 @@
   }
   .lico img{height:24px;width:auto;max-width:24px;display:block;object-fit:contain}
   .lmain{flex:1;min-width:0;display:flex;align-items:center}
-  .ldate{font-size:13.5px;font-weight:700;color:#e7eaf0}
-  .lsep{font-size:8px;margin:0 10px;line-height:1;opacity:.9}
-  .lsub{font-size:12px;font-weight:600}
+  .ldate{
+    flex:1;min-width:0;
+    font-size:13px;font-weight:700;color:#e7eaf0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .lsep{font-size:7px;margin:0 8px;line-height:1;opacity:.9;flex:none}
+  .lsub{font-size:12px;font-weight:700;white-space:nowrap;flex:none}
   .ldel{
     width:32px;height:32px;border-radius:9px;padding:0;flex:none;font-size:14px;
     background:transparent;border:1px solid transparent;color:#5d6575;
@@ -266,10 +270,7 @@
   .tot .k{display:block;font-size:13.5px;font-weight:600;color:#9aa5b5;letter-spacing:.2px}
   .tot .v{display:block;font-size:32px;font-weight:800;margin-top:3px;color:#7fb2ff}
   .tot.rest{background:rgba(74,222,128,.1)}
-  .tot.over{background:rgba(224,31,40,.14)}
-  .tot.over .k{color:#ff9aa4}
-  .tot.over .v{color:#ff3b30;text-shadow:0 0 14px rgba(255,59,48,.65),0 0 28px rgba(255,59,48,.3)}
-  .tot.over.shake{animation:overshake 1s ease-in-out 1}
+
   @keyframes overshake{
     0%,100%{transform:translateX(0)}
     15%{transform:translateX(-5px)}
@@ -280,6 +281,13 @@
   }
   .tot.rest .k{color:#8ad3aa}
   .tot.rest .v{color:#4ade80}
+  .tot.rest.over{background:rgba(224,31,40,.15)}
+  .tot.rest.over .k{color:#ff9aa4}
+  .tot.rest.over .v{
+    color:#ff3b30;
+    text-shadow:0 0 14px rgba(255,59,48,.7),0 0 30px rgba(255,59,48,.35);
+  }
+  .tot.rest.over.shake{animation:overshake 1s ease-in-out 1}
 
   .sheetbtns{display:flex;gap:8px}
   .sheetbtns button{font-size:14px;padding:11px 10px}
@@ -739,13 +747,16 @@
     return null;
   }
 
-  var GRMON = ['Ιαν','Φεβ','Μαρ','Απρ','Μαΐ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'];
+  var GRDAY = ['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
+
   function human(fromIso, toIso) {
-    var a = dparse(fromIso), b = dparse(toIso);
-    if (fromIso === toIso) return a.getDate() + ' ' + GRMON[a.getMonth()] + ' ' + a.getFullYear();
-    if (a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth())
-      return a.getDate() + ' – ' + b.getDate() + ' ' + GRMON[b.getMonth()] + ' ' + b.getFullYear();
-    return a.getDate() + ' ' + GRMON[a.getMonth()] + ' – ' + b.getDate() + ' ' + GRMON[b.getMonth()] + ' ' + b.getFullYear();
+    var a = dparse(fromIso), b = dparse(toIso), now = new Date().getFullYear();
+    var yr = (a.getFullYear() === now && b.getFullYear() === now) ? '' : ' ' + b.getFullYear();
+    function one(d) {
+      return GRDAY[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth() + 1);
+    }
+    if (fromIso === toIso) return one(a) + yr;
+    return one(a) + ' – ' + one(b) + yr;
   }
 
   /* ---------------- η ημέρα και η διάθεσή της ---------------- */
