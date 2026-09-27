@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 13:32 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 13:48 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -265,6 +265,24 @@
   .ldel.arm{color:#ff7183;border-color:#7a2030;background:#2a1118}
   .empty{padding:18px 2px;text-align:center;color:#5d6575;font-size:12.5px}
 
+  #leaveList{
+    max-height:46vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;scrollbar-color:#39415240 transparent;
+  }
+  #leaveList::-webkit-scrollbar{width:4px}
+  #leaveList::-webkit-scrollbar-track{background:transparent}
+  #leaveList::-webkit-scrollbar-thumb{background:#394152;border-radius:4px}
+
+  .tip{
+    position:fixed;z-index:80;pointer-events:none;
+    max-width:86vw;padding:9px 13px;border-radius:11px;
+    background:#0e131c;border:1px solid #2c3446;
+    box-shadow:0 10px 28px rgba(0,0,0,.6);
+    font-size:13.5px;font-weight:700;color:#e7eaf0;white-space:nowrap;
+    animation:fade .12s ease-out;
+  }
+  .tip[hidden]{display:none}
+
   .totals{display:flex;gap:9px;margin:13px 0 11px}
   .tot{flex:1;border-radius:12px;padding:11px 8px;text-align:center;background:#1a202c}
   .tot .k{display:block;font-size:13.5px;font-weight:600;color:#9aa5b5;letter-spacing:.2px}
@@ -399,6 +417,8 @@
   <img id="summerimg" src="summer.png" alt="" hidden>
   <img id="leaveimg" src="pto.png" alt="" hidden>
 </div>
+
+<div class="tip" id="tip" hidden></div>
 
 <div class="sheet" id="sheet" hidden>
   <div class="sheetbox">
@@ -748,6 +768,19 @@
   }
 
   var GRDAY = ['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'];
+  var GRDAYFULL = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
+
+  /* ολόκληρη η περίοδος, για το παρατεταμένο πάτημα */
+  function humanFull(fromIso, toIso) {
+    var a = dparse(fromIso), b = dparse(toIso);
+    function one(d, withYear) {
+      return GRDAYFULL[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth() + 1)
+           + (withYear ? '/' + d.getFullYear() : '');
+    }
+    var diff = a.getFullYear() !== b.getFullYear();
+    if (fromIso === toIso) return one(a, true);
+    return one(a, diff) + ' – ' + one(b, true);
+  }
 
   function human(fromIso, toIso) {
     var a = dparse(fromIso), b = dparse(toIso), now = new Date().getFullYear();
@@ -1362,6 +1395,20 @@
   var entNum    = document.getElementById('entNum');
 
   var formType = 'plain', entVal = 20, delArm = 0, delTimer = null, shakeRest = false;
+  var tip = document.getElementById('tip'), tipTimer = null;
+
+  function showTip(el, text) {
+    tip.textContent = text;
+    tip.hidden = false;
+    var r = el.getBoundingClientRect(), t = tip.getBoundingClientRect();
+    var left = r.left + (r.width - t.width) / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - t.width - 8));
+    var top = r.top - t.height - 8;
+    if (top < 8) top = r.bottom + 8;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  }
+  function hideTip() { clearTimeout(tipTimer); tip.hidden = true; }
 
   function pane(which) {
     paneList.hidden = which !== 'list';
@@ -1401,7 +1448,7 @@
     var html = '';
     for (var i = 0; i < sorted.length; i++) {
       var lv = sorted[i], tp = ltype(lv.type), d = workDays(lv.from, lv.to);
-      html += '<div class="lrow">'
+      html += '<div class="lrow" data-full="' + humanFull(lv.from, lv.to) + '">'
             +   '<span class="lico" style="background:' + tp.bg + ';color:' + tp.col + '">' + tp.icon + '</span>'
             +   '<span class="lmain">'
             +     '<span class="ldate">' + human(lv.from, lv.to) + '</span>'
@@ -1413,6 +1460,22 @@
             + '</div>';
     }
     listEl.innerHTML = html;
+
+    var rows = listEl.querySelectorAll('.lrow');
+    for (var r = 0; r < rows.length; r++) {
+      (function (row) {
+        var full = row.getAttribute('data-full');
+        function down() {
+          clearTimeout(tipTimer);
+          tipTimer = setTimeout(function () { showTip(row, full); }, 420);
+        }
+        row.addEventListener('touchstart', down, { passive: true });
+        row.addEventListener('mousedown', down);
+        ['touchend','touchcancel','touchmove','mouseup','mouseleave'].forEach(function (ev) {
+          row.addEventListener(ev, hideTip);
+        });
+      })(rows[r]);
+    }
 
     var dels = listEl.querySelectorAll('.ldel');
     for (var k = 0; k < dels.length; k++) {
@@ -1502,7 +1565,9 @@
     sheet.hidden = false;
   };
 
-  document.getElementById('sheetClose').onclick = function () { sheet.hidden = true; delArm = 0; };
+  document.getElementById('sheetClose').onclick = function () {
+    sheet.hidden = true; delArm = 0; hideTip();
+  };
   document.getElementById('btnAddLeave').onclick = openForm;
   document.getElementById('fCancel').onclick = function () { renderLeaves(); pane('list'); };
   fFrom.onchange = function () {
