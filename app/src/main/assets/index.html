@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 12:08 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 12:45 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -313,12 +313,15 @@
   }
   .fdate.bad{border-color:#c04358;background:#2a1118}
   .hint{font-size:11.5px;color:#5d6575;margin:7px 0 13px}
-  .chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px}
-  .chip{gap:9px}
+  .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:13px}
+  .chip{gap:9px;min-width:0;overflow:hidden}
+  .chip span.ctx{
+    min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
   .chip{
-    display:flex;align-items:center;gap:7px;padding:9px 10px;
+    display:flex;align-items:center;gap:7px;padding:9px 9px;
     border-radius:10px;border:1px solid #2a3140;background:#1a202c;
-    font-size:13px;color:#aab2c0;
+    font-size:12.5px;color:#aab2c0;
   }
   .chip img{height:21px;width:auto;max-width:21px;display:block;object-fit:contain}
   .chip img.egg{width:14px;object-fit:fill}
@@ -660,10 +663,10 @@
   /* ------------------------------ render ------------------------------ */
   /* ---------------- άδειες ---------------- */
   var LTYPES = [
-    { id:'plain',  name:'Απλή',             icon:'<img src="pto.png" alt="">', col:'#8fb6ff', bg:'rgba(143,182,255,.13)', kind:'leave'  },
-    { id:'summer', name:'Καλοκαιρινή',      icon:'<span class="cem">🏖️</span>', col:'#f0b429', bg:'rgba(240,180,41,.13)', kind:'summer' },
-    { id:'xmas',   name:'Χριστουγεννιάτικη', icon:'<span class="cem">🎄</span>', col:'#4ade80', bg:'rgba(74,222,128,.13)', kind:'xmas'   },
-    { id:'easter', name:'Πασχαλινή',        icon:'<img class="egg" src="egg.png" alt="">', col:'#ef6b6b', bg:'rgba(239,107,107,.13)', kind:'easter' }
+    { id:'plain',  name:'Απλή', short:'Απλή',             icon:'<img src="pto.png" alt="">', col:'#8fb6ff', bg:'rgba(143,182,255,.13)', kind:'leave'  },
+    { id:'summer', name:'Καλοκαιρινή', short:'Καλοκαίρι',      icon:'<span class="cem">🏖️</span>', col:'#f0b429', bg:'rgba(240,180,41,.13)', kind:'summer' },
+    { id:'xmas',   name:'Χριστουγεννιάτικη', short:'Χριστούγεννα', icon:'<span class="cem">🎄</span>', col:'#4ade80', bg:'rgba(74,222,128,.13)', kind:'xmas'   },
+    { id:'easter', name:'Πασχαλινή', short:'Πάσχα',        icon:'<img class="egg" src="egg.png" alt="">', col:'#ef6b6b', bg:'rgba(239,107,107,.13)', kind:'easter' }
   ];
   function ltype(id) {
     for (var i = 0; i < LTYPES.length; i++) if (LTYPES[i].id === id) return LTYPES[i];
@@ -863,10 +866,16 @@
     if (balloonStop) balloonStop();
     balloonStop = confettiFall(2000, c.fall);
 
-    /* 1.05s μπάσιμο + 3 × 0.5s τράνταγμα με καθυστέρηση 1.15s */
+    /* ανοίγει μόνο όταν ησυχάσει η εικόνα: με το animationend, και χρονόμετρο για σιγουριά */
     peekReady = false;
     clearTimeout(peekTimer);
-    peekTimer = setTimeout(function () { peekReady = true; }, 2750);
+    peekTimer = setTimeout(function () { peekReady = true; }, 3000);
+
+    c.img.addEventListener('animationend', function onEnd(ev) {
+      if (ev.animationName !== 'holiShake') return;   // το τελευταίο που τρέχει
+      c.img.removeEventListener('animationend', onEnd);
+      peekReady = true;
+    });
   }
 
   /* τρία γρήγορα πατήματα στην εικόνα: φεύγει η γιορτή για να φτάσεις στις άδειες.
@@ -1420,7 +1429,7 @@
       var t = LTYPES[i], on = t.id === formType;
       html += '<div class="chip' + (on ? ' on' : '') + '" data-t="' + t.id + '"'
             + (on ? ' style="border-color:' + t.col + ';background:' + t.bg + ';color:' + t.col + '"' : '')
-            + '>' + t.icon + t.name + '</div>';
+            + '>' + t.icon + '<span class="ctx">' + (t.short || t.name) + '</span></div>';
     }
     fChips.innerHTML = html;
     var chips = fChips.querySelectorAll('.chip');
