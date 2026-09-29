@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v2.0.0 · Last update: 27/09/2026 19:00 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v2.1.0 · Last update: 29/09/2026 12:31 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -83,6 +83,13 @@
   .day.d-thu{color:#9fe0b4;text-shadow:0 0 10px rgba(159,224,180,.3)}
   .day.d-fri{color:#22e06a;text-shadow:0 0 16px rgba(34,224,106,.75),0 0 34px rgba(34,224,106,.35)}
   .day.d-sat,.day.d-sun{color:#5ad7a0;text-shadow:0 0 12px rgba(90,215,160,.4)}
+  /* αργία ή άδεια: η μέρα χαίρεται, ό,τι μέρα κι αν είναι */
+  .day.d-off{
+    color:#3ce97a;
+    text-shadow:0 0 10px rgba(60,233,122,.9),
+                0 0 22px rgba(60,233,122,.55),
+                0 0 40px rgba(60,233,122,.3);
+  }
   /* αργία: πανηγύρι πάνω από όλη την οθόνη */
   .holiday{
     position:fixed;inset:0;z-index:50;
@@ -524,7 +531,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v2.0.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v2.1.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -799,6 +806,41 @@
   /* ---------------- η ημέρα και η διάθεσή της ---------------- */
   var DAYCLS = ['d-sun','d-mon','d-tue','d-wed','d-thu','d-fri','d-sat'];
 
+  /* μέρες με δικό τους όνομα - αλλάζει μόνο το κείμενο της κεφαλίδας */
+  var NAMEDDAY = {
+    '2026-01-01': 'Πρωτοχρονιά',
+    '2026-01-06': 'Φώτα',
+    '2026-02-12': 'Τσικνοπέμπτη',
+    '2026-02-23': 'Καθαρά Δευτέρα',
+    '2026-04-06': 'Μ. Δευτέρα',
+    '2026-04-07': 'Μ. Τρίτη',
+    '2026-04-08': 'Μ. Τετάρτη',
+    '2026-04-09': 'Μ. Πέμπτη',
+    '2026-04-10': 'Μ. Παρασκευή',
+    '2026-04-11': 'Μ. Σάββατο',
+    '2026-04-12': 'Κυριακή του Πάσχα',
+    '2026-04-13': 'Δευτέρα του Πάσχα',
+    '2026-05-01': 'Πρωτομαγιά',
+    '2026-06-01': 'Αγίου Πνεύματος',
+    '2026-08-15': 'Δεκαπενταύγουστος',
+    '2026-12-25': 'Χριστούγεννα',
+    '2027-01-01': 'Πρωτοχρονιά',
+    '2027-01-06': 'Φώτα',
+    '2027-03-04': 'Τσικνοπέμπτη',
+    '2027-03-15': 'Καθαρά Δευτέρα',
+    '2027-04-26': 'Μ. Δευτέρα',
+    '2027-04-27': 'Μ. Τρίτη',
+    '2027-04-28': 'Μ. Τετάρτη',
+    '2027-04-29': 'Μ. Πέμπτη',
+    '2027-04-30': 'Μ. Παρασκευή',
+    '2027-05-01': 'Μ. Σάββατο',
+    '2027-05-02': 'Κυριακή του Πάσχα',
+    '2027-05-03': 'Δευτέρα του Πάσχα',
+    '2027-06-21': 'Αγίου Πνεύματος',
+    '2027-08-15': 'Δεκαπενταύγουστος',
+    '2027-12-25': 'Χριστούγεννα'
+  };
+
   /* υποχρεωτικές αργίες ιδιωτικού τομέα - χωρίς όσες πέφτουν Σαββατοκύριακο */
   var HOLIDAYS = {
     '2026-10-28': 'holiday',   // 28η Οκτωβρίου
@@ -819,11 +861,19 @@
     if (shownDay === key) return;
     shownDay = key;
 
-    elDay.textContent = DAYS[w];
+    elDay.textContent = NAMEDDAY[key] || DAYS[w];
     elDay.className = 'day ' + DAYCLS[w];
+    fitDay();
     playMood(w);
 
     var lv = leaveOn(key);
+    if (lv || holi) {
+      /* ούτε αίματα ούτε δάκρυα σε μέρα που δεν δουλεύεις */
+      elDay.className = 'day d-off';
+      if (fxStop) { fxStop(); fxStop = null; }
+      elDay.classList.remove('shake');
+    }
+
     if (lv) celebrate(ltype(lv.type).kind);
     else if (holi) celebrate(holi);
     else if (w === 0 || w === 6) showWeekend();
@@ -878,7 +928,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v2.0.0';
+          ver.lastChild.textContent = 'v2.1.0';
         }, 2500);
       }, 1500);
     }
@@ -1128,6 +1178,25 @@
     })(t0);
 
     return function () { alive = false; if (raf) cancelAnimationFrame(raf); ctx.clearRect(0, 0, w, h); };
+  }
+
+  /* μεγάλα ονόματα σμικρύνονται όσο χρειάζεται για να μην ακουμπήσουν το εικονίδιο */
+  function fitDay() {
+    var worker = document.querySelector('.head .worker');
+    var size = 25;
+    elDay.style.fontSize = size + 'px';
+    if (!worker) return;
+
+    for (var i = 0; i < 14; i++) {
+      var r = elDay.getBoundingClientRect(),
+          wr = worker.getBoundingClientRect(),
+          br = dayBox.getBoundingClientRect(),
+          cx = r.left + r.width / 2,
+          room = 2 * Math.min(cx - (wr.right + 8), br.right - 8 - cx);
+      if (r.width <= room || size <= 15) break;
+      size -= 1;
+      elDay.style.fontSize = size + 'px';
+    }
   }
 
   /* καμβάς ακριβώς πάνω από τη λέξη της ημέρας */

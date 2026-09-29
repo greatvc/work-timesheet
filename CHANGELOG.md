@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v2.1.0] - 29/9/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
+
+### ✨ Added
+- 📛 Days that have a name of their own now carry it in the header instead of the plain weekday - Πρωτοχρονιά, Φώτα, Τσικνοπέμπτη, Καθαρά Δευτέρα, the whole of Holy Week from Μ. Δευτέρα to Μ. Σάββατο, Κυριακή and Δευτέρα του Πάσχα, Αγίου Πνεύματος, Πρωτομαγιά, Δεκαπενταύγουστος and Χριστούγεννα, for 2026 and 2027. Long names shrink themselves to fit: the app measures the free space next to the header icon and steps the type down until it clears, so "Δεκαπενταύγουστος" sits on one line as comfortably as "Τρίτη".
+
+### 🛡️ Fixed
+- 🎨 A day off no longer wears a working day's mood. On any holiday or declared leave the day name now glows a bright, thick green, and the weekday effects are suppressed - no blood dripping on a Monday you are not working, no tears on a Tuesday, no Friday fireworks competing with the celebration already on screen.
+
 ## 🏷️ [v2.0.0] - 27/9/26 &nbsp;&nbsp;&nbsp;![Major Release](https://img.shields.io/badge/Major-Release-22c55e?labelColor=166534)
 
 ### ✨ Added
