@@ -6,3 +6,4 @@ local.properties
 *.iml
 check-github.sh
 
+index.php
