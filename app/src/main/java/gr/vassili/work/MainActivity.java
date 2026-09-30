@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
             String b64 = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
 
             getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                .putString("flag_logo", "data:image/png;base64," + b64).commit();
+                .putString("flag_logo_new", "data:image/png;base64," + b64).commit();
 
             if (web != null) web.evaluateJavascript("window.__logoReady && window.__logoReady();", null);
         } catch (Exception ignored) { }

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.0.0 · Last update: 30/09/2026 17:06 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.0.0 · Last update: 30/09/2026 17:22 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -1631,7 +1631,15 @@
     bannerImg.src = l || 'brand.png';
     logoPrev.src  = l || 'brand.png';
   }
-  window.__logoReady = applyLogo;
+
+  /* η νέα εικόνα μένει στο πρόχειρο - στο banner μπαίνει μόνο με Αποθήκευση */
+  window.__logoReady = function () {
+    var fresh = flagGet('logo_new');
+    flagSet('logo_new', '');
+    if (!fresh || !DRAFT) return;
+    DRAFT.logo = fresh;
+    logoPrev.src = fresh;
+  };
 
   function hhmmShift(sec) {
     return Math.floor(sec / 3600) + ':' + two(Math.round(sec % 3600 / 60));
@@ -1690,12 +1698,17 @@
     setSheet.hidden = false;
   };
   document.getElementById('setClose').onclick = function () {   // άκυρο
-    DRAFT = null; setSheet.hidden = true;
+    DRAFT = null;
+    applyLogo();                                  // γυρίζει και η εικόνα όπως ήταν
+    setSheet.hidden = true;
   };
   document.getElementById('setSave').onclick = function () {
     if (!DRAFT) return;
+    if (typeof DRAFT.logo === 'string') flagSet('logo', DRAFT.logo);
+    delete DRAFT.logo;
     SET = DRAFT; DRAFT = null;
     saveSettings();
+    applyLogo();
     setSheet.hidden = true;
   };
 
@@ -1712,7 +1725,9 @@
     if (A && A.pickLogo) A.pickLogo();
   };
   document.getElementById('logoReset').onclick = function () {
-    flagSet('logo', ''); applyLogo();
+    if (this.disabled || !DRAFT) return;
+    DRAFT.logo = '';
+    logoPrev.src = 'brand.png';
   };
 
   /* ---------------- οθόνη αδειών: χειρισμός ---------------- */
