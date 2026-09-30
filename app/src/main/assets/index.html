@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v2.1.0 · Last update: 29/09/2026 12:31 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.0.0 · Last update: 30/09/2026 17:06 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -197,6 +197,7 @@
     padding:4px;color:#e6f6fb;background:#1b5064;border-color:#276b83;
   }
   button.brkbtn img{display:block;height:38px;width:auto;pointer-events:none}
+  button.brkbtn[hidden]{display:none}
   button:active{transform:translateY(1px)}
   button:disabled{opacity:.32}
 
@@ -382,6 +383,74 @@
   .entnum{font-size:40px;font-weight:800;color:#7fb2ff;line-height:1.05;text-align:center;min-width:72px}
   .entrange{font-size:11px;color:#5d6575;text-align:center}
 
+  /* ---------- ρυθμίσεις ---------- */
+  .gear{
+    position:fixed;z-index:30;
+    top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;
+    width:42px;height:42px;padding:0;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#1b2130;border:1px solid #2c3446;
+  }
+  .gear img{width:26px;height:26px;display:block;pointer-events:none}
+  .gear:active{background:#2a3550;border-color:#4a5a7d}
+
+  .sec{font-size:11px;font-weight:700;letter-spacing:.5px;color:#8e97a6;margin:16px 2px 8px}
+  .sec:first-of-type{margin-top:6px}
+  .opt{
+    display:flex;align-items:center;gap:10px;
+    background:#1a202c;border-radius:11px;padding:11px 12px;margin-bottom:8px;
+  }
+  .opt .lbl{flex:1;min-width:0;font-size:13.5px;color:#cfd6e2}
+  .opt.off .lbl{color:#5d6575}
+  .step{
+    width:32px;height:32px;border-radius:50%;padding:0;flex:none;font-size:17px;
+    background:#1b2130;border:1px solid #2c3446;color:#cfe0ff;
+  }
+  .step:disabled{opacity:.3}
+  .num{min-width:58px;text-align:center;font-size:20px;font-weight:800;color:#7fb2ff;
+       font-variant-numeric:tabular-nums}
+  .num.brk{color:#58b0c8}
+  .opt.off .num{color:#4a5262}
+
+  .sw{
+    width:48px;height:27px;border-radius:14px;flex:none;padding:0;position:relative;
+    background:#262c38;border:1px solid #333b4a;transition:background .16s ease;
+  }
+  .sw i{
+    position:absolute;top:2px;left:2px;width:21px;height:21px;border-radius:50%;
+    background:#6b7484;transition:left .16s ease,background .16s ease;
+  }
+  .sw.on{background:#2f6d4a;border-color:#3c8a5e}
+  .sw.on i{left:23px;background:#4ade80}
+
+  .logobox{background:#1a202c;border-radius:11px;padding:13px 12px 12px;margin-bottom:10px}
+  .logobox .prev{
+    display:flex;align-items:center;justify-content:center;
+    min-height:54px;margin-bottom:12px;
+  }
+  .logobox .prev img{max-width:82%;max-height:56px;height:auto;display:block}
+  .logorow{display:flex;gap:8px}
+  .logorow .pick{
+    flex:1;font-size:13px;font-weight:600;color:#cfe0ff;
+    background:#1d2a44;border-color:#2f4266;padding:10px;
+  }
+  .logorow .undo{
+    width:46px;padding:0;flex:none;display:flex;align-items:center;justify-content:center;
+  }
+  .logorow .undo img{width:22px;height:22px;display:block}
+  .savebtn{
+    width:100%;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:9px;
+    font-size:15px;font-weight:700;color:#cfe0ff;background:#1d2a44;border-color:#2f4266;padding:11px;
+  }
+  .savebtn img{width:22px;height:22px;display:block}
+
+  .locked{
+    display:flex;align-items:center;gap:8px;margin-top:4px;
+    background:rgba(240,180,41,.1);border-radius:10px;padding:10px 11px;
+    font-size:11.5px;color:#d3ac5c;
+  }
+  .locked[hidden]{display:none}
+
   canvas#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
 
   .pop{
@@ -426,6 +495,66 @@
 </div>
 
 <div class="tip" id="tip" hidden></div>
+
+<button class="gear" id="btnGear" aria-label="Ρυθμίσεις"><img src="gear.png" alt=""></button>
+
+<div class="sheet" id="setsheet" hidden>
+  <div class="sheetbox">
+
+    <div class="sheethead">
+      <img src="settings.png" alt="" style="width:36px;height:36px;position:relative;top:2px">
+      <span>Ρυθμίσεις</span>
+      <button class="xbtn" id="setClose" aria-label="Κλείσιμο">✕</button>
+    </div>
+
+    <div class="sec">ΒΑΡΔΙΑ</div>
+    <div class="opt">
+      <span class="lbl">Διάρκεια</span>
+      <button class="step" id="shDown">−</button>
+      <span class="num" id="shNum">8:30</span>
+      <button class="step" id="shUp">+</button>
+    </div>
+
+    <div class="sec">ΔΙΑΛΕΙΜΜΑ</div>
+    <div class="opt">
+      <span class="lbl">Έχω διάλειμμα</span>
+      <button class="sw" id="swBrk" aria-label="Διάλειμμα"><i></i></button>
+    </div>
+    <div class="opt" id="brkRow">
+      <span class="lbl">Διάρκεια</span>
+      <button class="step" id="bkDown">−</button>
+      <span class="num brk" id="bkNum">25</span>
+      <button class="step" id="bkUp">+</button>
+    </div>
+
+    <div class="sec">ΑΡΓΙΕΣ</div>
+    <div class="opt">
+      <span class="lbl">Μεγάλη Παρασκευή</span>
+      <button class="sw" id="swMP" aria-label="Μεγάλη Παρασκευή"><i></i></button>
+    </div>
+    <div class="opt">
+      <span class="lbl">Αγίου Πνεύματος</span>
+      <button class="sw" id="swAP" aria-label="Αγίου Πνεύματος"><i></i></button>
+    </div>
+    <div class="opt">
+      <span class="lbl">2 Ιανουαρίου</span>
+      <button class="sw" id="sw2J" aria-label="2 Ιανουαρίου"><i></i></button>
+    </div>
+
+    <div class="logobox">
+      <div class="prev"><img id="logoPrev" src="brand.png" alt=""></div>
+      <div class="logorow">
+        <button class="pick" id="logoPick">Αλλαγή</button>
+        <button class="undo" id="logoReset" aria-label="Επαναφορά"><img src="reset.png" alt=""></button>
+      </div>
+    </div>
+
+    <div class="locked" id="setLock" hidden>🔒&nbsp; Κλειδωμένες όσο τρέχει βάρδια</div>
+
+    <button class="savebtn" id="setSave"><img src="save.png" alt="">Αποθήκευση</button>
+
+  </div>
+</div>
 
 <div class="sheet" id="sheet" hidden>
   <div class="sheetbox">
@@ -485,7 +614,7 @@
 
   <button class="pto" id="btnPto" aria-label="Άδειες"><img src="ptobtn.png" alt=""></button>
 
-  <div class="banner"><img src="flexo.png" alt="Flexopack"></div>
+  <div class="banner"><img id="bannerImg" src="brand.png" alt=""></div>
 
   <div class="head">
     <img class="worker" src="worker.png" alt="">
@@ -531,7 +660,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v2.1.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -553,9 +682,12 @@
 
 <script>
 (function () {
-  var SHIFT  = 8 * 3600 + 30 * 60;   // 8:30 βάρδια
-  var BREAK  = 25 * 60;              // 25' διάλειμμα
-  var CUTOFF = 27 * 60;              // νεκρή ζώνη στην αρχή και στο τέλος
+  /* προεπιλογές - όλα ρυθμίζονται από την οθόνη ρυθμίσεων */
+  var SHIFT  = 8 * 3600 + 30 * 60;   // διάρκεια βάρδιας
+  var BREAK  = 25 * 60;              // διάλειμμα
+  var CUTOFF = BREAK + 120;          // νεκρή ζώνη = διάλειμμα + 2'
+  var BRKON  = true;                 // έχει διάλειμμα;
+  var SET    = { shift: SHIFT, brk: BREAK, brkOn: true, hMP: true, hAP: true, h2J: false };
   var KEY    = 'work-shift';
   var DAYS   = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
 
@@ -703,12 +835,49 @@
     { id:'xmas',   name:'Χριστουγεννιάτικη', short:'Χριστούγεννα', icon:'<span class="cem">🎄</span>', col:'#4ade80', bg:'rgba(74,222,128,.13)', kind:'xmas'   },
     { id:'easter', name:'Πασχαλινή', short:'Πάσχα',        icon:'<img class="egg" src="egg.png" alt="">', col:'#ef6b6b', bg:'rgba(239,107,107,.13)', kind:'easter' }
   ];
+  /* αργίες που εξαρτώνται από διακόπτη */
+  var OPTHOL = {
+    '2027-04-30': { flag: 'hMP', kind: 'easter'  },   // Μεγάλη Παρασκευή
+    '2027-06-21': { flag: 'hAP', kind: 'holiday' },   // Αγίου Πνεύματος
+    '2027-01-02': { flag: 'h2J', kind: 'xmas'    }    // 2 Ιανουαρίου, απογραφή
+  };
+  function hol(key) {
+    var o = OPTHOL[key];
+    if (o) return SET[o.flag] ? o.kind : null;
+    return HOLIDAYS[key] || null;
+  }
+
   function ltype(id) {
     for (var i = 0; i < LTYPES.length; i++) if (LTYPES[i].id === id) return LTYPES[i];
     return LTYPES[0];
   }
 
   var leaves = [], entitle = {};
+
+  function loadSettings() {
+    try {
+      var raw = JSON.parse(flagGet('settings') || '{}') || {};
+      if (raw.shift) SET.shift = raw.shift;
+      if (raw.brk)   SET.brk   = raw.brk;
+      if (typeof raw.brkOn === 'boolean') SET.brkOn = raw.brkOn;
+      if (typeof raw.hMP  === 'boolean')  SET.hMP  = raw.hMP;
+      if (typeof raw.hAP  === 'boolean')  SET.hAP  = raw.hAP;
+      if (typeof raw.h2J  === 'boolean')  SET.h2J  = raw.h2J;
+    } catch (e) {}
+    applySettings();
+  }
+  function saveSettings() {
+    flagSet('settings', JSON.stringify(SET));
+    applySettings();
+  }
+  function applySettings() {
+    SHIFT  = SET.shift;
+    BRKON  = SET.brkOn;
+    BREAK  = SET.brk;
+    CUTOFF = BREAK + 120;
+    btnBk.hidden = !BRKON;
+    shownDay = null;                 // οι αργίες μπορεί να άλλαξαν
+  }
 
   function loadLeaveData() {
     try { leaves = JSON.parse(flagGet('leaves') || '[]') || []; } catch (e) { leaves = []; }
@@ -726,7 +895,7 @@
   function workDays(fromIso, toIso) {
     var d = dparse(fromIso), end = dparse(toIso), n = 0, guard = 0;
     while (d <= end && guard++ < 800) {
-      if (!isWeekend(d) && !HOLIDAYS[ymd(d)]) n++;
+      if (!isWeekend(d) && !hol(ymd(d))) n++;
       d.setDate(d.getDate() + 1);
     }
     return n;
@@ -845,19 +1014,23 @@
   var HOLIDAYS = {
     '2026-10-28': 'holiday',   // 28η Οκτωβρίου
     '2026-12-25': 'xmas',      // Χριστούγεννα
+    '2026-12-26': 'xmas',      // Σύναξη Θεοτόκου - Σάββατο
     '2027-01-01': 'xmas',      // Πρωτοχρονιά
     '2027-01-06': 'xmas',      // Θεοφάνεια
     '2027-03-15': 'holiday',   // Καθαρά Δευτέρα
     '2027-03-25': 'holiday',   // 25η Μαρτίου
-    '2027-04-30': 'easter',    // Μεγάλη Παρασκευή
+    '2027-05-01': 'easter',    // Πρωτομαγιά - Μ. Σάββατο
+    '2027-05-02': 'easter',    // Κυριακή του Πάσχα
     '2027-05-03': 'easter',    // Δευτέρα του Πάσχα
-    '2027-06-21': 'summer',    // Αγίου Πνεύματος - θερινό ηλιοστάσιο
-    '2027-10-28': 'holiday'    // 28η Οκτωβρίου
+    '2027-08-15': 'summer',    // Δεκαπενταύγουστος - Κυριακή
+    '2027-10-28': 'holiday',   // 28η Οκτωβρίου
+    '2027-12-25': 'xmas',      // Χριστούγεννα - Σάββατο
+    '2027-12-26': 'xmas'       // Σύναξη Θεοτόκου - Κυριακή
   };
   var shownDay = null;
 
   function setDay(d) {
-    var key = ymd(d), w = d.getDay(), holi = HOLIDAYS[key] || null;
+    var key = ymd(d), w = d.getDay(), holi = hol(key);
     if (shownDay === key) return;
     shownDay = key;
 
@@ -928,7 +1101,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v2.1.0';
+          ver.lastChild.textContent = 'v3.0.0';
         }, 2500);
       }, 1500);
     }
@@ -1308,7 +1481,8 @@
 
   /* έντονο κόκκινο στην αρχή, απαλότερο μετά τις 4 ώρες, κίτρινο στο τελευταίο 40λεπτο */
   function tone(left) {
-    var cls = left <= 40 * 60 ? 'soon' : (left <= 4 * 3600 ? 'warm' : 'hot');
+    /* κατώφλια ως ποσοστό της βάρδιας: μισό και τελευταίο 8% */
+    var cls = left <= SHIFT * 0.08 ? 'soon' : (left <= SHIFT * 0.5 ? 'warm' : 'hot');
     if (elRest.className !== 'v ' + cls) elRest.className = 'v ' + cls;
   }
 
@@ -1345,7 +1519,7 @@
     rColon.classList.toggle('off', running && d.getSeconds() % 2 === 1);
 
     /* μέρα ρεπό: τίποτα δεν πατιέται, ακόμα κι αν παραμερίστηκε το γραφικό */
-    var offDay = !!leaveOn(ymd(d)) || !!HOLIDAYS[ymd(d)] || d.getDay() === 0 || d.getDay() === 6;
+    var offDay = !!leaveOn(ymd(d)) || !!hol(ymd(d)) || d.getDay() === 0 || d.getDay() === 6;
 
     /* μηνύματα μέσα στην εφαρμογή, όταν είναι ανοιχτή τη στιγμή που λήγει κάτι */
     if (!document.hidden) {
@@ -1366,13 +1540,13 @@
     imgIdle.hidden = !!st.start;
     imgRun.hidden  = !st.start;
 
-    btnBk.disabled = offDay || !running || !!st.brk
+    btnBk.disabled = !BRKON || offDay || !running || !!st.brk
       || (n - st.start) < CUTOFF
       || (end - n) < CUTOFF;
 
     if (!st.start) {
       card.classList.remove('done', 'pop');
-      setRest('08', '30');
+      setRest(two(Math.floor(SHIFT / 3600)), two(Math.round(SHIFT % 3600 / 60)));
       tone(SHIFT);
       elEnd.textContent  = '--:--';
       elState.innerHTML = '&nbsp;';
@@ -1445,6 +1619,100 @@
     if (btnRs.disabled) return;
     if (rsUntil && Date.now() < rsUntil) { disarm(); doReset(); }
     else arm();
+  };
+
+  /* ---------------- οθόνη ρυθμίσεων ---------------- */
+  var setSheet = document.getElementById('setsheet');
+  var bannerImg= document.getElementById('bannerImg');
+  var logoPrev = document.getElementById('logoPrev');
+
+  function applyLogo() {
+    var l = flagGet('logo');
+    bannerImg.src = l || 'brand.png';
+    logoPrev.src  = l || 'brand.png';
+  }
+  window.__logoReady = applyLogo;
+
+  function hhmmShift(sec) {
+    return Math.floor(sec / 3600) + ':' + two(Math.round(sec % 3600 / 60));
+  }
+
+  var DRAFT = null;   // ό,τι αλλάζεις ζει εδώ μέχρι να πατήσεις Αποθήκευση
+
+  function renderSettings() {
+    var locked = !!st.start, D = DRAFT || SET;
+    document.getElementById('shNum').textContent = hhmmShift(D.shift);
+    document.getElementById('bkNum').textContent = Math.round(D.brk / 60);
+
+    sw('swBrk', D.brkOn); sw('swMP', D.hMP); sw('swAP', D.hAP); sw('sw2J', D.h2J);
+    document.getElementById('brkRow').classList.toggle('off', !D.brkOn);
+
+    ['shDown','shUp','bkDown','bkUp','swBrk','swMP','swAP','sw2J','logoPick','logoReset','setSave']
+      .forEach(function (id) { document.getElementById(id).disabled = locked; });
+    document.getElementById('bkDown').disabled = locked || !D.brkOn;
+    document.getElementById('bkUp').disabled   = locked || !D.brkOn;
+    document.getElementById('setLock').hidden  = !locked;
+  }
+  function sw(id, on) { document.getElementById(id).classList.toggle('on', !!on); }
+
+  function bumpShift(step) {
+    DRAFT.shift = Math.min(9 * 3600, Math.max(8 * 3600, DRAFT.shift + step * 300));  // ανά 5'
+    renderSettings();
+  }
+  function bumpBreak(step) {
+    if (!DRAFT.brkOn) return;
+    DRAFT.brk = Math.min(60 * 60, Math.max(10 * 60, DRAFT.brk + step * 60));         // ανά 1'
+    renderSettings();
+  }
+
+  /* πάτημα για ένα βήμα, κράτημα για γρήγορη κύλιση */
+  function repeatOn(el, fn) {
+    var t1 = null, t2 = null;
+    function start(e) {
+      if (el.disabled) return;
+      if (e && e.type === 'touchstart') e.preventDefault();
+      fn();
+      t1 = setTimeout(function () { t2 = setInterval(fn, 90); }, 420);
+    }
+    function stop() { clearTimeout(t1); clearInterval(t2); }
+    el.addEventListener('touchstart', start);
+    el.addEventListener('mousedown', start);
+    ['touchend','touchcancel','mouseup','mouseleave'].forEach(function (ev) { el.addEventListener(ev, stop); });
+  }
+  repeatOn(document.getElementById('shDown'), function () { bumpShift(-1); });
+  repeatOn(document.getElementById('shUp'),   function () { bumpShift(1); });
+  repeatOn(document.getElementById('bkDown'), function () { bumpBreak(-1); });
+  repeatOn(document.getElementById('bkUp'),   function () { bumpBreak(1); });
+
+  document.getElementById('btnGear').onclick = function () {
+    DRAFT = JSON.parse(JSON.stringify(SET));
+    renderSettings();
+    setSheet.hidden = false;
+  };
+  document.getElementById('setClose').onclick = function () {   // άκυρο
+    DRAFT = null; setSheet.hidden = true;
+  };
+  document.getElementById('setSave').onclick = function () {
+    if (!DRAFT) return;
+    SET = DRAFT; DRAFT = null;
+    saveSettings();
+    setSheet.hidden = true;
+  };
+
+  function toggle(id, key) {
+    document.getElementById(id).onclick = function () {
+      if (this.disabled) return;
+      DRAFT[key] = !DRAFT[key];
+      renderSettings();
+    };
+  }
+  toggle('swBrk', 'brkOn'); toggle('swMP', 'hMP'); toggle('swAP', 'hAP'); toggle('sw2J', 'h2J');
+
+  document.getElementById('logoPick').onclick = function () {
+    if (A && A.pickLogo) A.pickLogo();
+  };
+  document.getElementById('logoReset').onclick = function () {
+    flagSet('logo', ''); applyLogo();
   };
 
   /* ---------------- οθόνη αδειών: χειρισμός ---------------- */
@@ -1746,6 +2014,8 @@
   })();
 
   loadLeaveData();
+  loadSettings();
+  applyLogo();
   st = load();
   if (st.start && now() >= st.start + SHIFT) celebrated = false;
   render();
@@ -1763,7 +2033,7 @@
       peek = false;
       var lvt = leaveOn(ymd(t));
       if (lvt) celebrate(ltype(lvt.type).kind);
-      else if (HOLIDAYS[ymd(t)]) celebrate(HOLIDAYS[ymd(t)]);
+      else if (hol(ymd(t))) celebrate(hol(ymd(t)));
       else if (t.getDay() === 0 || t.getDay() === 6) showWeekend();
       else if (flagGet('holitest') === '1') { flagSet('holitest', ''); showHoliday(); }
       render();

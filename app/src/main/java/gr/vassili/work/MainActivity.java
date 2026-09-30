@@ -6,10 +6,16 @@ import android.app.AlarmManager;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.util.Base64;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import android.os.Build;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
@@ -24,6 +30,7 @@ import android.webkit.WebView;
 public class MainActivity extends Activity {
 
     public static final String PREFS = "work_alarms";
+    private static final int REQ_LOGO = 7;
 
     /** true όσο η εφαρμογή είναι μπροστά - τότε το alarm δεν βγάζει notification */
     public static volatile boolean foreground = false;
@@ -75,6 +82,33 @@ public class MainActivity extends Activity {
         foreground = false;
     }
 
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req != REQ_LOGO || res != RESULT_OK || data == null || data.getData() == null) return;
+
+        try {
+            InputStream in = getContentResolver().openInputStream(data.getData());
+            Bitmap bm = BitmapFactory.decodeStream(in);
+            if (in != null) in.close();
+            if (bm == null) return;
+
+            /* σμίκρυνση πριν την αποθήκευση - το base64 ζει στις SharedPreferences */
+            int w = bm.getWidth(), h = bm.getHeight();
+            float sc = Math.min(1f, 640f / (float) w);
+            Bitmap small = Bitmap.createScaledBitmap(bm, Math.round(w * sc), Math.round(h * sc), true);
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            small.compress(Bitmap.CompressFormat.PNG, 90, out);
+            String b64 = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
+
+            getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                .putString("flag_logo", "data:image/png;base64," + b64).commit();
+
+            if (web != null) web.evaluateJavascript("window.__logoReady && window.__logoReady();", null);
+        } catch (Exception ignored) { }
+    }
+
     private void askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
@@ -112,6 +146,19 @@ public class MainActivity extends Activity {
         public void setFlag(String key, String value) {
             getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit().putString("flag_" + key, value == null ? "" : value).commit();
+        }
+
+        /* επιλογή λογότυπου - SAF, χωρίς καμία άδεια */
+        @JavascriptInterface
+        public void pickLogo() {
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    i.addCategory(Intent.CATEGORY_OPENABLE);
+                    i.setType("image/*");
+                    try { startActivityForResult(i, REQ_LOGO); } catch (Exception ignored) { }
+                }
+            });
         }
 
         @JavascriptInterface

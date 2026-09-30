@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.0.0] - 30/9/26 &nbsp;&nbsp;&nbsp;![Major Release](https://img.shields.io/badge/Major-Release-22c55e?labelColor=166534)
+
+### ✨ Added
+- ⚙️ Settings. A gear sits top-right of the screen, outside the card, and opens everything that used to be hard-coded. Shift length runs from 8:00 to 9:00 in five-minute steps, the break from 10 to 60 minutes one minute at a time, and every arrow repeats while held. Nothing is applied as you tap: changes live in a draft until you press Save, and the ✕ discards them.
+- 🔕 The break can be switched off entirely. When it is, its button leaves the card altogether rather than sitting there greyed out, its notification is never scheduled and its legend never appears.
+- 🎛️ Holidays that differ from one workplace to another became switches - Μεγάλη Παρασκευή and Αγίου Πνεύματος on by default, 2 Ιανουαρίου off, since that one is a retail-only closure for stocktaking.
+- 🖼️ The banner is yours to choose. The logo comes from the phone's own file chooser - no permission is asked, because the chooser runs outside the app - and is scaled down before being stored on the device. A reset button returns to the built-in wordmark, which is now the default: the app no longer ships wearing one company's branding.
+
+### 🛠️ Changed
+- 🎨 The countdown's colour thresholds became proportional instead of fixed. Hard red above half the shift, soft red below it, amber for the final eighth - for an 8:30 day that lands on 4:15 and 41 minutes, almost exactly the old numbers, but now correct for any shift length.
+- ⏱️ The dead zone around the break is derived rather than configured: always the break plus two minutes, so the button unlocks and locks itself whatever duration is set.
+- 🔒 Settings lock while a shift is running. Changing the length mid-shift would leave an alarm scheduled for a time that no longer exists.
+
+### 🛡️ Fixed
+- 🎄 A holiday now outranks the weekend. The list had been built with weekend holidays stripped out, because at the time all we wanted to know was which days were off - so Christmas 2027, falling on a Saturday, showed the couch and popcorn. Every one of them is back with its proper theme: 26/12/2026, Πρωτομαγιά and Κυριακή του Πάσχα 2027, Δεκαπενταύγουστος, and both days of Christmas 2027.
+
 ## 🏷️ [v2.1.0] - 29/9/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
 
 ### ✨ Added
