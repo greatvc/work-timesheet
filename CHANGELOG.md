@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.0.1] - 5/10/26
+
+### 🛡️ Fixed
+- 💥 Clocking out wrecked the layout. The card borrowed a class name, `pop`, that already belonged to the in-app message overlay - so at the moment the shift ended the card itself took on the overlay's styling: pinned to the left edge, stretched to full height, its contents strung out in one row that ran off the screen. The glow animation now has a name of its own. The break was never affected, since that class is only added when the shift ends.
+
+### 🛠️ Changed
+- ⏱️ Shift length now starts at 7:00 instead of 8:00, still up to 9:00 in five-minute steps, default unchanged at 8:30. The countdown's colour thresholds follow automatically, since they are percentages of the shift rather than fixed times.
+
 ## 🏷️ [v3.0.0] - 30/9/26 &nbsp;&nbsp;&nbsp;![Major Release](https://img.shields.io/badge/Major-Release-22c55e?labelColor=166534)
 
 ### ✨ Added

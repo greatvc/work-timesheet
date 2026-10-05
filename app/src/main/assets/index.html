@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.0.0 · Last update: 30/09/2026 17:22 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.0.1 · Last update: 05/10/2026 18:39 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -214,7 +214,7 @@
   .done .row .v,.done .state{color:var(--ok)}
   .done .state{font-size:18px;font-weight:800;letter-spacing:.4px;animation:textglow 2.4s ease-in-out infinite}
   .done .state .party{font-size:21px;margin-left:10px;vertical-align:-1px;text-shadow:none}
-  .done.pop{animation:glow 1.6s ease-out 2}
+  .done.flash{animation:glow 1.6s ease-out 2}
   @keyframes textglow{
     0%,100%{text-shadow:0 0 8px rgba(74,222,128,.35)}
     50%{text-shadow:0 0 16px rgba(74,222,128,.7),0 0 30px rgba(74,222,128,.28)}
@@ -660,7 +660,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.1</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -823,7 +823,7 @@
     cancel(1); cancel(2);
     pop.hidden = true;
     celebrated = false;
-    card.classList.remove('pop');
+    card.classList.remove('flash');
     render();
   }
 
@@ -1101,7 +1101,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.0.0';
+          ver.lastChild.textContent = 'v3.0.1';
         }, 2500);
       }, 1500);
     }
@@ -1545,7 +1545,7 @@
       || (end - n) < CUTOFF;
 
     if (!st.start) {
-      card.classList.remove('done', 'pop');
+      card.classList.remove('done', 'flash');
       setRest(two(Math.floor(SHIFT / 3600)), two(Math.round(SHIFT % 3600 / 60)));
       tone(SHIFT);
       elEnd.textContent  = '--:--';
@@ -1560,7 +1560,7 @@
     elEnd.textContent = hhmm(end);
 
     if (running) {
-      card.classList.remove('done', 'pop');
+      card.classList.remove('done', 'flash');
       var mins = Math.ceil((end - n) / 60);
       setRest(two(Math.floor(mins / 60)), two(mins % 60));
       tone(end - n);
@@ -1583,7 +1583,7 @@
       if (!celebrated) {
         celebrated = true;
         void card.offsetWidth;
-        card.classList.add('pop');
+        card.classList.add('flash');
         confetti();
       }
     }
@@ -1664,7 +1664,7 @@
   function sw(id, on) { document.getElementById(id).classList.toggle('on', !!on); }
 
   function bumpShift(step) {
-    DRAFT.shift = Math.min(9 * 3600, Math.max(8 * 3600, DRAFT.shift + step * 300));  // ανά 5'
+    DRAFT.shift = Math.min(9 * 3600, Math.max(7 * 3600, DRAFT.shift + step * 300));  // ανά 5'
     renderSettings();
   }
   function bumpBreak(step) {
