@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.0.2] - 6/10/26
+
+### 🛠️ Changed
+- 🔓 Settings now lock only while the shift is actually running. Once you have clocked out they open again - there is no reason to refuse a change at six in the evening when it only takes effect tomorrow morning.
+- 🧷 Each shift remembers the length it started with. Without that, changing the duration after clocking out would recalculate the day that just finished and bring it back to life with time left on it. Today keeps the settings it began with; new ones apply from the next day. The same goes for the break.
+- 🎚️ The break switch moved up beside its section heading, so the row that said "Έχω διάλειμμα" is gone and only the duration remains underneath.
+
 ## 🏷️ [v3.0.1] - 5/10/26
 
 ### 🛡️ Fixed

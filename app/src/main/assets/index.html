@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.0.1 · Last update: 05/10/2026 18:39 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.0.2 · Last update: 06/10/2026 18:32 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -396,6 +396,7 @@
 
   .sec{font-size:11px;font-weight:700;letter-spacing:.5px;color:#8e97a6;margin:16px 2px 8px}
   .sec:first-of-type{margin-top:6px}
+  .sec.secrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
   .opt{
     display:flex;align-items:center;gap:10px;
     background:#1a202c;border-radius:11px;padding:11px 12px;margin-bottom:8px;
@@ -515,9 +516,8 @@
       <button class="step" id="shUp">+</button>
     </div>
 
-    <div class="sec">ΔΙΑΛΕΙΜΜΑ</div>
-    <div class="opt">
-      <span class="lbl">Έχω διάλειμμα</span>
+    <div class="sec secrow">
+      <span>ΔΙΑΛΕΙΜΜΑ</span>
       <button class="sw" id="swBrk" aria-label="Διάλειμμα"><i></i></button>
     </div>
     <div class="opt" id="brkRow">
@@ -660,7 +660,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.1</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.2</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -780,6 +780,7 @@
     if (raw.date !== ymd(new Date())) return { date: null, start: null, brk: null, popBrk: 0, popEnd: 0 };
     return {
       date: raw.date, start: raw.start || null, brk: raw.brk || null,
+      len: raw.len || null, brkLen: raw.brkLen || null,
       popBrk: raw.popBrk || 0, popEnd: raw.popEnd || 0
     };
   }
@@ -798,7 +799,8 @@
 
   function doStart() {
     var t = Math.floor(now());
-    st = { date: ymd(new Date()), start: t, brk: null, popBrk: 0, popEnd: 0 };
+    st = { date: ymd(new Date()), start: t, brk: null,
+           len: SHIFT, brkLen: BREAK, popBrk: 0, popEnd: 0 };
     flagSet('notified_1', ''); flagSet('notified_2', '');
     save();
     schedule(1, t + SHIFT, '🥳  Σχόλασες! 🎉', '');
@@ -809,6 +811,7 @@
   function doBreak() {
     var t = Math.floor(now());
     st.brk = t;
+    st.brkLen = BREAK;
     st.popBrk = 0;
     flagSet('notified_2', '');
     save();
@@ -1101,7 +1104,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.0.1';
+          ver.lastChild.textContent = 'v3.0.2';
         }, 2500);
       }, 1500);
     }
@@ -1480,9 +1483,10 @@
   }
 
   /* έντονο κόκκινο στην αρχή, απαλότερο μετά τις 4 ώρες, κίτρινο στο τελευταίο 40λεπτο */
-  function tone(left) {
+  function tone(left, span) {
     /* κατώφλια ως ποσοστό της βάρδιας: μισό και τελευταίο 8% */
-    var cls = left <= SHIFT * 0.08 ? 'soon' : (left <= SHIFT * 0.5 ? 'warm' : 'hot');
+    var L = span || SHIFT;
+    var cls = left <= L * 0.08 ? 'soon' : (left <= L * 0.5 ? 'warm' : 'hot');
     if (elRest.className !== 'v ' + cls) elRest.className = 'v ' + cls;
   }
 
@@ -1494,8 +1498,9 @@
 
     setDay(d);
 
-    var end     = st.start ? st.start + SHIFT : null;
-    var brkEnd  = st.brk ? st.brk + BREAK : null;
+    var dayLen  = (st.start && st.len) ? st.len : SHIFT;
+    var end     = st.start ? st.start + dayLen : null;
+    var brkEnd  = st.brk ? st.brk + (st.brkLen || BREAK) : null;
     var running = !!st.start && n < end;
     var onBreak = !!st.brk && n < brkEnd;
     var hadBrk  = !!st.brk && n >= brkEnd;
@@ -1563,7 +1568,7 @@
       card.classList.remove('done', 'flash');
       var mins = Math.ceil((end - n) / 60);
       setRest(two(Math.floor(mins / 60)), two(mins % 60));
-      tone(end - n);
+      tone(end - n, dayLen);
       elState.textContent = 'Ξεκίνησες ' + hhmm(st.start);
       elSub.innerHTML     = '&nbsp;';
       btnGo.disabled = true;
@@ -1648,7 +1653,9 @@
   var DRAFT = null;   // ό,τι αλλάζεις ζει εδώ μέχρι να πατήσεις Αποθήκευση
 
   function renderSettings() {
-    var locked = !!st.start, D = DRAFT || SET;
+    /* κλειδώνουμε μόνο όσο μετράει - μετά το σχόλασμα οι αλλαγές πιάνουν αύριο */
+    var locked = !!st.start && now() < st.start + (st.len || SHIFT);
+    var D = DRAFT || SET;
     document.getElementById('shNum').textContent = hhmmShift(D.shift);
     document.getElementById('bkNum').textContent = Math.round(D.brk / 60);
 
@@ -2032,7 +2039,7 @@
   loadSettings();
   applyLogo();
   st = load();
-  if (st.start && now() >= st.start + SHIFT) celebrated = false;
+  if (st.start && now() >= st.start + (st.len || SHIFT)) celebrated = false;
   render();
 
   /* η δοκιμαστική γιορτή παίζει μία φορά και καταναλώνεται */
