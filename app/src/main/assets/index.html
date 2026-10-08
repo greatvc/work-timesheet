@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.0.3 · Last update: 08/10/2026 19:04 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.0.3 · Last update: 08/10/2026 19:43 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -24,7 +24,7 @@
   }
 
   .card{
-    position:relative;overflow:hidden;width:338px;
+    position:relative;overflow:hidden;width:100%;
     background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:0 14px 12px;
     transition:border-color .5s ease,box-shadow .5s ease;
@@ -399,7 +399,7 @@
   .entrange{font-size:11px;color:#5d6575;text-align:center}
 
   /* ---------- ρυθμίσεις ---------- */
-  .stage{position:relative;width:338px;padding-top:50px}
+  .stage{position:relative;width:100%;max-width:338px;padding-top:50px}
   .gear{
     position:absolute;z-index:30;top:0;right:0;
     width:42px;height:42px;padding:0;border-radius:50%;
@@ -772,6 +772,14 @@
 
   function two(n){ return (n < 10 ? '0' : '') + n; }
   function setRest(h, m) {
+    /* h === null: έχει σχολάσει - μια παύλα αντί για 00:00 */
+    if (h === null) {
+      rColon.hidden = true;
+      elRest.childNodes[0].nodeValue = '–';
+      elRest.childNodes[2].nodeValue = '';
+      return;
+    }
+    rColon.hidden = false;
     elRest.childNodes[0].nodeValue = h;
     elRest.childNodes[2].nodeValue = m;
   }
@@ -1590,7 +1598,7 @@
       btnRs.disabled = offDay;
     } else {
       card.classList.add('done');
-      setRest('00', '00');
+      setRest(null);
       if (elState.firstElementChild === null) {
         elState.innerHTML = 'Σχόλασες<span class="party">🎉</span>';
       }

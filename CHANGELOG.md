@@ -6,8 +6,10 @@ All notable changes to this project are documented here. Format loosely follows 
 
 ### 🛡️ Fixed
 - ⚙️ On iPhone the gear sat on top of the leave button. It was pinned to the top-right of the screen while the leave button lives in the card's own top-right corner - on a short viewport, where the card takes up almost the whole screen, the two landed in the same place. The gear is now anchored to the card rather than to the screen, so the gap above it is identical on every device.
+- 📐 The card's width is no longer fixed at 338px but capped there, so it shrinks to fit instead of running off both edges on a narrower viewport - which is what happens with Safari's page zoom or the larger accessibility text sizes.
 
 ### 🛠️ Changed
+- ➖ Once you have clocked out, the remaining time shows a single dash instead of 00:00. There is nothing left to count, and a zeroed clock reads like a timer still sitting there. Same size, same colour, the blinking colon simply goes away.
 - 🏷️ The plain leave type is now called "Κανονική" rather than "Απλή", in the list and in the type picker.
 - 💾 Save and cancel became icons alone - a floppy disk and a red cross, 30px, on two narrow buttons centred side by side, save on the left and cancel on the right. They had been wide text buttons stretched across the sheet because the words needed the room; with the words gone they no longer do. The ✕ in a sheet's top-right corner is untouched, and in Settings cancel now exists as a button of its own next to save rather than only up in the corner.
 - ⏱️ The reset button's confirmation window dropped from 10 seconds to 3 - the draining bar is a prompt to press again, not a countdown to sit through. The bar's animation follows.
