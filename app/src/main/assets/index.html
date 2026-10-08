@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.0.2 · Last update: 06/10/2026 18:32 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.0.3 · Last update: 08/10/2026 19:04 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -12,12 +12,14 @@
     box-sizing:border-box;
   }
   *,*::before,*::after{box-sizing:inherit}
-  html,body{height:100%}
+  html{height:100%}
+  body{min-height:100%}
   body{
     margin:0;background:var(--bg);color:#e7eaf0;
     font:400 15px/1.35 -apple-system,BlinkMacSystemFont,Roboto,"Segoe UI",sans-serif;
     -webkit-tap-highlight-color:transparent;
-    display:flex;align-items:center;justify-content:center;padding:16px;
+    display:flex;align-items:center;justify-content:center;
+    padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));
     touch-action:manipulation;
   }
 
@@ -315,8 +317,21 @@
   }
   .tot.rest.over.shake{animation:overshake 1s ease-in-out 1}
 
-  .sheetbtns{display:flex;gap:8px}
+  .sheetbtns{display:flex;gap:10px;justify-content:center}
   .sheetbtns button{font-size:14px;padding:11px 10px}
+
+  /* ζεύγος αποθήκευσης / ακύρωσης: μόνο εικονίδια, στενά και κεντραρισμένα */
+  .iconbtns{display:flex;gap:14px;justify-content:center;margin-top:12px}
+  .iconbtns button{
+    width:76px;height:52px;padding:0;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:12px;background:#1a202c;border:1px solid #2a3140;
+  }
+  .iconbtns button img{width:30px;height:30px;display:block;pointer-events:none}
+  .iconbtns button.ok{background:#1d2a44;border-color:#2f4266}
+  .iconbtns button.no{background:#2a1a1f;border-color:#4a2630}
+  .iconbtns button:active{transform:translateY(1px)}
+  .iconbtns button:disabled{opacity:.35}
   .sheetbtns .main{
     flex:1;font-weight:700;font-size:15px;color:#cfe0ff;background:#1d2a44;border-color:#2f4266;
     display:flex;align-items:center;justify-content:center;gap:9px;
@@ -384,9 +399,9 @@
   .entrange{font-size:11px;color:#5d6575;text-align:center}
 
   /* ---------- ρυθμίσεις ---------- */
+  .stage{position:relative;width:338px;padding-top:50px}
   .gear{
-    position:fixed;z-index:30;
-    top:calc(env(safe-area-inset-top,0px) + 12px);right:14px;
+    position:absolute;z-index:30;top:0;right:0;
     width:42px;height:42px;padding:0;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
     background:#1b2130;border:1px solid #2c3446;
@@ -439,11 +454,6 @@
     width:46px;padding:0;flex:none;display:flex;align-items:center;justify-content:center;
   }
   .logorow .undo img{width:22px;height:22px;display:block}
-  .savebtn{
-    width:100%;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:9px;
-    font-size:15px;font-weight:700;color:#cfe0ff;background:#1d2a44;border-color:#2f4266;padding:11px;
-  }
-  .savebtn img{width:22px;height:22px;display:block}
 
   .locked{
     display:flex;align-items:center;gap:8px;margin-top:4px;
@@ -497,8 +507,6 @@
 
 <div class="tip" id="tip" hidden></div>
 
-<button class="gear" id="btnGear" aria-label="Ρυθμίσεις"><img src="gear.png" alt=""></button>
-
 <div class="sheet" id="setsheet" hidden>
   <div class="sheetbox">
 
@@ -551,7 +559,10 @@
 
     <div class="locked" id="setLock" hidden>🔒&nbsp; Κλειδωμένες όσο τρέχει βάρδια</div>
 
-    <button class="savebtn" id="setSave"><img src="save.png" alt="">Αποθήκευση</button>
+    <div class="iconbtns">
+      <button class="ok" id="setSave" aria-label="Αποθήκευση"><img src="save.png" alt=""></button>
+      <button class="no" id="setCancel" aria-label="Ακύρωση"><img src="cancel.png" alt=""></button>
+    </div>
 
   </div>
 </div>
@@ -586,9 +597,9 @@
       <div class="chips" id="fChips"></div>
       <div class="dcount"><b id="fDays">0</b><span id="fDaysTx">Ημέρες</span></div>
       <div class="ferr" id="fErr" hidden></div>
-      <div class="sheetbtns">
-        <button style="flex:1" id="fCancel">Άκυρο</button>
-        <button class="main" id="fSave">Αποθήκευση</button>
+      <div class="iconbtns">
+        <button class="ok" id="fSave" aria-label="Αποθήκευση"><img src="save.png" alt=""></button>
+        <button class="no" id="fCancel" aria-label="Ακύρωση"><img src="cancel.png" alt=""></button>
       </div>
     </div>
 
@@ -600,16 +611,19 @@
         </div>
         <button id="entUp" aria-label="Αύξηση">▴</button>
       </div>
-      <div class="sheetbtns">
-        <button style="flex:1" id="entCancel">Άκυρο</button>
-        <button class="main" id="entSave">Αποθήκευση</button>
+      <div class="iconbtns">
+        <button class="ok" id="entSave" aria-label="Αποθήκευση"><img src="save.png" alt=""></button>
+        <button class="no" id="entCancel" aria-label="Ακύρωση"><img src="cancel.png" alt=""></button>
       </div>
     </div>
 
   </div>
 </div>
 
-<div class="card" id="card">
+<div class="stage">
+  <button class="gear" id="btnGear" aria-label="Ρυθμίσεις"><img src="gear.png" alt=""></button>
+
+  <div class="card" id="card">
   <canvas id="confetti"></canvas>
 
   <button class="pto" id="btnPto" aria-label="Άδειες"><img src="ptobtn.png" alt=""></button>
@@ -660,7 +674,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.2</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.3</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -678,6 +692,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <script>
@@ -833,7 +848,7 @@
   /* ------------------------------ render ------------------------------ */
   /* ---------------- άδειες ---------------- */
   var LTYPES = [
-    { id:'plain',  name:'Απλή', short:'Απλή',             icon:'<img src="pto.png" alt="">', col:'#8fb6ff', bg:'rgba(143,182,255,.13)', kind:'leave'  },
+    { id:'plain',  name:'Κανονική', short:'Κανονική',             icon:'<img src="pto.png" alt="">', col:'#8fb6ff', bg:'rgba(143,182,255,.13)', kind:'leave'  },
     { id:'summer', name:'Καλοκαιρινή', short:'Καλοκαίρι',      icon:'<span class="cem">🏖️</span>', col:'#f0b429', bg:'rgba(240,180,41,.13)', kind:'summer' },
     { id:'xmas',   name:'Χριστουγεννιάτικη', short:'Χριστούγεννα', icon:'<span class="cem">🎄</span>', col:'#4ade80', bg:'rgba(74,222,128,.13)', kind:'xmas'   },
     { id:'easter', name:'Πασχαλινή', short:'Πάσχα',        icon:'<img class="egg" src="egg.png" alt="">', col:'#ef6b6b', bg:'rgba(239,107,107,.13)', kind:'easter' }
@@ -1104,7 +1119,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.0.2';
+          ver.lastChild.textContent = 'v3.0.3';
         }, 2500);
       }, 1500);
     }
@@ -1609,15 +1624,15 @@
   }
 
   function arm() {
-    rsUntil = Date.now() + 10000;
+    rsUntil = Date.now() + 3000;
     btnRs.classList.add('armed');
     rsFill.style.transition = 'none';
     rsFill.style.transform = 'scaleX(1)';
     void rsFill.offsetWidth;
-    rsFill.style.transition = 'transform 10s linear';
+    rsFill.style.transition = 'transform 3s linear';
     rsFill.style.transform = 'scaleX(0)';
     clearTimeout(rsTick);
-    rsTick = setTimeout(disarm, 10000);
+    rsTick = setTimeout(disarm, 3000);
   }
 
   btnRs.onclick = function () {
@@ -1704,11 +1719,14 @@
     renderSettings();
     setSheet.hidden = false;
   };
-  document.getElementById('setClose').onclick = function () {   // άκυρο
+  function setCancel() {                                        // άκυρο
     DRAFT = null;
     applyLogo();                                  // γυρίζει και η εικόνα όπως ήταν
     setSheet.hidden = true;
-  };
+  }
+  document.getElementById('setClose').onclick = setCancel;
+  document.getElementById('setCancel').onclick = setCancel;
+
   document.getElementById('setSave').onclick = function () {
     if (!DRAFT) return;
     if (typeof DRAFT.logo === 'string') flagSet('logo', DRAFT.logo);
