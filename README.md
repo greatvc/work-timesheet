@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-v3.0.0-f0b429?labelColor=1b2130" alt="version">
+  <img src="https://img.shields.io/github/v/release/greatvc/work-timesheet?label=version&color=f0b429&labelColor=1b2130" alt="version">
   <img src="https://img.shields.io/badge/Android-8%2B-4ade80?labelColor=1b2130" alt="android">
   <img src="https://img.shields.io/badge/dependencies-none-58b0c8?labelColor=1b2130" alt="dependencies">
   <img src="https://img.shields.io/badge/network-offline-7fb2ff?labelColor=1b2130" alt="offline">
