@@ -34,7 +34,9 @@ It is a WebView shell around one HTML file, with a native layer for alarms. No a
 
 **Tracks your leave.** Add a range and a type, delete it with two taps, no editing by design. Days are counted as actual working days: weekends and public holidays inside a range do not consume leave. The screen shows how much you have taken and what is left of the yearly allowance you entered.
 
-**Adjusts to your workplace.** Shift length from 8:00 to 9:00, break from 10 to 60 minutes or switched off entirely, toggles for the holidays that differ from one employer to another, and your own logo in place of the default wordmark.
+**Adjusts to your workplace.** Shift length from 7:00 to 9:00 in five-minute steps, break from 10 to 60 minutes or switched off entirely, toggles for the holidays that differ from one employer to another — Καθαρά Δευτέρα, Μεγάλη Παρασκευή, Αγίου Πνεύματος, 2 Ιανουαρίου — and your own logo in place of the default wordmark. A holiday you switch off becomes an ordinary working day everywhere at once, including the day counting that decides how much of your leave a range consumes.
+
+**Looks like you.** The figure beside the day name comes in two versions, picked in settings. Everything else on the card is the same either way.
 
 ## Holiday coverage
 

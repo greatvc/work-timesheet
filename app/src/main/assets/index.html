@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.0.3 · Last update: 08/10/2026 19:43 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.2.0 · Last update: 10/10/2026 18:24 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -439,6 +439,62 @@
   .sw.on{background:#2f6d4a;border-color:#3c8a5e}
   .sw.on i{left:23px;background:#4ade80}
 
+  .opt.avrow{justify-content:space-between;padding:9px 12px}
+  .opt .av{width:54px;height:54px;flex:none;object-fit:contain;display:block}
+  .rad{
+    width:24px;height:24px;border-radius:50%;flex:none;padding:0;position:relative;
+    background:#262c38;border:1px solid #3b4454;transition:background .16s ease,border-color .16s ease;
+  }
+  .rad::after{
+    content:'';position:absolute;inset:5px;border-radius:50%;background:#4ade80;
+    opacity:0;transform:scale(.4);transition:opacity .14s ease,transform .14s ease;
+  }
+  .rad.on{background:#2f6d4a;border-color:#3c8a5e}
+  .rad.on::after{opacity:1;transform:scale(1)}
+  .rad:disabled{opacity:.35}
+
+  /* ---------- υπενθύμιση τέλους χρονιάς ---------- */
+  .eoy{
+    position:fixed;inset:0;z-index:60;
+    display:flex;align-items:center;justify-content:center;padding:22px;
+    background:rgba(6,8,12,.62);
+    -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+    animation:eoyFade .28s ease-out;
+  }
+  .eoy[hidden]{display:none}
+  .eoybox{
+    position:relative;width:100%;max-width:330px;
+    background:#151922;border:1px solid #2f4266;border-radius:16px;
+    padding:40px 20px 18px;text-align:center;
+    box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 0 1px rgba(143,182,255,.08);
+    animation:eoyPop .34s cubic-bezier(.2,.9,.3,1.25);
+  }
+  .eoyx{
+    position:absolute;top:9px;right:9px;width:30px;height:30px;padding:0;
+    display:flex;align-items:center;justify-content:center;border-radius:50%;
+    background:#1b2130;border:1px solid #2c3446;color:#aeb7c6;font-size:14px;
+  }
+  .eoyico{font-size:34px;line-height:1;margin-bottom:12px}
+  .eoytx{font-size:14px;line-height:1.5;color:#e7eaf0;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+  .eoytx b{font-weight:800;color:#8fb6ff;text-shadow:0 0 10px rgba(143,182,255,.45)}
+  .eoytx .warn{display:block;margin-top:11px;color:#f0b429;font-weight:700;
+               text-shadow:0 0 10px rgba(240,180,41,.35)}
+  .eoytx .note{display:block;margin-top:11px;color:#9aa3b2;font-weight:400;font-size:13px;text-shadow:none}
+  .eoychk{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    margin-top:18px;padding-top:14px;border-top:1px solid #242a36;
+    font-size:11.5px;color:#8e97a6;cursor:pointer;
+  }
+  .eoychk .box{
+    width:18px;height:18px;flex:none;border-radius:5px;
+    background:#1b2130;border:1px solid #3b4454;
+  }
+  .eoychk .box.on{background:#2f6d4a;border-color:#3c8a5e}
+  .eoychk .box.on::after{content:'✓';display:block;font-size:12px;line-height:17px;color:#4ade80}
+  @keyframes eoyFade{from{opacity:0}to{opacity:1}}
+  @keyframes eoyPop{0%{opacity:0;transform:scale(.84) translateY(14px)}
+                    100%{opacity:1;transform:scale(1) translateY(0)}}
+
   .logobox{background:#1a202c;border-radius:11px;padding:13px 12px 12px;margin-bottom:10px}
   .logobox .prev{
     display:flex;align-items:center;justify-content:center;
@@ -507,6 +563,18 @@
 
 <div class="tip" id="tip" hidden></div>
 
+<div class="eoy" id="eoy" hidden>
+  <div class="eoybox">
+    <button class="eoyx" id="eoyClose" aria-label="Κλείσιμο">✕</button>
+    <div class="eoyico">ℹ️</div>
+    <div class="eoytx" id="eoyTx"></div>
+    <div class="eoychk" id="eoyChkRow">
+      <span class="box" id="eoyChk"></span>
+      <span id="eoyChkTx"></span>
+    </div>
+  </div>
+</div>
+
 <div class="sheet" id="setsheet" hidden>
   <div class="sheetbox">
 
@@ -535,7 +603,21 @@
       <button class="step" id="bkUp">+</button>
     </div>
 
+    <div class="sec">AVATAR</div>
+    <div class="opt avrow" id="avMan">
+      <img class="av" src="man.png" alt="">
+      <button class="rad" id="radMan" aria-label="Άνδρας"></button>
+    </div>
+    <div class="opt avrow" id="avWoman">
+      <img class="av" src="woman.png" alt="">
+      <button class="rad" id="radWoman" aria-label="Γυναίκα"></button>
+    </div>
+
     <div class="sec">ΑΡΓΙΕΣ</div>
+    <div class="opt">
+      <span class="lbl">Καθαρά Δευτέρα</span>
+      <button class="sw" id="swKD" aria-label="Καθαρά Δευτέρα"><i></i></button>
+    </div>
     <div class="opt">
       <span class="lbl">Μεγάλη Παρασκευή</span>
       <button class="sw" id="swMP" aria-label="Μεγάλη Παρασκευή"><i></i></button>
@@ -631,7 +713,7 @@
   <div class="banner"><img id="bannerImg" src="brand.png" alt=""></div>
 
   <div class="head">
-    <img class="worker" src="worker.png" alt="">
+    <img class="worker" id="avatarImg" src="man.png" alt="">
     <div class="daybox" id="daybox">
       <canvas id="fx"></canvas>
       <span class="day" id="day">&nbsp;</span>
@@ -674,7 +756,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.0.3</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.2.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -702,7 +784,8 @@
   var BREAK  = 25 * 60;              // διάλειμμα
   var CUTOFF = BREAK + 120;          // νεκρή ζώνη = διάλειμμα + 2'
   var BRKON  = true;                 // έχει διάλειμμα;
-  var SET    = { shift: SHIFT, brk: BREAK, brkOn: true, hMP: true, hAP: true, h2J: false };
+  var SET    = { shift: SHIFT, brk: BREAK, brkOn: true,
+                 hKD: true, hMP: true, hAP: true, h2J: false, avatar: 'man' };
   var KEY    = 'work-shift';
   var DAYS   = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
 
@@ -731,6 +814,7 @@
   var btnGo    = document.getElementById('btnStart');
   var btnRs    = document.getElementById('btnReset');
   var btnBk    = document.getElementById('btnBreak');
+  var avatarImg= document.getElementById('avatarImg');
   var imgIdle  = document.getElementById('imgIdle');
   var imgRun   = document.getElementById('imgRun');
   var ask      = document.getElementById('ask');
@@ -863,6 +947,7 @@
   ];
   /* αργίες που εξαρτώνται από διακόπτη */
   var OPTHOL = {
+    '2027-03-15': { flag: 'hKD', kind: 'holiday' },   // Καθαρά Δευτέρα
     '2027-04-30': { flag: 'hMP', kind: 'easter'  },   // Μεγάλη Παρασκευή
     '2027-06-21': { flag: 'hAP', kind: 'holiday' },   // Αγίου Πνεύματος
     '2027-01-02': { flag: 'h2J', kind: 'xmas'    }    // 2 Ιανουαρίου, απογραφή
@@ -886,9 +971,11 @@
       if (raw.shift) SET.shift = raw.shift;
       if (raw.brk)   SET.brk   = raw.brk;
       if (typeof raw.brkOn === 'boolean') SET.brkOn = raw.brkOn;
+      if (typeof raw.hKD  === 'boolean')  SET.hKD  = raw.hKD;
       if (typeof raw.hMP  === 'boolean')  SET.hMP  = raw.hMP;
       if (typeof raw.hAP  === 'boolean')  SET.hAP  = raw.hAP;
       if (typeof raw.h2J  === 'boolean')  SET.h2J  = raw.h2J;
+      if (raw.avatar === 'man' || raw.avatar === 'woman') SET.avatar = raw.avatar;
     } catch (e) {}
     applySettings();
   }
@@ -902,7 +989,10 @@
     BREAK  = SET.brk;
     CUTOFF = BREAK + 120;
     btnBk.hidden = !BRKON;
+    avatarImg.src = SET.avatar === 'woman' ? 'woman.png' : 'man.png';
     shownDay = null;                 // οι αργίες μπορεί να άλλαξαν
+    /* οι διακόπτες αργιών αλλάζουν τις εργάσιμες, άρα και τα σύνολα αδειών */
+    if (sheet && !sheet.hidden) renderLeaves();
   }
 
   function loadLeaveData() {
@@ -927,14 +1017,15 @@
     return n;
   }
 
-  /* η άδεια χρεώνεται στη χρονιά που ξεκινάει - εκτός αν ξεκινάει Ιανουάριο
-     και έχει μείνει υπόλοιπο από πέρσι */
-  function chargeYear(lv) {
-    var f = dparse(lv.from), y = f.getFullYear();
-    if (f.getMonth() === 0 && carryFrom(y - 1) > 0) return y - 1;
-    return y;
-  }
-  function takenIn(y) {
+  /* -------------------- λογιστική αδειών --------------------
+     Η άδεια χρεώνεται ακέραια στη χρονιά που ΞΕΚΙΝΑΕΙ: μια άδεια 30/12 - 5/1
+     τρώει μέρες του παλιού έτους, όχι του καινούριου.
+
+     entitle[y] = το σύνολο που δήλωσες για τη χρονιά y, ΜΕΣΑ του και όσες
+     μεταφέρθηκαν από πέρσι - γι' αυτό ο μετρητής δεν κατεβαίνει κάτω από αυτές.
+     Οι μεταφερόμενες ζουν μέχρι 31/1· ό,τι δεν κάηκε ως τότε, χάνεται.
+     ---------------------------------------------------------- */
+  function usedIn(y) {                         // μέρες που χρεώνονται στη χρονιά y
     var n = 0;
     for (var i = 0; i < leaves.length; i++) {
       var lv = leaves[i];
@@ -942,18 +1033,34 @@
     }
     return n;
   }
-  function carryFrom(y) {
-    var left = (entitle[y] || 0) - takenIn(y);
+  function usedJan(y) {                        // από αυτές, όσες ξεκινούν Ιανουάριο
+    var n = 0;
+    for (var i = 0; i < leaves.length; i++) {
+      var f = dparse(leaves[i].from);
+      if (f.getFullYear() === y && f.getMonth() === 0) n += workDays(leaves[i].from, leaves[i].to);
+    }
+    return n;
+  }
+  function carryFrom(y) {                      // ό,τι περίσσεψε στο τέλος της χρονιάς y
+    if (!entitle[y]) return 0;
+    var left = (entitle[y] - carryLost(y)) - usedIn(y);
     return left > 0 ? left : 0;
   }
+  function carryAlive(y) {                     // ζουν ακόμα οι μεταφερόμενες του y;
+    var t = new Date();
+    return t.getFullYear() < y || (t.getFullYear() === y && t.getMonth() === 0);
+  }
+  function carryLost(y) {                      // μεταφερόμενες που έληξαν αχρησιμοποίητες
+    var c = carryFrom(y - 1);
+    if (!c || carryAlive(y)) return 0;
+    var burned = Math.min(c, usedJan(y));
+    return c - burned;
+  }
   function totalsFor(y) {
-    /* διαθέσιμες = όσες κουβαλήθηκαν από πέρσι + όσες δήλωσες φέτος
-       σύνολο = όσες μέρες άδειας έχεις πάρει, υπόλοιπο = η διαφορά */
-    var avail = carryFrom(y - 1) + (entitle[y] || 0), used = 0;
-    for (var i = 0; i < leaves.length; i++) {
-      if (chargeYear(leaves[i]) === y) used += workDays(leaves[i].from, leaves[i].to);
-    }
-    return { used: used, rest: avail - used };
+    /* πριν δηλώσεις σύνολο για φέτος, διαθέσιμες είναι μόνο οι μεταφερόμενες */
+    var base  = entitle[y] || carryFrom(y - 1);
+    var avail = base - carryLost(y), used = usedIn(y);
+    return { used: used, rest: avail - used, carry: carryFrom(y - 1), lost: carryLost(y) };
   }
 
   function overlaps(fromIso, toIso) {
@@ -1043,7 +1150,6 @@
     '2026-12-26': 'xmas',      // Σύναξη Θεοτόκου - Σάββατο
     '2027-01-01': 'xmas',      // Πρωτοχρονιά
     '2027-01-06': 'xmas',      // Θεοφάνεια
-    '2027-03-15': 'holiday',   // Καθαρά Δευτέρα
     '2027-03-25': 'holiday',   // 25η Μαρτίου
     '2027-05-01': 'easter',    // Πρωτομαγιά - Μ. Σάββατο
     '2027-05-02': 'easter',    // Κυριακή του Πάσχα
@@ -1127,7 +1233,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.0.3';
+          ver.lastChild.textContent = 'v3.2.0';
         }, 2500);
       }, 1500);
     }
@@ -1151,6 +1257,7 @@
   };
 
   function celebrate(kind) {
+    if (eoyOpen) return;         // πρώτα η υπενθύμιση, μετά η γιορτή
     if (peek) return;            // ο χρήστης την παραμέρισε γι' αυτή τη συνεδρία
     var c = KINDS[kind] || KINDS.holiday;
     for (var k in KINDS) KINDS[k].img.hidden = (KINDS[k] !== c);
@@ -1682,16 +1789,20 @@
     document.getElementById('shNum').textContent = hhmmShift(D.shift);
     document.getElementById('bkNum').textContent = Math.round(D.brk / 60);
 
-    sw('swBrk', D.brkOn); sw('swMP', D.hMP); sw('swAP', D.hAP); sw('sw2J', D.h2J);
+    sw('swBrk', D.brkOn);
+    sw('swKD', D.hKD); sw('swMP', D.hMP); sw('swAP', D.hAP); sw('sw2J', D.h2J);
+    rad('radMan', D.avatar !== 'woman'); rad('radWoman', D.avatar === 'woman');
     document.getElementById('brkRow').classList.toggle('off', !D.brkOn);
 
-    ['shDown','shUp','bkDown','bkUp','swBrk','swMP','swAP','sw2J','logoPick','logoReset','setSave']
+    ['shDown','shUp','bkDown','bkUp','swBrk','swKD','swMP','swAP','sw2J',
+     'radMan','radWoman','logoPick','logoReset','setSave']
       .forEach(function (id) { document.getElementById(id).disabled = locked; });
     document.getElementById('bkDown').disabled = locked || !D.brkOn;
     document.getElementById('bkUp').disabled   = locked || !D.brkOn;
     document.getElementById('setLock').hidden  = !locked;
   }
   function sw(id, on) { document.getElementById(id).classList.toggle('on', !!on); }
+  function rad(id, on) { document.getElementById(id).classList.toggle('on', !!on); }
 
   function bumpShift(step) {
     DRAFT.shift = Math.min(9 * 3600, Math.max(7 * 3600, DRAFT.shift + step * 300));  // ανά 5'
@@ -1752,7 +1863,18 @@
       renderSettings();
     };
   }
-  toggle('swBrk', 'brkOn'); toggle('swMP', 'hMP'); toggle('swAP', 'hAP'); toggle('sw2J', 'h2J');
+  toggle('swBrk', 'brkOn'); toggle('swKD', 'hKD');
+  toggle('swMP', 'hMP'); toggle('swAP', 'hAP'); toggle('sw2J', 'h2J');
+
+  /* avatar: όλη η γραμμή είναι πατητή, όχι μόνο το κουμπάκι */
+  function pickAv(rowId, val) {
+    document.getElementById(rowId).onclick = function () {
+      if (!DRAFT || document.getElementById('radMan').disabled) return;
+      DRAFT.avatar = val;
+      renderSettings();
+    };
+  }
+  pickAv('avMan', 'man'); pickAv('avWoman', 'woman');
 
   document.getElementById('logoPick').onclick = function () {
     if (A && A.pickLogo) A.pickLogo();
@@ -1827,6 +1949,9 @@
       entWarn.hidden = false;
       entWarn.textContent = 'Δεν έχεις ορίσει μέρες για το ' + y + ' — πάτα τον μετρητή δίπλα.';
     } else entWarn.hidden = true;
+
+    /* χωρίς δηλωμένο σύνολο δεν μπαίνει άδεια - δεν ξέρουμε σε τι να τη χρεώσουμε */
+    document.getElementById('btnAddLeave').disabled = !entitle[y];
 
     if (!leaves.length) {
       listEl.innerHTML = '<div class="empty">Καμία άδεια δηλωμένη</div>';
@@ -1990,19 +2115,29 @@
   };
 
   /* μετρητής δικαιούμενων, μόνο με βελάκια */
+  var entMin = 1, entMax = 30;
   function openEnt() {
-    var y = new Date().getFullYear();
-    entVal = entitle[y] || 20;
-    entNum.textContent = entVal;
+    var y = new Date().getFullYear(), c = carryFrom(y - 1);
+    /* όσο ζουν οι μεταφερόμενες είναι το δάπεδο του μετρητή - δεν σβήνονται με το χέρι */
+    entMin = (c && carryAlive(y)) ? c : 1;
+    entMax = 30 + (entMin > 1 ? entMin : 0);
+    entVal = entitle[y] ? Math.max(entMin, entitle[y]) : (entMin > 1 ? entMin : 20);
+    paintEnt();
     pane('ent');
   }
-  function bump(step) {
-    entVal = Math.min(30, Math.max(1, entVal + step));
+  function paintEnt() {
     entNum.textContent = entVal;
+    document.getElementById('entDown').disabled = entVal <= entMin;
+    document.getElementById('entUp').disabled   = entVal >= entMax;
+  }
+  function bump(step) {
+    entVal = Math.min(entMax, Math.max(entMin, entVal + step));
+    paintEnt();
   }
   function holdable(el, step) {
     var t1 = null, t2 = null;
     function start() {
+      if (el.disabled) return;
       bump(step);
       t1 = setTimeout(function () { t2 = setInterval(function () { bump(step); }, 90); }, 450);
     }
@@ -2061,11 +2196,55 @@
     });
   })();
 
+  /* --------- υπενθύμιση 27-31/12: οι μέρες που περισσεύουν ---------
+     Βγαίνει πριν από οτιδήποτε άλλο, ακόμα κι αν η μέρα έχει άδεια ή αργία·
+     η γιορτή παίζει μόλις κλείσει. */
+  var eoyOpen = false;
+  var eoyBox  = document.getElementById('eoy');
+  var eoyChk  = document.getElementById('eoyChk');
+
+  function eoyDue() {
+    var d = new Date(), y = d.getFullYear();
+    if (d.getMonth() !== 11 || d.getDate() < 27) return 0;     // από 27 Δεκεμβρίου ως το τέλος της χρονιάς
+    if (flagGet('eoyAck') === String(y)) return 0;             // το έκλεισε με το τικ
+    var r = totalsFor(y).rest;
+    return r > 0 ? r : 0;
+  }
+  function eoyShow() {
+    if (eoyOpen) return true;
+    var n = eoyDue();
+    if (!n) return false;
+    var y = new Date().getFullYear(), one = n === 1;
+    document.getElementById('eoyTx').innerHTML =
+        (one ? 'Μένει <b>1 ημέρα</b> άδειας στο ' : 'Μένουν <b>' + n + ' ημέρες</b> άδειας στο ') + y + '.'
+      + '<span class="warn">'
+      + (one ? 'Αν δεν την πάρεις μεταφέρεται στο ' + (y + 1) + ' και λήγει στις 31 Ιανουαρίου.'
+             : 'Όσες δεν πάρεις μεταφέρονται στο ' + (y + 1) + ' και λήγουν στις 31 Ιανουαρίου.')
+      + '</span>'
+      + '<span class="note">Για να μη μεταφερ' + (one ? 'θεί' : 'θούν') + ' μπορείς είτε να τ'
+      + (one ? 'η' : 'ις') + ' δηλώσεις ως άδεια είτε να κατεβάσεις το σύνολο του ' + y
+      + ' και να μείνεις στο μηδέν, ως τις 31/12 στις 23:59.</span>';
+    document.getElementById('eoyChkTx').textContent = 'Να μην εμφανιστεί ξανά για το ' + y;
+    eoyChk.classList.remove('on');
+    eoyOpen = true;
+    eoyBox.hidden = false;
+    return true;
+  }
+  document.getElementById('eoyChkRow').onclick = function () { eoyChk.classList.toggle('on'); };
+  document.getElementById('eoyClose').onclick = function () {
+    if (eoyChk.classList.contains('on')) flagSet('eoyAck', String(new Date().getFullYear()));
+    eoyOpen = false;
+    eoyBox.hidden = true;
+    shownDay = null;            // τώρα παίζει η γιορτή της ημέρας, αν υπάρχει
+    setDay(new Date());
+  };
+
   loadLeaveData();
   loadSettings();
   applyLogo();
   st = load();
   if (st.start && now() >= st.start + (st.len || SHIFT)) celebrated = false;
+  eoyShow();                    // πριν το render, ώστε να μην προλάβει η γιορτή
   render();
 
   /* η δοκιμαστική γιορτή παίζει μία φορά και καταναλώνεται */
@@ -2079,6 +2258,7 @@
       var t = new Date();
       playMood(t.getDay());
       peek = false;
+      if (eoyShow()) { render(); return; }
       var lvt = leaveOn(ymd(t));
       if (lvt) celebrate(ltype(lvt.type).kind);
       else if (hol(ymd(t))) celebrate(hol(ymd(t)));

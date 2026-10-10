@@ -2,6 +2,32 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.2.0] - 10/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
+
+*Both builds. The PHP page jumps straight from v3.0.3 to v3.2.0 and picks up the v3.1.0 changes on the way.*
+
+### 🛡️ Fixed
+- 🧾 Carried-over leave was counted twice. A leave starting in January used to be charged back to the previous year, while the days it carried forward were still being offered as available in the new one - so four days taken in January came off last year's balance and sat untouched in this year's as well. The whole thing is now accounted for one way: a leave belongs entirely to the year it starts in, and the days left over at the end of a year are rolled into next year's declared total rather than added on top of it.
+
+### ✨ Added
+- 🔔 A reminder on the last days of the year. From 27 to 31 December, if the year still has leave left, the app opens with a notice saying how many days remain, that they roll into next year but expire on 31 January, and that the two ways to avoid carrying them are to declare them as leave or to lower the year's declared total to zero. It comes up ahead of everything else - before a holiday or leave takeover, which then plays the moment the notice is closed - and it reappears on every open until the new year, unless you tick the box that silences it for that year.
+
+### 🛠️ Changed
+- 🔢 The yearly counter opens already holding whatever carried over, and will not go below it. Finish 2026 with two days left and the counter for 2027 starts at 2 with the down arrow greyed out; you add your 25 and the year's total reads 27.
+- ⏳ Carried days expire on 31 January, as the law has them. Leave taken during January burns them first; from 1 February whatever is left of them is subtracted from the year's total. Two days carried into 2027 and untouched through January turn a declared 27 into 25 on the 1st of February.
+- 🚫 Νέα άδεια is disabled while the year has no declared total. There is nothing to charge the days against, and the warning above it already says what to press.
+
+## 🏷️ [v3.1.0] - 10/10/26
+
+*Shipped in the Android build; the PHP page received the same two changes with v3.2.0.*
+
+### ✨ Added
+- 👤 The avatar on the card is now yours to pick. Settings gained an AVATAR section with two rows, each just the drawing itself and a radio button - no labels, because the pictures say it. The man is the default, and the pair was drawn to match rather than the old single figure. The choice lives in the draft like everything else, so it only takes effect when you press Save.
+- 🧹 Καθαρά Δευτέρα became a switch, alongside Μεγάλη Παρασκευή, Αγίου Πνεύματος and 2 Ιανουαρίου. It is not one of the holidays the law makes compulsory in the private sector - some employers close, some do not - so it is now declared rather than assumed. On by default, which is how the app behaved until now.
+
+### 🛠️ Changed
+- 🧮 Everything that counts days reads the holiday switches rather than a fixed list, so declaring a day as working or not is reflected everywhere at once: the live counter in the new-leave form, the days shown on each row of the list, the year's total taken and the balance left. Turn Καθαρά Δευτέρα off and a leave from the 15th to the 17th of March 2027 goes from two days to three, and the yearly total follows. The day itself behaves the same way - with the switch on it is a day off with its artwork and locked buttons, with it off it is an ordinary Monday that still carries its name in the header.
+
 ## 🏷️ [v3.0.3] - 8/10/26
 
 ### 🛡️ Fixed
