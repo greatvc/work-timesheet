@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.2.0 · Last update: 10/10/2026 18:24 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.2.1 · Last update: 11/10/2026 11:26 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -138,6 +138,7 @@
   .rest .v.hot{color:#ff3b30;text-shadow:0 0 12px rgba(255,59,48,.6),0 0 24px rgba(255,59,48,.25)}
   .rest .v.warm{color:#ef8a84;text-shadow:0 0 8px rgba(239,138,132,.28)}
   .rest .v.soon{color:var(--value);text-shadow:none}
+  .rest .v.na{color:var(--dim);text-shadow:none}
   .endr .v{color:var(--soft);font-weight:600}
   .colon{transition:opacity .12s linear}
   .colon.off{opacity:.18}
@@ -756,7 +757,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.2.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.2.1</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -1233,7 +1234,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.2.0';
+          ver.lastChild.textContent = 'v3.2.1';
         }, 2500);
       }, 1500);
     }
@@ -1681,8 +1682,14 @@
 
     if (!st.start) {
       card.classList.remove('done', 'flash');
-      setRest(two(Math.floor(SHIFT / 3600)), two(Math.round(SHIFT % 3600 / 60)));
-      tone(SHIFT);
+      if (offDay) {
+        /* ρεπό: δεν υπάρχει ωράριο να μετρήσει, παύλες όπως και το σχόλασμα */
+        setRest('--', '--');
+        if (elRest.className !== 'v na') elRest.className = 'v na';
+      } else {
+        setRest(two(Math.floor(SHIFT / 3600)), two(Math.round(SHIFT % 3600 / 60)));
+        tone(SHIFT);
+      }
       elEnd.textContent  = '--:--';
       elState.innerHTML = '&nbsp;';
       elSub.innerHTML   = '&nbsp;';
@@ -2027,8 +2034,8 @@
   }
 
   function nextWorkday(d) {
-    var x = new Date(d.getTime());
-    while (isWeekend(x)) x.setDate(x.getDate() + 1);
+    var x = new Date(d.getTime()), guard = 0;
+    while ((isWeekend(x) || hol(ymd(x))) && guard++ < 400) x.setDate(x.getDate() + 1);
     return x;
   }
 
@@ -2042,6 +2049,10 @@
     fToLbl.textContent   = grDate(fTo.value);
   }
 
+  function holWhy(iso) {
+    var d = iso.split('-');
+    return 'Η ' + (+d[2]) + '/' + (+d[1]) + ' είναι αργία.';
+  }
   function checkForm() {
     stampLabels();
     var ok = true;
@@ -2053,6 +2064,18 @@
     if (ok && isWeekend(dparse(fFrom.value))) { fFrom.classList.add('bad'); ok = false; }
     if (ok && isWeekend(dparse(fTo.value)))   { fTo.classList.add('bad');   ok = false; }
     if (ok && dparse(fTo.value) < dparse(fFrom.value)) { fTo.classList.add('bad'); ok = false; }
+
+    /* αργία δεν γίνεται άκρο της άδειας - ούτε μονοήμερη πάνω σε αργία.
+       Περνάει από το hol(), άρα ακολουθεί τους διακόπτες των ρυθμίσεων. */
+    if (ok) {
+      var badEl = hol(fFrom.value) ? fFrom : (hol(fTo.value) ? fTo : null);
+      if (badEl) {
+        badEl.classList.add('bad');
+        ok = false;
+        fErr.hidden = false;
+        fErr.textContent = holWhy(badEl.value);
+      }
+    }
 
     var n = ok ? workDays(fFrom.value, fTo.value) : 0;
     fDays.textContent = n;
@@ -2098,8 +2121,10 @@
 
   document.getElementById('fSave').onclick = function () {
     if (!checkForm()) {
-      fErr.hidden = false;
-      fErr.textContent = 'Διάλεξε έγκυρες ημερομηνίες - όχι Σαββατοκύριακο.';
+      if (fErr.hidden) {                        // η checkForm μπορεί να έχει ήδη εξηγήσει γιατί
+        fErr.hidden = false;
+        fErr.textContent = 'Διάλεξε έγκυρες ημερομηνίες - όχι Σαββατοκύριακο.';
+      }
       return;
     }
     if (overlaps(fFrom.value, fTo.value)) {
