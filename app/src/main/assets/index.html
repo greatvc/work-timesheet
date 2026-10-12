@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.3.0 · Last update: 12/10/2026 12:18 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.3.0 · Last update: 12/10/2026 18:18 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -424,6 +424,9 @@
     background:#1b2130;border:1px solid #2c3446;color:#cfe0ff;
   }
   .step:disabled{opacity:.3}
+  .step.big{width:42px;height:42px;font-size:22px}
+  .num.pre{color:#8fb6ff}
+  .opt.off .num.pre{color:#4a5262}
   .num{min-width:58px;text-align:center;font-size:20px;font-weight:800;color:#7fb2ff;
        font-variant-numeric:tabular-nums}
   .num.brk{color:#58b0c8}
@@ -593,8 +596,14 @@
       <button class="step" id="shUp">+</button>
     </div>
     <div class="opt">
-      <span class="lbl">Ειδοποίηση 10 λεπτά πριν</span>
-      <button class="sw" id="swPre" aria-label="Ειδοποίηση 10 λεπτά πριν"><i></i></button>
+      <span class="lbl">Ειδοποίηση πριν το τέλος</span>
+      <button class="sw" id="swPre" aria-label="Ειδοποίηση πριν το τέλος"><i></i></button>
+    </div>
+    <div class="opt" id="preRow">
+      <span class="lbl">Λεπτά</span>
+      <button class="step big" id="prDown">−</button>
+      <span class="num pre" id="prNum">10</span>
+      <button class="step big" id="prUp">+</button>
     </div>
 
     <div class="sec secrow">
@@ -790,8 +799,8 @@
   var CUTOFF = BREAK + 120;          // νεκρή ζώνη = διάλειμμα + 2'
   var BRKON  = true;                 // έχει διάλειμμα;
   var PRE10  = false;                // προειδοποίηση 10' πριν το σχόλασμα
-  var PRESEC = 10 * 60;
-  var SET    = { shift: SHIFT, brk: BREAK, brkOn: true, pre10: false,
+  var PRESEC = 10 * 60;             // πόσο πριν, από τις ρυθμίσεις
+  var SET    = { shift: SHIFT, brk: BREAK, brkOn: true, pre10: false, preMin: 10,
                  hKD: true, hMP: true, hAP: true, h2J: false, avatar: 'man' };
   var KEY    = 'work-shift';
   var DAYS   = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
@@ -835,9 +844,11 @@
 
   var POPTX = {
     brk: '👉 Το Διάλειμμα Τελείωσε   💼',
-    pre: '⏰ Ετοιμάσου, Άλλα 10 λεπτά και τέλος για σήμερα! 🥳✨',
     end: '🥳  Σχόλασες! 🎉'
   };
+  function preTx(m) {
+    return '⏰ Ετοιμάσου… Άλλα ' + m + ' λεπτά και τέλος για σήμερα! 🥳✨';
+  }
 
   /* 0 = δεν συνέβη, 1 = εκκρεμεί, 2 = το είδα */
   function pendingPop() {
@@ -858,7 +869,7 @@
   }
 
   function showPop(kind) {
-    popTx.textContent = POPTX[kind];
+    popTx.textContent = kind === 'pre' ? preTx(st.pre || SET.preMin) : POPTX[kind];
     popTx.className = kind === 'end' ? 'win' : 'brk';
     pop.hidden = false;
   }
@@ -897,7 +908,7 @@
     return {
       date: raw.date, start: raw.start || null, brk: raw.brk || null,
       len: raw.len || null, brkLen: raw.brkLen || null,
-      pre: raw.pre || 0,
+      pre: raw.pre === 1 ? 10 : (raw.pre || 0),   // 1 = παλιά μορφή, ήταν σημαία
       popBrk: raw.popBrk || 0, popPre: raw.popPre || 0, popEnd: raw.popEnd || 0
     };
   }
@@ -916,12 +927,12 @@
 
   function doStart() {
     var t = Math.floor(now());
-    st = { date: ymd(new Date()), start: t, brk: null, pre: PRE10 ? 1 : 0,
+    st = { date: ymd(new Date()), start: t, brk: null, pre: PRE10 ? SET.preMin : 0,
            len: SHIFT, brkLen: BREAK, popBrk: 0, popPre: 0, popEnd: 0 };
     flagSet('notified_1', ''); flagSet('notified_2', ''); flagSet('notified_3', '');
     save();
     schedule(1, t + SHIFT, '🥳  Σχόλασες! 🎉', '');
-    if (PRE10) schedule(3, t + SHIFT - PRESEC, '⏰ Ετοιμάσου, Άλλα 10 λεπτά και τέλος για σήμερα! 🥳✨', '');
+    if (PRE10) schedule(3, t + SHIFT - PRESEC, preTx(SET.preMin), '');
     celebrated = false;
     render();
   }
@@ -983,6 +994,7 @@
       if (raw.brk)   SET.brk   = raw.brk;
       if (typeof raw.brkOn === 'boolean') SET.brkOn = raw.brkOn;
       if (typeof raw.pre10 === 'boolean') SET.pre10 = raw.pre10;
+      if (raw.preMin) SET.preMin = Math.min(55, Math.max(5, Math.round(raw.preMin / 5) * 5));
       if (typeof raw.hKD  === 'boolean')  SET.hKD  = raw.hKD;
       if (typeof raw.hMP  === 'boolean')  SET.hMP  = raw.hMP;
       if (typeof raw.hAP  === 'boolean')  SET.hAP  = raw.hAP;
@@ -999,6 +1011,7 @@
     SHIFT  = SET.shift;
     BRKON  = SET.brkOn;
     PRE10  = SET.pre10;
+    PRESEC = SET.preMin * 60;
     BREAK  = SET.brk;
     CUTOFF = BREAK + 120;
     btnBk.hidden = !BRKON;
@@ -1675,8 +1688,9 @@
         st.popBrk = 1; save();
       }
       /* 10' πριν - μόνο αν ήταν ανοιχτός ο διακόπτης όταν ξεκίνησε η βάρδια */
-      if (!!st.start && st.pre && !st.popPre && n >= end - PRESEC && n < end
-          && (n - (end - PRESEC)) < 150 && flagGet('notified_3') !== '1') {
+      var preSec = (st.pre || 0) * 60;
+      if (!!st.start && preSec && !st.popPre && n >= end - preSec && n < end
+          && (n - (end - preSec)) < 150 && flagGet('notified_3') !== '1') {
         st.popPre = 1; save();
       }
       if (!!st.start && n >= end && !st.popEnd && (n - end) < 150 && flagGet('notified_1') !== '1') {
@@ -1815,17 +1829,21 @@
     var D = DRAFT || SET;
     document.getElementById('shNum').textContent = hhmmShift(D.shift);
     document.getElementById('bkNum').textContent = Math.round(D.brk / 60);
+    document.getElementById('prNum').textContent = D.preMin;
 
     sw('swBrk', D.brkOn); sw('swPre', D.pre10);
     sw('swKD', D.hKD); sw('swMP', D.hMP); sw('swAP', D.hAP); sw('sw2J', D.h2J);
     rad('radMan', D.avatar !== 'woman'); rad('radWoman', D.avatar === 'woman');
     document.getElementById('brkRow').classList.toggle('off', !D.brkOn);
+    document.getElementById('preRow').classList.toggle('off', !D.pre10);
 
-    ['shDown','shUp','bkDown','bkUp','swBrk','swPre','swKD','swMP','swAP','sw2J',
+    ['shDown','shUp','bkDown','bkUp','prDown','prUp','swBrk','swPre','swKD','swMP','swAP','sw2J',
      'radMan','radWoman','logoPick','logoReset','setSave']
       .forEach(function (id) { document.getElementById(id).disabled = locked; });
     document.getElementById('bkDown').disabled = locked || !D.brkOn;
     document.getElementById('bkUp').disabled   = locked || !D.brkOn;
+    document.getElementById('prDown').disabled = locked || !D.pre10;
+    document.getElementById('prUp').disabled   = locked || !D.pre10;
     document.getElementById('setLock').hidden  = !locked;
   }
   function sw(id, on) { document.getElementById(id).classList.toggle('on', !!on); }
@@ -1833,6 +1851,11 @@
 
   function bumpShift(step) {
     DRAFT.shift = Math.min(9 * 3600, Math.max(7 * 3600, DRAFT.shift + step * 300));  // ανά 5'
+    renderSettings();
+  }
+  function bumpPre(step) {
+    if (!DRAFT.pre10) return;
+    DRAFT.preMin = Math.min(55, Math.max(5, DRAFT.preMin + step * 5));   // ανά 5'
     renderSettings();
   }
   function bumpBreak(step) {
@@ -1859,6 +1882,8 @@
   repeatOn(document.getElementById('shUp'),   function () { bumpShift(1); });
   repeatOn(document.getElementById('bkDown'), function () { bumpBreak(-1); });
   repeatOn(document.getElementById('bkUp'),   function () { bumpBreak(1); });
+  repeatOn(document.getElementById('prDown'), function () { bumpPre(-1); });
+  repeatOn(document.getElementById('prUp'),   function () { bumpPre(1); });
 
   document.getElementById('btnGear').onclick = function () {
     DRAFT = JSON.parse(JSON.stringify(SET));

@@ -4,14 +4,10 @@ All notable changes to this project are documented here. Format loosely follows 
 
 ## 🏷️ [v3.3.0] - 12/10/26
 
-*Both builds.*
-
 ### ✨ Added
-- ⏰ A heads-up ten minutes before the end of the shift, switched on and off under ΒΑΡΔΙΑ in settings and off by default. It fires the same way as the clock-out alert does: a real notification through AlarmManager when the app is closed or in the background, or the in-app dialog when you happen to be looking at the screen - never both. The ten minutes are counted from the end of the shift whatever its length, so a seven-hour day gets it at 6:50. The switch is read when you press Έναρξη, so turning it on mid-shift applies from the next day; Reset cancels the alarm along with the others. If the shift ends before you ever saw the warning, it is dropped rather than queued behind the Σχόλασες dialog.
+- ⏰ A heads-up before the end of the shift, switched on and off under ΒΑΡΔΙΑ in settings and off by default. How early is yours to choose: a row of its own underneath holds the minutes, with a larger pair of arrows that step in fives from 5 up to 55, greyed out while the switch is off. Ten minutes is the starting point, and whatever you pick is what the message says - five minutes chosen, five minutes announced. It fires the same way as the clock-out alert does: a real notification through AlarmManager when the app is closed or in the background, or the in-app dialog when you happen to be looking at the screen - never both. The countdown runs from the end of the shift whatever its length, so a seven-hour day with the default set gets it at 6:50. The switch is read when you press Έναρξη, so turning it on mid-shift applies from the next day; Reset cancels the alarm along with the others. If the shift ends before you ever saw the warning, it is dropped rather than queued behind the Σχόλασες dialog.
 
 ## 🏷️ [v3.2.1] - 11/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
-
-*Both builds.*
 
 ### 🛠️ Changed
 - ➖ On a day you are not working - weekend, holiday or declared leave - the remaining time shows dashes instead of the full shift length. There is no shift to count down, so printing 07:50 in red was just noise; it now reads the same way as the clock-out time underneath it, in grey.
@@ -20,8 +16,6 @@ All notable changes to this project are documented here. Format loosely follows 
 - 🎄 A leave could be declared on a public holiday. The form refused a weekend at either end of the range but said nothing about holidays, so a single day booked on 25 December was accepted and charged against the year - while the same day sitting inside a longer range was correctly skipped. Both ends of the range are now checked, the date turns red and a short line appears underneath: "Η 25/12 είναι αργία." The check reads the holiday switches, so a Μεγάλη Παρασκευή you have turned off stays bookable. The dates the form proposes when it opens skip holidays too, instead of landing on one.
 
 ## 🏷️ [v3.2.0] - 10/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
-
-*Both builds. The PHP page jumps straight from v3.0.3 to v3.2.0.*
 
 ### 🛡️ Fixed
 - 🧾 Carried-over leave was counted twice. A leave starting in January used to be charged back to the previous year, while the days it carried forward were still being offered as available in the new one - so four days taken in January came off last year's balance and sat untouched in this year's as well. The whole thing is now accounted for one way: a leave belongs entirely to the year it starts in, and the days left over at the end of a year are rolled into next year's declared total rather than added on top of it.
