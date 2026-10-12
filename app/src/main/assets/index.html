@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.2.1 · Last update: 11/10/2026 11:26 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.3.0 · Last update: 12/10/2026 12:18 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -592,6 +592,10 @@
       <span class="num" id="shNum">8:30</span>
       <button class="step" id="shUp">+</button>
     </div>
+    <div class="opt">
+      <span class="lbl">Ειδοποίηση 10 λεπτά πριν</span>
+      <button class="sw" id="swPre" aria-label="Ειδοποίηση 10 λεπτά πριν"><i></i></button>
+    </div>
 
     <div class="sec secrow">
       <span>ΔΙΑΛΕΙΜΜΑ</span>
@@ -757,7 +761,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.2.1</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.3.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -785,7 +789,9 @@
   var BREAK  = 25 * 60;              // διάλειμμα
   var CUTOFF = BREAK + 120;          // νεκρή ζώνη = διάλειμμα + 2'
   var BRKON  = true;                 // έχει διάλειμμα;
-  var SET    = { shift: SHIFT, brk: BREAK, brkOn: true,
+  var PRE10  = false;                // προειδοποίηση 10' πριν το σχόλασμα
+  var PRESEC = 10 * 60;
+  var SET    = { shift: SHIFT, brk: BREAK, brkOn: true, pre10: false,
                  hKD: true, hMP: true, hAP: true, h2J: false, avatar: 'man' };
   var KEY    = 'work-shift';
   var DAYS   = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
@@ -829,12 +835,14 @@
 
   var POPTX = {
     brk: '👉 Το Διάλειμμα Τελείωσε   💼',
+    pre: '⏰ Ετοιμάσου, Άλλα 10 λεπτά και τέλος για σήμερα! 🥳✨',
     end: '🥳  Σχόλασες! 🎉'
   };
 
   /* 0 = δεν συνέβη, 1 = εκκρεμεί, 2 = το είδα */
   function pendingPop() {
     if (st.popEnd === 1) return 'end';
+    if (st.popPre === 1) return 'pre';
     if (st.popBrk === 1) return 'brk';
     return null;
   }
@@ -885,11 +893,12 @@
   function load() {
     var raw = {};
     try { raw = JSON.parse(rawState() || '{}') || {}; } catch (e) { raw = {}; }
-    if (raw.date !== ymd(new Date())) return { date: null, start: null, brk: null, popBrk: 0, popEnd: 0 };
+    if (raw.date !== ymd(new Date())) return { date: null, start: null, brk: null, popBrk: 0, popPre: 0, popEnd: 0 };
     return {
       date: raw.date, start: raw.start || null, brk: raw.brk || null,
       len: raw.len || null, brkLen: raw.brkLen || null,
-      popBrk: raw.popBrk || 0, popEnd: raw.popEnd || 0
+      pre: raw.pre || 0,
+      popBrk: raw.popBrk || 0, popPre: raw.popPre || 0, popEnd: raw.popEnd || 0
     };
   }
 
@@ -907,11 +916,12 @@
 
   function doStart() {
     var t = Math.floor(now());
-    st = { date: ymd(new Date()), start: t, brk: null,
-           len: SHIFT, brkLen: BREAK, popBrk: 0, popEnd: 0 };
-    flagSet('notified_1', ''); flagSet('notified_2', '');
+    st = { date: ymd(new Date()), start: t, brk: null, pre: PRE10 ? 1 : 0,
+           len: SHIFT, brkLen: BREAK, popBrk: 0, popPre: 0, popEnd: 0 };
+    flagSet('notified_1', ''); flagSet('notified_2', ''); flagSet('notified_3', '');
     save();
     schedule(1, t + SHIFT, '🥳  Σχόλασες! 🎉', '');
+    if (PRE10) schedule(3, t + SHIFT - PRESEC, '⏰ Ετοιμάσου, Άλλα 10 λεπτά και τέλος για σήμερα! 🥳✨', '');
     celebrated = false;
     render();
   }
@@ -928,10 +938,10 @@
   }
 
   function doReset() {
-    st = { date: null, start: null, brk: null, popBrk: 0, popEnd: 0 };
-    flagSet('notified_1', ''); flagSet('notified_2', '');
+    st = { date: null, start: null, brk: null, popBrk: 0, popPre: 0, popEnd: 0 };
+    flagSet('notified_1', ''); flagSet('notified_2', ''); flagSet('notified_3', '');
     save();
-    cancel(1); cancel(2);
+    cancel(1); cancel(2); cancel(3);
     pop.hidden = true;
     celebrated = false;
     card.classList.remove('flash');
@@ -972,6 +982,7 @@
       if (raw.shift) SET.shift = raw.shift;
       if (raw.brk)   SET.brk   = raw.brk;
       if (typeof raw.brkOn === 'boolean') SET.brkOn = raw.brkOn;
+      if (typeof raw.pre10 === 'boolean') SET.pre10 = raw.pre10;
       if (typeof raw.hKD  === 'boolean')  SET.hKD  = raw.hKD;
       if (typeof raw.hMP  === 'boolean')  SET.hMP  = raw.hMP;
       if (typeof raw.hAP  === 'boolean')  SET.hAP  = raw.hAP;
@@ -987,6 +998,7 @@
   function applySettings() {
     SHIFT  = SET.shift;
     BRKON  = SET.brkOn;
+    PRE10  = SET.pre10;
     BREAK  = SET.brk;
     CUTOFF = BREAK + 120;
     btnBk.hidden = !BRKON;
@@ -1234,7 +1246,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.2.1';
+          ver.lastChild.textContent = 'v3.3.0';
         }, 2500);
       }, 1500);
     }
@@ -1662,10 +1674,18 @@
       if (hadBrk && !st.popBrk && (n - brkEnd) < 150 && flagGet('notified_2') !== '1') {
         st.popBrk = 1; save();
       }
+      /* 10' πριν - μόνο αν ήταν ανοιχτός ο διακόπτης όταν ξεκίνησε η βάρδια */
+      if (!!st.start && st.pre && !st.popPre && n >= end - PRESEC && n < end
+          && (n - (end - PRESEC)) < 150 && flagGet('notified_3') !== '1') {
+        st.popPre = 1; save();
+      }
       if (!!st.start && n >= end && !st.popEnd && (n - end) < 150 && flagGet('notified_1') !== '1') {
         st.popEnd = 1; save();
       }
     }
+
+    /* αν σχόλασε χωρίς να δει το «10 λεπτά», δεν έχει πια νόημα */
+    if (!!st.start && n >= end && st.popPre === 1) { st.popPre = 2; save(); }
 
     var want = pendingPop();
     if (!infoOpen) {
@@ -1796,12 +1816,12 @@
     document.getElementById('shNum').textContent = hhmmShift(D.shift);
     document.getElementById('bkNum').textContent = Math.round(D.brk / 60);
 
-    sw('swBrk', D.brkOn);
+    sw('swBrk', D.brkOn); sw('swPre', D.pre10);
     sw('swKD', D.hKD); sw('swMP', D.hMP); sw('swAP', D.hAP); sw('sw2J', D.h2J);
     rad('radMan', D.avatar !== 'woman'); rad('radWoman', D.avatar === 'woman');
     document.getElementById('brkRow').classList.toggle('off', !D.brkOn);
 
-    ['shDown','shUp','bkDown','bkUp','swBrk','swKD','swMP','swAP','sw2J',
+    ['shDown','shUp','bkDown','bkUp','swBrk','swPre','swKD','swMP','swAP','sw2J',
      'radMan','radWoman','logoPick','logoReset','setSave']
       .forEach(function (id) { document.getElementById(id).disabled = locked; });
     document.getElementById('bkDown').disabled = locked || !D.brkOn;
@@ -1870,7 +1890,7 @@
       renderSettings();
     };
   }
-  toggle('swBrk', 'brkOn'); toggle('swKD', 'hKD');
+  toggle('swBrk', 'brkOn'); toggle('swPre', 'pre10'); toggle('swKD', 'hKD');
   toggle('swMP', 'hMP'); toggle('swAP', 'hAP'); toggle('sw2J', 'h2J');
 
   /* avatar: όλη η γραμμή είναι πατητή, όχι μόνο το κουμπάκι */
@@ -2188,6 +2208,7 @@
     infoOpen = false;
     var k = pendingPop();
     if (k === 'end') st.popEnd = 2;
+    else if (k === 'pre') st.popPre = 2;
     else if (k === 'brk') st.popBrk = 2;
     save();
     pop.hidden = true;

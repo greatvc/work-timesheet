@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.3.0] - 12/10/26
+
+*Both builds.*
+
+### ✨ Added
+- ⏰ A heads-up ten minutes before the end of the shift, switched on and off under ΒΑΡΔΙΑ in settings and off by default. It fires the same way as the clock-out alert does: a real notification through AlarmManager when the app is closed or in the background, or the in-app dialog when you happen to be looking at the screen - never both. The ten minutes are counted from the end of the shift whatever its length, so a seven-hour day gets it at 6:50. The switch is read when you press Έναρξη, so turning it on mid-shift applies from the next day; Reset cancels the alarm along with the others. If the shift ends before you ever saw the warning, it is dropped rather than queued behind the Σχόλασες dialog.
+
 ## 🏷️ [v3.2.1] - 11/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
 
 *Both builds.*
