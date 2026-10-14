@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.4.0] - 13/10/26
+
+### ✨ Added
+- 📃 A note on a leave. The form gained a field under the day count - sixty characters, optional, left empty it is not stored at all. A leave that carries one shows a 📃 beside the bin: hold it and the note appears above your finger, wrapping onto a second or third line as needed, and it goes the moment you let go. The row itself is too narrow to print it, the same reason the dates are already read by holding them.
+- 🗑 Deleting a note works like deleting a leave: one tap arms it and turns it red, a second within three seconds removes it, and it disarms itself otherwise. There is no edit here either - write it again instead.
+
+### 🛠️ Changed
+- ⏱️ The confirmation window on deleting a leave dropped from five seconds to three, the same wait the note now uses.
+
 ## 🏷️ [v3.3.0] - 12/10/26
 
 ### ✨ Added
@@ -34,8 +43,8 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v3.0.3] - 8/10/26
 
 ### 🛡️ Fixed
-- ⚙️ On iPhone the gear sat on top of the leave button. It was pinned to the top-right of the screen while the leave button lives in the card's own top-right corner - on a short viewport, where the card takes up almost the whole screen, the two landed in the same place. The gear is now anchored to the card rather than to the screen, so the gap above it is identical on every device.
-- 📐 The card's width is no longer fixed at 338px but capped there, so it shrinks to fit instead of running off both edges on a narrower viewport - which is what happens with Safari's page zoom or the larger accessibility text sizes.
+- ⚙️ The gear could sit on top of the leave button. It was pinned to the top-right of the screen while the leave button lives in the card's own top-right corner - on a short screen, where the card takes up almost everything, the two landed in the same place. The gear is now anchored to the card rather than to the screen, so the gap above it is identical on every device.
+- 📐 The card's width is no longer fixed at 338px but capped there, so it shrinks to fit instead of running off both edges when there is less room than that - which is what the larger accessibility font and display sizes leave you with.
 
 ### 🛠️ Changed
 - ➖ Once you have clocked out, the remaining time shows a single dash instead of 00:00. There is nothing left to count, and a zeroed clock reads like a timer still sitting there. Same size, same colour, the blinking colon simply goes away.
@@ -103,10 +112,10 @@ All notable changes to this project are documented here. Format loosely follows 
 ## 🏷️ [v1.0.0] - 23/9/26 &nbsp;&nbsp;&nbsp;![Initial Release](https://img.shields.io/badge/Initial-Release-22c55e?labelColor=124fde)
 
 ### ✨ Added
-- 💼 First working version of **Work TimeSheet** - a discreet shift tracker for an 8h30 workday, shipping as two builds from one codebase: a PHP page (`index.php`, state in `data/shift.json`) and a native Android APK (WebView shell, state in `localStorage`, no server and no network permission at all).
+- 💼 First working version of **Work TimeSheet** - a discreet shift tracker for an 8h30 workday, built as a native Android APK: a WebView shell holding the whole interface, state in `localStorage`, no server and no network permission at all.
 - ⏱️ Live clock in hours and minutes with a blinking colon, countdown of the remaining shift in hours and minutes, and the calculated clock-out time - press at 09:00 and it reads 17:30.
-- 🍴 30-minute break with its own countdown in minutes and seconds inside a tinted panel, plus a confirmation overlay ("Να ξεκινήσω διάλειμμα;") rendered in-card with a blurred backdrop instead of the browser's native `confirm()`. Once taken, it leaves a bulleted legend showing the exact window, e.g. "Διάλειμμα 13:50 - 14:20".
-- 🚫 Break button stays disabled during the first 31 minutes of the shift and the last 31 minutes before clocking out - a 30-minute break doesn't fit in either window. Enforced client-side and again server-side in the PHP build, and it unlocks live without a refresh.
+- 🍴 30-minute break with its own countdown in minutes and seconds inside a tinted panel, plus a confirmation overlay ("Να ξεκινήσω διάλειμμα;") rendered in-card with a blurred backdrop instead of a native system dialog. Once taken, it leaves a bulleted legend showing the exact window, e.g. "Διάλειμμα 13:50 - 14:20".
+- 🚫 Break button stays disabled during the first 31 minutes of the shift and the last 31 minutes before clocking out - a 30-minute break doesn't fit in either window. It unlocks live, without a refresh.
 - 🎉 Celebration on clock-out: confetti clipped inside the card (not the full screen), a pulsing green border glow, and a glowing "Σχόλασες 🎉" that replays on every refresh for as long as it's the same day.
 - ♻️ Two-step reset: the first press arms the button - it turns deep red and a thin bar drains across the bottom over 10 seconds. A second press within that window resets; otherwise it disarms itself. Prevents the mis-tap that would wipe a running shift.
 - 🔔 **Android notifications** scheduled through `AlarmManager` at the moment a button is pressed, firing with sound and heads-up banner even when the app is fully closed - one for the end of the break, one for clocking out. No background service, no battery drain. Alarms are re-registered after a device reboot via `BootReceiver`, and Reset cancels both.
@@ -114,4 +123,4 @@ All notable changes to this project are documented here. Format loosely follows 
 - 🎨 A company banner across the top of the card and the worker icon on the left of the day name. The logo ships in a dark-mode variant - its white background stripped and the grey lettering lightened, so it sits on the dark card instead of showing up as a white box.
 - 🌙 Deliberately low-key on a desk: the web card idles at 78% opacity and wakes to full on touch or hover for 12 seconds, buttons carry emoji and images instead of readable words, and nothing about the card announces what it's tracking from across the room.
 - 🤖 CI build with no local toolchain: a GitHub Actions workflow produces a signed APK as an artifact on every push, using a committed debug keystore so successive builds install over each other without an uninstall.
-- 📱 Tuned for iPhone (safe-area insets, `viewport-fit=cover`, standalone home-screen mode) and for the Samsung A34 on the APK side.
+- 📱 Tuned for a phone screen: safe-area insets around the notch and the gesture bar, full-bleed layout, and sized against the Samsung A34.

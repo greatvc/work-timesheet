@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.3.0 · Last update: 12/10/2026 18:18 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.4.0 · Last update: 13/10/2026 19:14 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -293,6 +293,22 @@
     animation:fade .12s ease-out;
   }
   .tip[hidden]{display:none}
+  .tip.wrap{white-space:normal;max-width:74vw;font-weight:600;line-height:1.4}
+
+  .fnote{
+    display:block;width:100%;margin:2px 0 10px;padding:11px 12px;
+    background:#1a202c;border:1px solid #2a3140;border-radius:11px;
+    color:#e7eaf0;font-size:13.5px;font-family:inherit;outline:none;
+  }
+  .fnote::placeholder{color:#5d6575}
+  .fnote:focus{border-color:#2f4266;background:#1b2334}
+
+  .lnote{
+    width:34px;height:34px;flex:none;padding:0;margin-right:4px;
+    display:flex;align-items:center;justify-content:center;
+    border-radius:10px;background:transparent;border:1px solid transparent;font-size:16px;
+  }
+  .lnote.arm{background:#3a1c22;border-color:#5e2a33;color:#ff6b6b}
 
   .totals{display:flex;gap:9px;margin:13px 0 11px}
   .tot{flex:1;border-radius:12px;padding:11px 8px;text-align:center;background:#1a202c}
@@ -692,6 +708,8 @@
       </div>
       <div class="chips" id="fChips"></div>
       <div class="dcount"><b id="fDays">0</b><span id="fDaysTx">Ημέρες</span></div>
+      <input class="fnote" id="fNote" type="text" maxlength="60"
+             placeholder="Σημείωση… εάν θες…" autocomplete="off" spellcheck="false">
       <div class="ferr" id="fErr" hidden></div>
       <div class="iconbtns">
         <button class="ok" id="fSave" aria-label="Αποθήκευση"><img src="save.png" alt=""></button>
@@ -770,7 +788,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.3.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.4.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -1259,7 +1277,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.3.0';
+          ver.lastChild.textContent = 'v3.4.0';
         }, 2500);
       }, 1500);
     }
@@ -1952,16 +1970,23 @@
   var fChips    = document.getElementById('fChips');
   var fDays     = document.getElementById('fDays');
   var fDaysTx   = document.getElementById('fDaysTx');
+  var fNote     = document.getElementById('fNote');
   var fFromLbl  = document.getElementById('fFromLbl');
   var fToLbl    = document.getElementById('fToLbl');
   var fErr      = document.getElementById('fErr');
   var entNum    = document.getElementById('entNum');
 
   var formType = 'plain', entVal = 20, delArm = 0, delTimer = null, shakeRest = false;
+  var noteArm = 0, noteTimer = null;
+  function esc(t) {
+    return String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
   var tip = document.getElementById('tip'), tipTimer = null;
 
-  function showTip(el, text) {
+  function showTip(el, text, wrap) {
     tip.textContent = text;
+    tip.className = wrap ? 'tip wrap' : 'tip';
     tip.hidden = false;
     var r = el.getBoundingClientRect(), t = tip.getBoundingClientRect();
     var left = r.left + (r.width - t.width) / 2;
@@ -2021,6 +2046,11 @@
             +     '<span class="lsep">🔵</span>'
             +     '<span class="lsub" style="color:' + tp.col + '">' + d + (d === 1 ? ' ημέρα' : ' ημέρες') + '</span>'
             +   '</span>'
+            +   (lv.note
+                  ? '<button class="lnote' + (noteArm === lv.id ? ' arm' : '') + '" data-id="' + lv.id
+                    + '" data-note="' + esc(lv.note) + '">'
+                    + (noteArm === lv.id ? '✓' : '📃') + '</button>'
+                  : '')
             +   '<button class="ldel' + (delArm === lv.id ? ' arm' : '') + '" data-id="' + lv.id + '">'
             +     (delArm === lv.id ? '✓' : '🗑') + '</button>'
             + '</div>';
@@ -2043,6 +2073,42 @@
       })(rows[r]);
     }
 
+    /* σημείωση: κράτημα = διάβασέ την, πάτημα = οπλίζει τη διαγραφή */
+    var notes = listEl.querySelectorAll('.lnote');
+    for (var m = 0; m < notes.length; m++) {
+      (function (btn) {
+        var txt = btn.getAttribute('data-note'), held = false, hold = null;
+        function down(e) {
+          if (e && e.stopPropagation) e.stopPropagation();
+          clearTimeout(tipTimer);
+          held = false;
+          hold = setTimeout(function () { held = true; showTip(btn, txt, true); }, 330);
+        }
+        function up() { clearTimeout(hold); hideTip(); }
+        btn.addEventListener('touchstart', down, { passive: true });
+        btn.addEventListener('mousedown', down);
+        ['touchend','touchcancel','touchmove','mouseup','mouseleave'].forEach(function (ev) {
+          btn.addEventListener(ev, up);
+        });
+        btn.onclick = function (e) {
+          e.stopPropagation();
+          if (held) { held = false; return; }      // ήταν κράτημα για διάβασμα
+          var id = +btn.getAttribute('data-id');
+          clearTimeout(noteTimer);
+          if (noteArm === id) {
+            for (var j = 0; j < leaves.length; j++) if (leaves[j].id === id) { delete leaves[j].note; break; }
+            noteArm = 0;
+            saveLeaveData();
+            renderLeaves();
+          } else {
+            noteArm = id;
+            renderLeaves();
+            noteTimer = setTimeout(function () { noteArm = 0; renderLeaves(); }, 3000);
+          }
+        };
+      })(notes[m]);
+    }
+
     var dels = listEl.querySelectorAll('.ldel');
     for (var k = 0; k < dels.length; k++) {
       dels[k].onclick = function () {
@@ -2057,7 +2123,7 @@
         } else {
           delArm = id;
           renderLeaves();
-          delTimer = setTimeout(function () { delArm = 0; renderLeaves(); }, 5000);
+          delTimer = setTimeout(function () { delArm = 0; renderLeaves(); }, 3000);
         }
       };
     }
@@ -2132,6 +2198,7 @@
     var t = nextWorkday(new Date()), iso = ymd(t);
     var nx = nextWorkday(new Date(t.getTime() + 86400000));
     fFrom.value = iso; fTo.value = ymd(nx);
+    fNote.value = '';
     formType = 'plain';
     renderChips();
     checkForm();
@@ -2148,7 +2215,7 @@
   };
 
   document.getElementById('sheetClose').onclick = function () {
-    sheet.hidden = true; delArm = 0; hideTip();
+    sheet.hidden = true; delArm = 0; noteArm = 0; hideTip();
   };
   document.getElementById('btnAddLeave').onclick = openForm;
   document.getElementById('fCancel').onclick = function () { renderLeaves(); pane('list'); };
@@ -2177,7 +2244,10 @@
       fErr.textContent = 'Υπάρχει ήδη άδεια σε αυτές τις ημερομηνίες.';
       return;
     }
-    leaves.push({ id: Date.now(), from: fFrom.value, to: fTo.value, type: formType });
+    var note = fNote.value.trim().slice(0, 60);
+    var rec = { id: Date.now(), from: fFrom.value, to: fTo.value, type: formType };
+    if (note) rec.note = note;
+    leaves.push(rec);
     saveLeaveData();
     shownDay = null;
     renderLeaves();
