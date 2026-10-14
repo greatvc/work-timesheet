@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
-## 🏷️ [v3.4.0] - 13/10/26
+## 🏷️ [v3.4.0] - 14/10/26
 
 ### ✨ Added
 - 📃 A note on a leave. The form gained a field under the day count - sixty characters, optional, left empty it is not stored at all. A leave that carries one shows a 📃 beside the bin: hold it and the note appears above your finger, wrapping onto a second or third line as needed, and it goes the moment you let go. The row itself is too narrow to print it, the same reason the dates are already read by holding them.
@@ -10,6 +10,9 @@ All notable changes to this project are documented here. Format loosely follows 
 
 ### 🛠️ Changed
 - ⏱️ The confirmation window on deleting a leave dropped from five seconds to three, the same wait the note now uses.
+
+### 🛡️ Fixed
+- 🔎 Holding a row in the leave list to read the full dates could start a text selection instead - the magnifier, the handles and the copy-paste bar over everything. The card had already been told not to let its text be selected, but the leave screen sits outside it and never inherited that. It does now, with the long-press callout switched off as well; the note field keeps normal selection so it can still be edited.
 
 ## 🏷️ [v3.3.0] - 12/10/26
 

@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.4.0 · Last update: 13/10/2026 19:14 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.4.0 · Last update: 14/10/2026 19:14 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -241,7 +241,10 @@
     width:100%;max-width:342px;max-height:92vh;overflow:auto;
     background:#151922;border:1px solid #242a36;border-radius:16px;padding:14px;
     animation:rise .2s ease-out;
+    /* το κράτημα δείχνει πληροφορία - δεν ξεκινάει επιλογή κειμένου */
+    user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
   }
+  .sheetbox input{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
   .sheethead{display:flex;align-items:center;gap:9px;margin-bottom:12px}
   .sheethead img{width:27px;height:27px;display:block}
   .sheethead span{flex:1;font-size:16px;font-weight:800;letter-spacing:.2px}
