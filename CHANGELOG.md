@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.4.1] - 16/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
+
+### ✨ Added
+- 🏷️ The icon at the left of a leave row now names its type - Κανονική, Καλοκαιρινή, Χριστουγεννιάτικη, Πασχαλινή. The icons carry the type by colour and picture alone, which is readable once you know them and a guess until then. With a mouse it is a plain hover tooltip; by touch, where hovering does not exist, it is a hold. Either way the rest of the row still gives the full dates, and the icon no longer wakes that one by accident.
+
 ## 🏷️ [v3.4.0] - 14/10/26
 
 ### ✨ Added

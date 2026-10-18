@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.4.0 · Last update: 14/10/2026 19:14 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.4.1 · Last update: 16/10/2026 11:33 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -791,7 +791,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.4.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.4.1</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -1280,7 +1280,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.4.0';
+          ver.lastChild.textContent = 'v3.4.1';
         }, 2500);
       }, 1500);
     }
@@ -2001,6 +2001,10 @@
   }
   function hideTip() { clearTimeout(tipTimer); tip.hidden = true; }
 
+  /* ποντίκι = tooltip με hover, αφή = κράτημα */
+  var canHover = false;
+  try { canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches; } catch (e) {}
+
   function pane(which) {
     paneList.hidden = which !== 'list';
     paneForm.hidden = which !== 'form';
@@ -2043,7 +2047,8 @@
     for (var i = 0; i < sorted.length; i++) {
       var lv = sorted[i], tp = ltype(lv.type), d = workDays(lv.from, lv.to);
       html += '<div class="lrow" data-full="' + humanFull(lv.from, lv.to) + '">'
-            +   '<span class="lico" style="background:' + tp.bg + ';color:' + tp.col + '">' + tp.icon + '</span>'
+            +   '<span class="lico" data-kind="' + esc(tp.name) + '"'
+                + ' style="background:' + tp.bg + ';color:' + tp.col + '">' + tp.icon + '</span>'
             +   '<span class="lmain">'
             +     '<span class="ldate">' + human(lv.from, lv.to) + '</span>'
             +     '<span class="lsep">🔵</span>'
@@ -2074,6 +2079,34 @@
           row.addEventListener(ev, hideTip);
         });
       })(rows[r]);
+    }
+
+    /* κράτημα στο εικονίδιο: δείχνει τον τύπο της άδειας */
+    var icos = listEl.querySelectorAll('.lico');
+    for (var c = 0; c < icos.length; c++) {
+      (function (ico) {
+        var kind = ico.getAttribute('data-kind'), hold = null;
+        function down(e) {
+          if (e && e.stopPropagation) e.stopPropagation();
+          clearTimeout(tipTimer);
+          hold = setTimeout(function () { showTip(ico, kind); }, 330);
+        }
+        function up() { clearTimeout(hold); hideTip(); }
+        ico.addEventListener('touchstart', down, { passive: true });
+        ['touchend','touchcancel','touchmove'].forEach(function (ev) {
+          ico.addEventListener(ev, up);
+        });
+        if (canHover) {
+          ico.addEventListener('mouseenter', function () { clearTimeout(tipTimer); showTip(ico, kind); });
+          ico.addEventListener('mouseleave', hideTip);
+          /* το πάτημα να μη φέρνει τις ημερομηνίες πάνω από το tooltip */
+          ico.addEventListener('mousedown', function (e) { e.stopPropagation(); });
+        } else {
+          ico.addEventListener('mousedown', down);
+          ['mouseup','mouseleave'].forEach(function (ev) { ico.addEventListener(ev, up); });
+        }
+        ico.addEventListener('click', function (e) { e.stopPropagation(); });
+      })(icos[c]);
     }
 
     /* σημείωση: κράτημα = διάβασέ την, πάτημα = οπλίζει τη διαγραφή */
