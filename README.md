@@ -22,7 +22,7 @@ It is a WebView shell around one HTML file, with a native layer for alarms. No a
 
 ## What it does
 
-**Counts down the shift.** Press the start button when you clock in. The card shows the time remaining and the exact clock-out time. The countdown changes colour as the day burns down: hard red above half the shift, softer red below it, amber for the final stretch. When the time runs out the card turns green, confetti falls inside it, and everything locks until the next day.
+**Counts down the shift.** Press the start button when you clock in. The card shows the time remaining and the exact clock-out time. The countdown changes colour as the day burns down: hard red above half the shift, softer red below it, amber for the final stretch. When the time runs out the card turns green, confetti falls inside it, and everything locks until the next day. If you pressed it late, hold the start line for a second and a half and dial the real time in - the day restarts from there.
 
 **Handles the break.** One tap starts it, with a confirmation first so it cannot be triggered by accident. The button stays locked during the opening and closing minutes of the shift, since a break started there would run past the end of the day. When it finishes you get a notification — or, if you happen to be looking at the screen, a dialog inside the app instead. Never both.
 

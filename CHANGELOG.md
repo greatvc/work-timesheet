@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v3.5.0] - 25/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
+
+### ✨ Added
+- 🕘 The start time can be corrected. Press Έναρξη late and the day was wrong for good, with nothing to do about it but Reset. Hold «Ξεκίνησες HH:MM» for a second and a half, dial the hour and the minutes you actually started, and the day runs from there. The hold works through the first quarter of the shift and does nothing after that - two hours into an eight-hour day.
+
 ## 🏷️ [v3.4.1] - 16/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
 
 ### ✨ Added

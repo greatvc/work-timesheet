@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.4.1 · Last update: 16/10/2026 11:33 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v3.5.0 · Last update: 21/10/2026 14:05 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -28,7 +28,7 @@
     background:var(--card);border:1px solid var(--line);border-radius:14px;
     padding:0 14px 12px;
     transition:border-color .5s ease,box-shadow .5s ease;
-    user-select:none;-webkit-user-select:none;
+    user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;
   }
 
   /* --- banner + κεφαλίδα --- */
@@ -227,6 +227,30 @@
     35%{box-shadow:0 0 22px 2px rgba(74,222,128,.28)}
     100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}
   }
+
+  /* ---------- αλλαγή ώρας έναρξης ---------- */
+  .dials{display:flex;gap:10px}
+  .dial{flex:1;min-width:0;background:#1a202c;border-radius:12px;padding:10px 8px 12px;text-align:center}
+  .dial .lab{font-size:11px;font-weight:700;letter-spacing:.7px;color:#8e97a6;text-transform:uppercase}
+  .dial .dnum{
+    font-size:34px;font-weight:800;color:#7fb2ff;line-height:1.1;margin:4px 0 6px;
+    font-variant-numeric:tabular-nums;
+  }
+  .dial .arrows{display:flex;gap:8px;justify-content:center}
+  .dial button{
+    width:42px;height:42px;border-radius:50%;padding:0;flex:none;font-size:21px;
+    background:#1b2130;border:1px solid #2c3446;color:#cfe0ff;
+  }
+  .dial button:disabled{opacity:.28}
+  .dial button:active:not(:disabled){background:#2a3550}
+  .echo{
+    margin-top:12px;background:#1a202c;border-radius:11px;padding:10px 12px;
+    font-size:13px;color:#9aa5b5;display:flex;flex-direction:column;gap:5px;
+  }
+  .echo .l{display:flex;justify-content:space-between;gap:10px}
+  .echo b{color:#cfd6e2;font-weight:600;font-variant-numeric:tabular-nums}
+  .echo .wn{color:#f0b429;font-size:12.5px;line-height:1.4}
+  .echo .wn[hidden]{display:none}
 
   /* ---------- οθόνη αδειών ---------- */
   .sheet{
@@ -598,6 +622,44 @@
   </div>
 </div>
 
+<div class="sheet" id="stsheet" hidden>
+  <div class="sheetbox">
+
+    <div class="sheethead"><span>Αλλαγή ώρας έναρξης</span></div>
+
+    <div class="dials">
+      <div class="dial">
+        <div class="lab">Ώρα</div>
+        <div class="dnum" id="stHv">09</div>
+        <div class="arrows">
+          <button id="stHDn" aria-label="Ώρα κάτω">−</button>
+          <button id="stHUp" aria-label="Ώρα πάνω">+</button>
+        </div>
+      </div>
+      <div class="dial">
+        <div class="lab">Λεπτά</div>
+        <div class="dnum" id="stMv">50</div>
+        <div class="arrows">
+          <button id="stMDn" aria-label="Λεπτά κάτω">−</button>
+          <button id="stMUp" aria-label="Λεπτά πάνω">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="echo">
+      <div class="l"><span>Έναρξη</span><b id="stEcho">--:--</b></div>
+      <div class="l"><span>Σχόλασμα</span><b id="stEnd">--:--</b></div>
+      <div class="wn" id="stWarn" hidden></div>
+    </div>
+
+    <div class="iconbtns">
+      <button class="ok" id="stSave" aria-label="Αποθήκευση"><img src="save.png" alt=""></button>
+      <button class="no" id="stCancel" aria-label="Ακύρωση"><img src="cancel.png" alt=""></button>
+    </div>
+
+  </div>
+</div>
+
 <div class="sheet" id="setsheet" hidden>
   <div class="sheetbox">
 
@@ -791,7 +853,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.4.1</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.5.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -946,15 +1008,25 @@
   }
   function cancel(id) { if (A && A.cancel) A.cancel(id); }
 
-  function doStart() {
-    var t = Math.floor(now());
+  /* at: η ώρα έναρξης σε epoch - χωρίς αυτό ξεκινάει τώρα.
+     Με at η μέρα μηδενίζεται ολόκληρη: διάλειμμα, ειδοποιήσεις, ό,τι έχει συμβεί. */
+  function doStart(at) {
+    var nw = Math.floor(now());
+    var t  = at || nw;
+    var over = (t + SHIFT) <= nw;              // η νέα ώρα βάζει το σχόλασμα στο παρελθόν
     st = { date: ymd(new Date()), start: t, brk: null, pre: PRE10 ? SET.preMin : 0,
-           len: SHIFT, brkLen: BREAK, popBrk: 0, popPre: 0, popEnd: 0 };
+           len: SHIFT, brkLen: BREAK, popBrk: 0,
+           popPre: over ? 2 : 0, popEnd: over ? 2 : 0 };
     flagSet('notified_1', ''); flagSet('notified_2', ''); flagSet('notified_3', '');
     save();
-    schedule(1, t + SHIFT, '🥳  Σχόλασες! 🎉', '');
-    if (PRE10) schedule(3, t + SHIFT - PRESEC, preTx(SET.preMin), '');
-    celebrated = false;
+    cancel(1); cancel(2); cancel(3);
+    if (!over) {
+      schedule(1, t + SHIFT, '🥳  Σχόλασες! 🎉', '');
+      if (PRE10 && (t + SHIFT - PRESEC) > nw) schedule(3, t + SHIFT - PRESEC, preTx(SET.preMin), '');
+    }
+    pop.hidden = true;
+    card.classList.remove('flash');
+    celebrated = over;                          // σχολασμένη βάρδια δεν γιορτάζει
     render();
   }
 
@@ -1280,7 +1352,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.4.1';
+          ver.lastChild.textContent = 'v3.5.0';
         }, 2500);
       }, 1500);
     }
@@ -1817,6 +1889,102 @@
     if (rsUntil && Date.now() < rsUntil) { disarm(); doReset(); }
     else arm();
   };
+
+  /* ---------------- αλλαγή ώρας έναρξης ---------------- */
+  /* κράτημα 1,5" στο «Ξεκίνησες HH:MM» - η μέρα ξαναρχίζει από τη νέα ώρα */
+  var ST_MINH  = 7;                    // δάπεδο: τίποτα δεν ξεκινάει πριν τις 07:00
+  var stSheet  = document.getElementById('stsheet');
+  var stHEl    = document.getElementById('stHv');
+  var stMEl    = document.getElementById('stMv');
+  var stHDn    = document.getElementById('stHDn');
+  var stHUp    = document.getElementById('stHUp');
+  var stMDn    = document.getElementById('stMDn');
+  var stMUp    = document.getElementById('stMUp');
+  var stEcho   = document.getElementById('stEcho');
+  var stEndEl  = document.getElementById('stEnd');
+  var stWarn   = document.getElementById('stWarn');
+  var stH = 0, stM = 0, stHold = null;
+
+  function stNowMin() {
+    var d = new Date(now() * 1000);
+    return d.getHours() * 60 + d.getMinutes();
+  }
+  function stMaxH() { return Math.floor(stNowMin() / 60); }
+  function stMaxM(h) {
+    var n = stNowMin();
+    return h < Math.floor(n / 60) ? 55 : Math.floor((n % 60) / 5) * 5;
+  }
+
+  function stPaint() {
+    var hi = stMaxH();
+    stH = Math.min(Math.max(stH, ST_MINH), hi);
+    stM = Math.min(Math.max(stM, 0), stMaxM(stH));
+    stHEl.textContent = two(stH);
+    stMEl.textContent = two(stM);
+    stHDn.disabled = stH <= ST_MINH;
+    stHUp.disabled = stH >= hi;
+    stMDn.disabled = stM <= 0;
+    stMUp.disabled = stM >= stMaxM(stH);
+
+    var mins = stH * 60 + stM, endMin = mins + Math.round(SHIFT / 60);
+    stEcho.textContent  = two(stH) + ':' + two(stM);
+    stEndEl.textContent = two(Math.floor(endMin / 60) % 24) + ':' + two(endMin % 60);
+    if (endMin <= stNowMin()) {
+      stWarn.hidden = false;
+      stWarn.textContent = 'Με αυτή την ώρα η βάρδια έχει ήδη λήξει.';
+    } else {
+      stWarn.hidden = true;
+    }
+  }
+
+  function stStep(el, fn) {
+    el.onclick = function () { if (!el.disabled) { fn(); stPaint(); } };
+  }
+  stStep(stHUp, function () { stH++; });
+  stStep(stHDn, function () { stH--; });
+  stStep(stMUp, function () { stM += 5; });
+  stStep(stMDn, function () { stM -= 5; });
+
+  /* το παράθυρο ζει μόνο στο πρώτο τέταρτο της βάρδιας - σε 8ωρο, δύο ώρες.
+     Παραπάνω από εκεί δεν είναι πια διόρθωση, είναι ξαναγράψιμο της μέρας. */
+  function stLate() { return now() - st.start > (st.len || SHIFT) / 4; }
+
+  function stOpen() {
+    if (!st || !st.start) return;                       // δεν τρέχει βάρδια
+    if (now() >= st.start + (st.len || SHIFT)) return;  // έχει σχολάσει - κλειδωμένο
+    if (stLate()) return;                               // πέρασε το παράθυρο διόρθωσης
+    if (stMaxH() < ST_MINH) return;                     // πριν τις 07:00 δεν υπάρχει τι να διορθώσει
+    var d = new Date(st.start * 1000);
+    stH = d.getHours();
+    stM = Math.round(d.getMinutes() / 5) * 5;
+    stPaint();
+    stSheet.hidden = false;
+  }
+
+  function stDown() {
+    if (!st || !st.start) return;
+    if (now() >= st.start + (st.len || SHIFT)) return;
+    if (stLate()) return;
+    clearTimeout(stHold);
+    stHold = setTimeout(function () {
+      stOpen();
+    }, 1500);
+  }
+  function stUp() { clearTimeout(stHold); }
+  elState.addEventListener('touchstart', stDown, { passive: true });
+  elState.addEventListener('mousedown', stDown);
+  ['touchend', 'touchcancel', 'touchmove', 'mouseup', 'mouseleave'].forEach(function (ev) {
+    elState.addEventListener(ev, stUp);
+  });
+
+  document.getElementById('stCancel').onclick = function () { stSheet.hidden = true; };
+  document.getElementById('stSave').onclick = function () {
+    var d = new Date(now() * 1000);
+    d.setHours(stH, stM, 0, 0);
+    stSheet.hidden = true;
+    doStart(Math.floor(d.getTime() / 1000));
+  };
+  stSheet.addEventListener('click', function (e) { if (e.target === stSheet) stSheet.hidden = true; });
 
   /* ---------------- οθόνη ρυθμίσεων ---------------- */
   var setSheet = document.getElementById('setsheet');
