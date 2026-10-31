@@ -7,12 +7,14 @@ import android.content.SharedPreferences;
 
 import java.util.Map;
 
-/** Μετά από restart τα alarms χάνονται - τα ξαναστήνουμε. */
+/** Μετά από restart τα alarms και ο κύκλος του γραφείου χάνονται - τα ξαναστήνουμε. */
 public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context ctx, Intent intent) {
         SharedPreferences p = ctx.getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE);
+
+        MainActivity.applyGeofence(ctx);
 
         for (Map.Entry<String, ?> e : p.getAll().entrySet()) {
             if (!e.getKey().startsWith("alarm_")) continue;

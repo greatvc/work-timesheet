@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v3.5.0 · Last update: 21/10/2026 14:05 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v4.0.0 · Last update: 31/10/2026 11:50 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -282,7 +282,12 @@
   }
   .warnline[hidden]{display:none}
 
-  .lrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #1e2430}
+  /* γιατί το υπόλοιπο είναι μικρότερο από όσο δείχνει η αριθμητική */
+  .heldline{font-size:11.5px;color:#8b93a3;text-align:center;margin:9px 2px 0;line-height:1.45}
+  .heldline[hidden]{display:none}
+  .heldline b{color:#f0b429;font-weight:700}
+
+  .lrow{display:flex;align-items:center;gap:10px;padding:9px 7px;border-bottom:1px solid #1e2430}
   .lico{
     width:35px;height:35px;border-radius:50%;flex:none;
     display:flex;align-items:center;justify-content:center;font-size:19px;
@@ -295,6 +300,68 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
   .lsep{font-size:7px;margin:0 8px;line-height:1;opacity:.9;flex:none}
+  /* άδεια που δεν χρεώνεται πια, επειδή άλλαξε το πρόγραμμα */
+  .lrow.zero .lico,.lrow.zero .ldate,.lrow.zero .lsep{opacity:.45}
+
+  /* Άδεια που πέρασε: ξεθωριάζει και ΜΕΝΕΙ ξεθωριασμένη. Καμία αντίδραση στον
+     δείκτη - αλλιώς, μόλις ανοίγει η λίστα, ο δείκτης τυχαίνει πάνω στην πρώτη
+     σειρά και τη δείχνει ενεργή. Το κράτημα για τη σημείωση, το σβήσιμο και τα
+     κουμπιά της σειράς δουλεύουν κανονικά - μόνο η διαφάνεια είναι σταθερή. */
+  .lrow.past .lico,.lrow.past .ldate,.lrow.past .lsep,.lrow.past .lsub{opacity:.38}
+  /* η επόμενη άδεια που έρχεται. Το περίγραμμα είναι inset ώστε να μη
+     βγαίνει έξω από τη λίστα που κάνει scroll. */
+  .lrow.next{
+    border-bottom-color:transparent;border-radius:10px;
+    background:linear-gradient(90deg,rgba(74,222,128,.14),rgba(74,222,128,.03) 70%);
+    box-shadow:inset 0 0 0 1px rgba(74,222,128,.32),0 0 18px rgba(74,222,128,.15);
+  }
+  .lsub.zero{font-size:12px;font-weight:700;color:#8b93a3;white-space:nowrap;flex:none}
+
+  /* η επιβεβαίωση κάθεται ΠΑΝΩ από τις ρυθμίσεις που την άνοιξαν */
+  #wksheet{z-index:70}
+
+  /* μέρες που δουλεύω */
+  .wkrow{justify-content:center}
+  .wkdots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+  .wkdots button{
+    width:34px;height:34px;border-radius:50%;padding:0;flex:none;
+    font-size:14px;font-weight:700;
+    background:#1b2130;border:1px solid #2c3446;color:#5d6575;
+  }
+  .wkdots button.on{background:#1d2a44;border-color:#2f4266;color:#cfe0ff}
+  .wkdots button:active:not(:disabled){transform:scale(.94)}
+  .wkdots button:disabled{opacity:.4}
+  /* το μοτίβο: γράμμα για μέρα που δουλεύεις, ημερολόγιο για ρεπό.
+     Ίδιο πλάτος κελιού και στα δύο, ώστε να πέφτουν σε ευθεία. */
+  .wkpat{display:flex;gap:7px;justify-content:center;align-items:center;margin-bottom:12px}
+  .wkpat span{
+    width:26px;height:26px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;font-weight:800;line-height:1;color:#7fb2ff;
+  }
+  .wkpat svg{width:21px;height:21px;display:block}
+  .wkwhy{font-size:12.5px;color:#8b93a3;line-height:1.45;margin:0 0 14px;text-align:center}
+  .wkopt .lbl{display:flex;flex-direction:column;gap:2px}
+  .wkopt .lbl i{font-style:normal;font-size:11.5px;color:#7b8494;line-height:1.35}
+  /* πλέγμα, ώστε τα βελάκια και οι αριθμοί να πέφτουν σε κοινές στήλες
+     σε όλες τις γραμμές, ό,τι πλάτος κι αν έχουν τα νούμερα */
+  .wkdiff{
+    background:#1a202c;border-radius:11px;padding:11px 12px;
+    font-size:13px;color:#9aa5b5;
+    display:grid;grid-template-columns:1fr auto 18px auto;
+    align-items:center;column-gap:7px;row-gap:7px;
+  }
+  .wkdiff .l{display:contents}
+  .wkdiff .l > span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .wkdiff u{
+    text-decoration:none;color:#cfd6e2;font-weight:700;
+    font-variant-numeric:tabular-nums;text-align:right;
+  }
+  .wkdiff u:last-of-type{text-align:left}
+  /* λίγο πιο κάτω από τη γραμμή των ψηφίων, να κάθεται στη μέση τους */
+  .wkdiff .arw{width:18px;height:18px;display:block;position:relative;top:1px}
+  .wkdiff .big > span,.wkdiff .big > u{color:#e7eaf0;font-weight:800}
+  .wkdiff .none{grid-column:1 / -1;color:#5d6575}
   .lsub{font-size:12px;font-weight:700;white-space:nowrap;flex:none}
   .ldel{
     width:32px;height:32px;border-radius:9px;padding:0;flex:none;font-size:14px;
@@ -390,21 +457,39 @@
   .entbtn:active{background:#2a3550;border-color:#4a5a7d}
 
   /* φόρμα */
-  .frow{display:flex;gap:9px}
-  .frow label{flex:1;font-size:11.5px;color:#8e97a6}
+  /* σε στενή οθόνη ή με μεγάλα γράμματα, τα δύο πεδία μπορούν να στοιβαχτούν
+     αντί να βγει το δεύτερο εκτός οθόνης */
+  .frow{display:flex;gap:9px;flex-wrap:wrap}
+  .frow label{flex:1 1 132px;min-width:0;font-size:11.5px;color:#8e97a6}
   .dwrap{position:relative;margin-top:4px}
   .dlabel{
     position:absolute;left:11px;top:50%;transform:translateY(-50%);
     pointer-events:none;font-size:14.5px;font-weight:600;color:#e7eaf0;
     font-variant-numeric:tabular-nums;
+    user-select:none;-webkit-user-select:none;
   }
   .fdate{
-    display:block;width:100%;
+    display:block;width:100%;min-width:0;
     font:inherit;font-size:14px;color:transparent;
     background:#1b2130;border:1px solid #2c3446;border-radius:9px;padding:9px 8px;
     color-scheme:dark;
   }
   .fdate.bad{border-color:#c04358;background:#2a1118}
+  /* Το πεδίο είναι διάφανο και από πάνω γράφει η δική μας ετικέτα, στα ελληνικά.
+     Χωρίς αυτά, η μπλε επιλογή του browser ξαναζωγραφίζει το κείμενό του από κάτω
+     και φαίνονται δύο ημερομηνίες, η μία με αντεστραμμένη μέρα/μήνα. */
+  .fdate::selection{background:transparent;color:transparent}
+  .fdate::-webkit-datetime-edit,
+  .fdate::-webkit-datetime-edit-fields-wrapper,
+  .fdate::-webkit-datetime-edit-text,
+  .fdate::-webkit-datetime-edit-day-field,
+  .fdate::-webkit-datetime-edit-month-field,
+  .fdate::-webkit-datetime-edit-year-field,
+  .fdate::-webkit-datetime-edit-day-field:focus,
+  .fdate::-webkit-datetime-edit-month-field:focus,
+  .fdate::-webkit-datetime-edit-year-field:focus{
+    background:transparent;color:transparent;outline:none;
+  }
   .hint{font-size:11.5px;color:#5d6575;margin:7px 0 13px}
   .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:13px}
   .chip{gap:9px;min-width:0;overflow:hidden}
@@ -417,6 +502,12 @@
     font-size:12.5px;color:#aab2c0;
   }
   .chip img{height:21px;width:auto;max-width:21px;display:block;object-fit:contain}
+  /* πολύ στενή οθόνη: μικραίνει το κείμενο αντί να κοπεί η λέξη */
+  @media (max-width:360px){
+    .chip{font-size:11.5px;padding:9px 7px;gap:6px}
+    .chip img{height:19px;max-width:19px}
+    .cem{font-size:19px}
+  }
   .chip img.egg{width:14px;object-fit:fill}
   .lico img.egg{width:16px;object-fit:fill}
   .cem{font-size:21px;line-height:1;display:inline-block}
@@ -474,6 +565,34 @@
        font-variant-numeric:tabular-nums}
   .num.brk{color:#58b0c8}
   .opt.off .num{color:#4a5262}
+
+  /* ---------------- υπενθύμιση άφιξης ---------------- */
+  .opt .lbl small{display:block;color:#5d6575;font-size:11.5px;margin-top:2px;line-height:1.35}
+  .optnote{font-size:11.5px;color:#5d6575;margin:-3px 2px 9px;line-height:1.45}
+  .optnote[hidden]{display:none}
+  .optnote.warn{color:#c99a3a}
+  .optnote.tap{text-decoration:underline;text-underline-offset:2px}
+  #geoRow{flex-wrap:wrap}
+  #geoRow .lbl{flex:1 1 132px}
+  .geobtn{
+    flex:0 0 auto;position:relative;overflow:hidden;
+    background:#23314a;border:1px solid #3a557f;color:#dce9ff;
+    border-radius:9px;padding:10px 12px 12px;font-size:12.5px;font-weight:600;
+    min-width:134px;text-align:center;
+  }
+  .geobtn.armed{background:#7a2030;border-color:#c04358;color:#ffd9de}
+  .geobtn .fill{
+    position:absolute;left:0;bottom:0;height:4px;width:100%;border-radius:0 2px 2px 0;
+    background:#ff7183;box-shadow:0 0 7px rgba(255,113,131,.8);
+    transform:scaleX(0);transform-origin:left;pointer-events:none;
+  }
+  .geobtn.ico{
+    min-width:0;width:58px;padding:8px 0 10px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .geobtn.ico .lab{display:flex}
+  .geobtn img{width:22px;height:27px;display:block;pointer-events:none}
+  .opt.off .geobtn{opacity:.42}
 
   .sw{
     width:48px;height:27px;border-radius:14px;flex:none;padding:0;position:relative;
@@ -660,11 +779,43 @@
   </div>
 </div>
 
+<div class="sheet" id="wksheet" hidden>
+  <div class="sheetbox">
+
+    <div class="sheethead"><span>Αλλαγή προγράμματος</span></div>
+
+    <div class="wkpat" id="wkPat"></div>
+    <p class="wkwhy">Άλλαξες τις μέρες που δουλεύεις και έχεις ήδη δηλωμένες άδειες.
+       Οι μέρες τους ξαναμετριούνται.</p>
+
+    <div id="wkChoice">
+      <div class="sec">ΑΠΟ ΠΟΤΕ ΙΣΧΥΕΙ</div>
+      <div class="opt avrow wkopt" id="wkRowToday">
+        <span class="lbl">Μόνο από εδώ και μπρος<i>Οι άδειες πριν από σήμερα μένουν όπως μετρήθηκαν</i></span>
+        <button class="rad" id="radToday" aria-label="Μόνο από εδώ και μπρος"></button>
+      </div>
+      <div class="opt avrow wkopt" id="wkRowAlways">
+        <span class="lbl">Και στις παλιές άδειες<i>Ξαναμετριούνται όλες, σαν να ίσχυε από πάντα</i></span>
+        <button class="rad" id="radAlways" aria-label="Και στις παλιές άδειες"></button>
+      </div>
+    </div>
+
+    <div class="sec" id="wkDiffCap">ΤΙ ΑΛΛΑΖΕΙ</div>
+    <div class="wkdiff" id="wkDiff"></div>
+
+    <div class="iconbtns">
+      <button class="ok" id="wkSave" aria-label="Αποθήκευση"><img src="save.png" alt=""></button>
+      <button class="no" id="wkCancel" aria-label="Ακύρωση"><img src="cancel.png" alt=""></button>
+    </div>
+
+  </div>
+</div>
+
 <div class="sheet" id="setsheet" hidden>
   <div class="sheetbox">
 
     <div class="sheethead">
-      <img src="settings.png" alt="" style="width:36px;height:36px;position:relative;top:2px">
+      <img src="settings.png" alt="" style="width:38px;height:35px;position:relative;top:1px">
       <span>Ρυθμίσεις</span>
       <button class="xbtn" id="setClose" aria-label="Κλείσιμο">✕</button>
     </div>
@@ -676,6 +827,7 @@
       <span class="num" id="shNum">8:30</span>
       <button class="step" id="shUp">+</button>
     </div>
+    <div class="opt wkrow"><div class="wkdots" id="wkDots"></div></div>
     <div class="opt">
       <span class="lbl">Ειδοποίηση πριν το τέλος</span>
       <button class="sw" id="swPre" aria-label="Ειδοποίηση πριν το τέλος"><i></i></button>
@@ -726,6 +878,15 @@
       <button class="sw" id="sw2J" aria-label="2 Ιανουαρίου"><i></i></button>
     </div>
 
+    <div class="sec secrow">
+      <span>ΥΠΕΝΘΥΜΙΣΗ ΑΦΙΞΗΣ</span>
+      <button class="sw" id="swGeo" aria-label="Υπενθύμιση άφιξης"><i></i></button>
+    </div>
+    <div class="optnote" id="geoWhy" hidden></div>
+    <div class="opt" id="geoRow">
+      <span class="lbl">Το γραφείο μου<small id="geoSub">Δεν έχει οριστεί ακόμα</small></span>
+      <button class="geobtn" id="geoBtn"><span class="lab">Είμαι εδώ τώρα</span><i class="fill"></i></button>
+    </div>
     <div class="logobox">
       <div class="prev"><img id="logoPrev" src="brand.png" alt=""></div>
       <div class="logorow">
@@ -760,6 +921,7 @@
         <div class="tot"><span class="k">Σύνολο</span><span class="v" id="totAll">0</span></div>
         <div class="tot rest"><span class="k">Υπόλοιπο</span><span class="v" id="totRest">0</span></div>
       </div>
+      <div class="heldline" id="heldNote" hidden></div>
       <div class="sheetbtns">
         <button class="main" id="btnAddLeave"><img src="newleave.png" alt="">Νέα άδεια</button>
         <button class="entbtn" id="btnEnt" aria-label="Δικαιούμενες"><img src="remaining.png" alt=""></button>
@@ -853,7 +1015,7 @@
   </div>
   <button class="brkbtn" id="btnBreak" aria-label="Διάλειμμα"><img src="food.png" alt=""></button>
 
-  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v3.5.0</span></div>
+  <div class="ver" id="ver"><span class="tagico">🏷️</span><span>v4.0.0</span></div>
 
   <div class="pop" id="pop" hidden>
     <div class="pop-in">
@@ -884,7 +1046,8 @@
   var PRE10  = false;                // προειδοποίηση 10' πριν το σχόλασμα
   var PRESEC = 10 * 60;             // πόσο πριν, από τις ρυθμίσεις
   var SET    = { shift: SHIFT, brk: BREAK, brkOn: true, pre10: false, preMin: 10,
-                 hKD: true, hMP: true, hAP: true, h2J: false, avatar: 'man' };
+                 hKD: true, hMP: true, hAP: true, h2J: false, avatar: 'man',
+                 geoOn: false };
   var KEY    = 'work-shift';
   var DAYS   = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
 
@@ -1018,6 +1181,7 @@
            len: SHIFT, brkLen: BREAK, popBrk: 0,
            popPre: over ? 2 : 0, popEnd: over ? 2 : 0 };
     flagSet('notified_1', ''); flagSet('notified_2', ''); flagSet('notified_3', '');
+    flagSet('geoStarted', st.date);   /* σήμερα δεν χρειάζεσαι υπενθύμιση */
     save();
     cancel(1); cancel(2); cancel(3);
     if (!over) {
@@ -1044,6 +1208,7 @@
   function doReset() {
     st = { date: null, start: null, brk: null, popBrk: 0, popPre: 0, popEnd: 0 };
     flagSet('notified_1', ''); flagSet('notified_2', ''); flagSet('notified_3', '');
+    flagSet('geoStarted', '');        /* σβήνει η βάρδια, ξαναπαίζει η υπενθύμιση */
     save();
     cancel(1); cancel(2); cancel(3);
     pop.hidden = true;
@@ -1093,12 +1258,15 @@
       if (typeof raw.hAP  === 'boolean')  SET.hAP  = raw.hAP;
       if (typeof raw.h2J  === 'boolean')  SET.h2J  = raw.h2J;
       if (raw.avatar === 'man' || raw.avatar === 'woman') SET.avatar = raw.avatar;
+      if (typeof raw.geoOn === 'boolean') SET.geoOn = raw.geoOn;
     } catch (e) {}
     applySettings();
   }
   function saveSettings() {
     flagSet('settings', JSON.stringify(SET));
     applySettings();
+    geoPushFlags();
+    geoPushDays();          /* οι διακόπτες των αργιών αλλάζουν τις εργάσιμες */
   }
   function applySettings() {
     SHIFT  = SET.shift;
@@ -1121,16 +1289,154 @@
   function saveLeaveData() {
     flagSet('leaves', JSON.stringify(leaves));
     flagSet('entitle', JSON.stringify(entitle));
+    geoPushDays();
+  }
+
+  /* ------------------- υπενθύμιση άφιξης -------------------
+     Ο native κώδικας δεν ξέρει πρόγραμμα, αργίες και άδειες, και δεν πρέπει
+     να τα ξαναϋπολογίσει: θα γίνονταν δύο αλήθειες που ξεφεύγουν η μία από
+     την άλλη. Του αφήνουμε εδώ έτοιμη τη λίστα με τις επόμενες εργάσιμες,
+     και εκείνος κοιτάει απλώς αν η σημερινή είναι μέσα. */
+  var GEO_TEXT = '👀📍 Έφτασες! Έναρξη βάρδιας 💼⏰';
+  var GEO_FROM = 5 * 60, GEO_TO = 12 * 60;   // 05:00 - 12:00, κλειδωμένο
+  var GEO_RAD   = 500;                       // μέτρα, κλειδωμένο
+  var GEO_AHEAD = 60;                        // πόσες εργάσιμες μπροστά
+
+  function geoPushDays() {
+    var out = [], d = new Date(), guard = 0;
+    d.setHours(12, 0, 0, 0);
+    while (out.length < GEO_AHEAD && guard++ < 500) {
+      var key = ymd(d);
+      if (isWorkday(d) && !leaveOn(key)) out.push(key);
+      d.setDate(d.getDate() + 1);
+    }
+    flagSet('geoDays', out.join(','));
+  }
+
+  function geoPushFlags() {
+    flagSet('geoOn',   SET.geoOn ? '1' : '');
+    flagSet('geoRad',  String(GEO_RAD));
+    flagSet('geoText', GEO_TEXT);
+    flagSet('geoFrom', String(GEO_FROM));
+    flagSet('geoTo',   String(GEO_TO));
+    if (A && A.geoApply) { try { A.geoApply(); } catch (e) {} }
   }
 
   function dparse(iso) { var a = iso.split('-'); return new Date(+a[0], +a[1] - 1, +a[2]); }
   function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
 
+  /* ------------------- πρόγραμμα εργασίας -------------------
+     Λίστα περιόδων, ταξινομημένη. Όποιος δεν το άλλαξε ποτέ έχει μία
+     εγγραφή και δεν βλέπει πουθενά ότι υπάρχει μηχανισμός από κάτω.
+     days: αριθμοί getDay() - 0 Κυριακή, 1 Δευτέρα … 6 Σάββατο.
+     ----------------------------------------------------------- */
+  var WEEKDEF = [1, 2, 3, 4, 5];
+  var WEEK    = [{ from: '2000-01-01', days: WEEKDEF.slice() }];
+
+  function weekOn(d) {
+    var key = ymd(d), days = WEEK[0].days;
+    for (var i = 0; i < WEEK.length; i++) if (key >= WEEK[i].from) days = WEEK[i].days;
+    return days;
+  }
+
+  /* η μία ερώτηση που ρωτάνε όλα: δουλεύει αυτή τη μέρα; */
+  function isWorkday(d) {
+    if (hol(ymd(d))) return false;
+    return weekOn(d).indexOf(d.getDay()) >= 0;
+  }
+
+  var WKORDER = [1, 2, 3, 4, 5, 6, 0];
+  var WKCHAR  = ['Δ', 'Τ', 'Τ', 'Π', 'Π', 'Σ', 'Κ'];
+  function weekPat(days) {
+    var out = '';
+    for (var i = 0; i < 7; i++) out += days.indexOf(WKORDER[i]) >= 0 ? WKCHAR[i] : '·';
+    return out;
+  }
+
+  /* ημερολόγιο = μέρα που δεν δουλεύεις, βέλος = από-σε */
+  var SVG_CAL =
+    '<svg viewBox="0 0 24 24" aria-hidden="true">'
+    + '<rect x="5.4" y="0.8" width="2.5" height="4.8" rx="1.25" fill="#f5c518"/>'
+    + '<rect x="16.1" y="0.8" width="2.5" height="4.8" rx="1.25" fill="#f5c518"/>'
+    + '<path d="M1.6 8.1a4 4 0 0 1 4-4h12.8a4 4 0 0 1 4 4v0.7H1.6z" fill="#3fdfd4"/>'
+    + '<path d="M1.6 9.9h20.8v9.5a4 4 0 0 1-4 4H5.6a4 4 0 0 1-4-4z" fill="#efefef"/>'
+    + '<rect x="1.6" y="4.1" width="20.8" height="19.3" rx="4" fill="none"'
+    + ' stroke="#1b1b1b" stroke-width="2.1"/>'
+    + '<path d="M1.6 9.9h20.8" stroke="#1b1b1b" stroke-width="2.1"/>'
+    + '</svg>';
+  var SVG_ARW =
+    '<svg class="arw" viewBox="0 0 24 24" aria-hidden="true">'
+    + '<rect width="24" height="24" rx="4.6" fill="#fbbf3c"/>'
+    + '<path d="M5.9 5.1a.9.9 0 0 1 1.4-.75l9 6.9a.9.9 0 0 1 0 1.5l-9 6.9'
+    + 'a.9.9 0 0 1-1.4-.75z" fill="#fff"/>'
+    + '<rect x="16.3" y="5.9" width="2.4" height="12.2" rx="1.1" fill="#fff"/>'
+    + '</svg>';
+
+  function weekPatHtml(days) {
+    var out = '';
+    for (var i = 0; i < 7; i++) {
+      out += days.indexOf(WKORDER[i]) >= 0
+        ? '<span>' + WKCHAR[i] + '</span>'
+        : '<span>' + SVG_CAL + '</span>';
+    }
+    return out;
+  }
+  function diffRow(label, a, b, big) {
+    return '<div class="l' + (big ? ' big' : '') + '"><span>' + label + '</span>'
+         + '<u>' + a + '</u>' + SVG_ARW + '<u>' + b + '</u></div>';
+  }
+  function sameWeek(a, b) {
+    return a.slice().sort().join() === b.slice().sort().join();
+  }
+
+  function loadWeek() {
+    var ok = null;
+    try {
+      var raw = JSON.parse(flagGet('week') || 'null');
+      if (raw && raw.length && raw[0] && raw[0].days && raw[0].days.length) ok = raw;
+    } catch (e) {}
+    WEEK = ok || [{ from: '2000-01-01', days: WEEKDEF.slice() }];
+  }
+  function saveWeek() { flagSet('week', JSON.stringify(WEEK)); geoPushDays(); }
+
+  /* η αλλαγή ισχύει από σήμερα - καμία αναδρομική ημερομηνία.
+     Το «ίσχυε πάντα» είναι ρητή επιλογή και ξαναγράφει την υπάρχουσα. */
+  function applyWeek(days, mode) {
+    var key = ymd(new Date());
+    if (mode === 'always') {
+      WEEK = [{ from: WEEK[0].from, days: days.slice() }];
+    } else {
+      var out = [];
+      for (var i = 0; i < WEEK.length; i++) if (WEEK[i].from < key) out.push(WEEK[i]);
+      if (!out.length) out.push({ from: WEEK[0].from, days: WEEK[0].days.slice() });
+      out.push({ from: key, days: days.slice() });
+      WEEK = out;
+    }
+    saveWeek();
+  }
+
+  /* δοκιμάζει ένα πρόγραμμα χωρίς να το σώσει, για την οθόνη επιβεβαίωσης */
+  function withWeek(days, mode, fn) {
+    var keep = WEEK, out;
+    var key = ymd(new Date());
+    if (mode === 'always') WEEK = [{ from: WEEK[0].from, days: days.slice() }];
+    else {
+      var tmp = [];
+      for (var i = 0; i < keep.length; i++) if (keep[i].from < key) tmp.push(keep[i]);
+      if (!tmp.length) tmp.push({ from: keep[0].from, days: keep[0].days.slice() });
+      tmp.push({ from: key, days: days.slice() });
+      WEEK = tmp;
+    }
+    try { out = fn(); } finally { WEEK = keep; }
+    return out;
+  }
+
+
   /* εργάσιμες: χωρίς Σαββατοκύριακα, χωρίς αργίες */
   function workDays(fromIso, toIso) {
     var d = dparse(fromIso), end = dparse(toIso), n = 0, guard = 0;
     while (d <= end && guard++ < 800) {
-      if (!isWeekend(d) && !hol(ymd(d))) n++;
+      if (isWorkday(d)) n++;
       d.setDate(d.getDate() + 1);
     }
     return n;
@@ -1160,26 +1466,49 @@
     }
     return n;
   }
-  function carryFrom(y) {                      // ό,τι περίσσεψε στο τέλος της χρονιάς y
-    if (!entitle[y]) return 0;
-    var left = (entitle[y] - carryLost(y)) - usedIn(y);
-    return left > 0 ? left : 0;
-  }
+  /* ----- μεταφορά ημερών από χρονιά σε χρονιά -----
+     Οι περσινές είναι ΞΕΧΩΡΙΣΤΟ απόθεμα, επιπλέον του φετινού συνόλου, και
+     λήγουν στις 31/1. Άδεια μέσα στον Ιανουάριο τρώει πρώτα από αυτές, και
+     ό,τι δεν προλάβει να φαγωθεί εξαφανίζεται. */
+
   function carryAlive(y) {                     // ζουν ακόμα οι μεταφερόμενες του y;
     var t = new Date();
     return t.getFullYear() < y || (t.getFullYear() === y && t.getMonth() === 0);
   }
-  function carryLost(y) {                      // μεταφερόμενες που έληξαν αχρησιμοποίητες
+  function carryUsed(y) {                      // πόσες περσινές κάηκαν τον Ιανουάριο του y
+    var c = carryFrom(y - 1);
+    return c ? Math.min(c, usedJan(y)) : 0;
+  }
+  function carryLost(y) {                      // περσινές που έληξαν αχρησιμοποίητες
     var c = carryFrom(y - 1);
     if (!c || carryAlive(y)) return 0;
-    var burned = Math.min(c, usedJan(y));
-    return c - burned;
+    return c - carryUsed(y);
   }
+  function carryFrom(y) {                      // ό,τι περίσσεψε από το ΔΙΚΟ ΤΟΥ σύνολο του y
+    if (!entitle[y]) return 0;
+    var own = usedIn(y) - carryUsed(y);        // όσες χρεώθηκαν στο σύνολο του y
+    if (own < 0) own = 0;
+    var left = entitle[y] - own;
+    return left > 0 ? left : 0;
+  }
+
+  /* Μέρες του Ιανουαρίου της επόμενης χρονιάς που είναι ήδη κλεισμένες και θα
+     φάνε από τις μεταφερόμενες. Τις κόβουμε από το υπόλοιπο ΤΩΡΑ, αλλιώς η
+     οθόνη δείχνει ελεύθερες μέρες που στην πραγματικότητα έχεις δεσμεύσει. */
+  function reserved(y) {
+    if (new Date().getFullYear() !== y) return 0;
+    var c = carryFrom(y);
+    return c > 0 ? Math.min(c, usedJan(y + 1)) : 0;
+  }
+
   function totalsFor(y) {
     /* πριν δηλώσεις σύνολο για φέτος, διαθέσιμες είναι μόνο οι μεταφερόμενες */
-    var base  = entitle[y] || carryFrom(y - 1);
-    var avail = base - carryLost(y), used = usedIn(y);
-    return { used: used, rest: avail - used, carry: carryFrom(y - 1), lost: carryLost(y) };
+    var c     = carryFrom(y - 1);
+    var extra = carryAlive(y) ? c : carryUsed(y);
+    var avail = (entitle[y] || 0) + extra;
+    var used  = usedIn(y), held = reserved(y);
+    return { used: used, rest: avail - used - held,
+             carry: c, lost: carryLost(y), held: held };
   }
 
   function overlaps(fromIso, toIso) {
@@ -1291,7 +1620,7 @@
     playMood(w);
 
     var lv = leaveOn(key);
-    if (lv || holi) {
+    if (lv || holi || !isWorkday(d)) {
       /* ούτε αίματα ούτε δάκρυα σε μέρα που δεν δουλεύεις */
       elDay.className = 'day d-off';
       if (fxStop) { fxStop(); fxStop = null; }
@@ -1300,7 +1629,7 @@
 
     if (lv) celebrate(ltype(lv.type).kind);
     else if (holi) celebrate(holi);
-    else if (w === 0 || w === 6) showWeekend();
+    else if (!isWorkday(d)) showWeekend();
     else holiBox.hidden = true;
   }
 
@@ -1352,7 +1681,7 @@
         ver.lastChild.textContent = ok ? 'armed · ' + via : 'save failed';
         setTimeout(function () {
           ver.classList.remove('armed', 'failed');
-          ver.lastChild.textContent = 'v3.5.0';
+          ver.lastChild.textContent = 'v4.0.0';
         }, 2500);
       }, 1500);
     }
@@ -1773,7 +2102,7 @@
     rColon.classList.toggle('off', running && d.getSeconds() % 2 === 1);
 
     /* μέρα ρεπό: τίποτα δεν πατιέται, ακόμα κι αν παραμερίστηκε το γραφικό */
-    var offDay = !!leaveOn(ymd(d)) || !!hol(ymd(d)) || d.getDay() === 0 || d.getDay() === 6;
+    var offDay = !!leaveOn(ymd(d)) || !isWorkday(d);
 
     /* μηνύματα μέσα στην εφαρμογή, όταν είναι ανοιχτή τη στιγμή που λήγει κάτι */
     if (!document.hidden) {
@@ -2023,6 +2352,7 @@
     sw('swBrk', D.brkOn); sw('swPre', D.pre10);
     sw('swKD', D.hKD); sw('swMP', D.hMP); sw('swAP', D.hAP); sw('sw2J', D.h2J);
     rad('radMan', D.avatar !== 'woman'); rad('radWoman', D.avatar === 'woman');
+    paintWeekDots(D.week || weekOn(new Date()), locked);
     document.getElementById('brkRow').classList.toggle('off', !D.brkOn);
     document.getElementById('preRow').classList.toggle('off', !D.pre10);
 
@@ -2034,6 +2364,7 @@
     document.getElementById('prDown').disabled = locked || !D.pre10;
     document.getElementById('prUp').disabled   = locked || !D.pre10;
     document.getElementById('setLock').hidden  = !locked;
+    geoPaint();
   }
   function sw(id, on) { document.getElementById(id).classList.toggle('on', !!on); }
   function rad(id, on) { document.getElementById(id).classList.toggle('on', !!on); }
@@ -2074,8 +2405,118 @@
   repeatOn(document.getElementById('prDown'), function () { bumpPre(-1); });
   repeatOn(document.getElementById('prUp'),   function () { bumpPre(1); });
 
+  /* ---------------- μέρες που δουλεύω ---------------- */
+  var wkDots = document.getElementById('wkDots');
+  (function buildDots() {
+    for (var i = 0; i < 7; i++) {
+      (function (k) {
+        var b = document.createElement('button');
+        b.type = 'text';
+        b.textContent = WKCHAR[k];
+        b.setAttribute('aria-label',
+          ['Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο','Κυριακή'][k]);
+        b.onclick = function () {
+          if (b.disabled || !DRAFT) return;
+          var days = (DRAFT.week || weekOn(new Date())).slice();
+          var at = days.indexOf(WKORDER[k]);
+          if (at >= 0) {
+            if (days.length === 1) return;        // τουλάχιστον μία μέρα
+            days.splice(at, 1);
+          } else days.push(WKORDER[k]);
+          DRAFT.week = days;
+          renderSettings();
+        };
+        wkDots.appendChild(b);
+      })(i);
+    }
+  })();
+
+  function paintWeekDots(days, locked) {
+    for (var i = 0; i < 7; i++) {
+      var b = wkDots.children[i];
+      b.classList.toggle('on', days.indexOf(WKORDER[i]) >= 0);
+      b.disabled = !!locked;
+    }
+  }
+
+  /* ---------------- η οθόνη επιβεβαίωσης ---------------- */
+  var wkSheet = document.getElementById('wksheet');
+  var wkWant = null, wkMode = 'today';
+
+  /* πόσες μέρες πιάνει κάθε άδεια και τι υπόλοιπο μένει, με δοσμένο πρόγραμμα.
+     days κενό = όπως είναι τώρα. */
+  function wkCalc(days, mode) {
+    var y = new Date().getFullYear(), out;
+    function take() {
+      var a = [];
+      for (var i = 0; i < leaves.length; i++) a.push(workDays(leaves[i].from, leaves[i].to));
+      return { days: a, rest: totalsFor(y).rest };
+    }
+    if (!days) return take();
+    withWeek(days, mode, function () { out = take(); });
+    return out;
+  }
+  function wkEq(a, b) { return a.days.join() === b.days.join() && a.rest === b.rest; }
+
+  function wkPaint() {
+    document.getElementById('wkPat').innerHTML = weekPatHtml(wkWant);
+    rad('radToday',  wkMode === 'today');
+    rad('radAlways', wkMode === 'always');
+
+    var y = new Date().getFullYear();
+    var now = wkCalc(null);
+    var cToday = wkCalc(wkWant, 'today'), cAlways = wkCalc(wkWant, 'always');
+
+    /* οι δύο επιλογές διαφέρουν ΜΟΝΟ σε άδειες πριν από σήμερα.
+       Αν δίνουν το ίδιο, δεν υπάρχει τίποτα να διαλέξει - φεύγει η ερώτηση. */
+    var same = wkEq(cToday, cAlways);
+    if (same) wkMode = 'today';
+    var pick = wkMode === 'always' ? cAlways : cToday;
+    document.getElementById('wkChoice').hidden = same;
+    document.getElementById('wkDiffCap').textContent =
+      same ? 'ΤΙ ΑΛΛΑΖΕΙ' : 'ΜΕ ΑΥΤΗ ΤΗΝ ΕΠΙΛΟΓΗ';
+
+    var html = '';
+    for (var k = 0; k < leaves.length; k++) {
+      if (now.days[k] === pick.days[k]) continue;
+      html += diffRow(human(leaves[k].from, leaves[k].to), now.days[k], pick.days[k], false);
+    }
+    if (!html) html = '<div class="none">Καμία άδεια δεν αλλάζει.</div>';
+    html += diffRow('Υπόλοιπο ' + y, now.rest, pick.rest, true);
+    document.getElementById('wkDiff').innerHTML = html;
+  }
+
+  function openWk(days) {
+    wkWant = days.slice();
+    wkMode = 'today';
+    wkPaint();
+    wkSheet.hidden = false;
+  }
+
+  document.getElementById('wkRowToday').onclick  = function () { wkMode = 'today';  wkPaint(); };
+  document.getElementById('wkRowAlways').onclick = function () { wkMode = 'always'; wkPaint(); };
+  document.getElementById('wkCancel').onclick = function () { wkSheet.hidden = true; };
+  document.getElementById('wkSave').onclick = function () {
+    wkSheet.hidden = true;
+    commitSettings(wkWant, wkMode);
+  };
+
+  function commitSettings(days, mode) {
+    if (typeof DRAFT.logo === 'string') flagSet('logo', DRAFT.logo);
+    delete DRAFT.logo;
+    SET = DRAFT; DRAFT = null;
+    saveSettings();
+    if (days && !sameWeek(days, weekOn(new Date()))) applyWeek(days, mode || 'today');
+    applyLogo();
+    setSheet.hidden = true;
+    shownDay = null;
+    renderLeaves();
+    render();
+  }
+
   document.getElementById('btnGear').onclick = function () {
     DRAFT = JSON.parse(JSON.stringify(SET));
+    DRAFT.week = weekOn(new Date()).slice();
     renderSettings();
     setSheet.hidden = false;
   };
@@ -2089,12 +2530,17 @@
 
   document.getElementById('setSave').onclick = function () {
     if (!DRAFT) return;
-    if (typeof DRAFT.logo === 'string') flagSet('logo', DRAFT.logo);
-    delete DRAFT.logo;
-    SET = DRAFT; DRAFT = null;
-    saveSettings();
-    applyLogo();
-    setSheet.hidden = true;
+    var want = (DRAFT.week || weekOn(new Date())).slice();
+    /* Το παράθυρο βγαίνει μόνο αν το νέο πρόγραμμα όντως κουνάει κάτι -
+       μέρες άδειας ή υπόλοιπο. Αλλιώς δεν έχει τι να δείξει, και σώζει κατευθείαν. */
+    if (!sameWeek(want, weekOn(new Date())) && leaves.length) {
+      var now = wkCalc(null);
+      if (!wkEq(wkCalc(want, 'today'), now) || !wkEq(wkCalc(want, 'always'), now)) {
+        openWk(want);
+        return;
+      }
+    }
+    commitSettings(want, 'today');
   };
 
   function toggle(id, key) {
@@ -2106,6 +2552,139 @@
   }
   toggle('swBrk', 'brkOn'); toggle('swPre', 'pre10'); toggle('swKD', 'hKD');
   toggle('swMP', 'hMP'); toggle('swAP', 'hAP'); toggle('sw2J', 'h2J');
+  toggle('swGeo', 'geoOn');
+
+  /* ---------------- υπενθύμιση άφιξης: η οθόνη ----------------
+     Ο διακόπτης και η απόσταση περνούν από το DRAFT, όπως κάθε ρύθμιση.
+     Ο ορισμός του γραφείου όμως γίνεται αμέσως: παίρνει στίγμα τη στιγμή
+     που το πατάς, δεν έχει νόημα να περιμένει την Αποθήκευση. */
+  var geoRow  = document.getElementById('geoRow');
+  var geoSub  = document.getElementById('geoSub');
+  var geoBtn  = document.getElementById('geoBtn');
+  var geoWhy  = document.getElementById('geoWhy');
+  var geoFill = geoBtn.querySelector('.fill');
+  var geoArm  = 0, geoTick = null, geoBusy = false;
+
+  var geoLab = geoBtn.querySelector('.lab');
+
+  /* Με τοποθεσία ορισμένη το κουμπί γίνεται σκέτος κάδος, όπως το ♻️ της
+     κάρτας: κοκκινίζει και αδειάζει η γραμμή, χωρίς κείμενο να αλλάζει. */
+  function geoLabel() {
+    var has = geoHas();
+    geoBtn.classList.toggle('ico', has);
+    geoLab.innerHTML = has ? '<img src="trash.png" alt="">' : 'Είμαι εδώ τώρα';
+    geoBtn.setAttribute('aria-label', has ? 'Σβήσιμο τοποθεσίας' : 'Είμαι εδώ τώρα');
+  }
+
+  function geoHas()  { return !!flagGet('geoLat'); }
+  function geoPerm() {
+    if (A && A.geoPerm) { try { return A.geoPerm() || 'none'; } catch (e) {} }
+    return 'back';                      /* στον browser δεν υπάρχει το θέμα */
+  }
+
+  function geoStamp() {
+    var ms = parseInt(flagGet('geoAt'), 10);
+    if (!ms) return 'Δεν έχει οριστεί ακόμα';
+    var d = new Date(ms), acc = flagGet('geoAcc');
+    return 'Ορίστηκε ' + d.getDate() + '/' + (d.getMonth() + 1) + ', '
+         + two(d.getHours()) + ':' + two(d.getMinutes())
+         + (acc ? ', ακρίβεια ±' + acc + ' μ.' : '');
+  }
+
+  function geoPaint() {
+    var D = DRAFT || SET, on = !!D.geoOn, has = geoHas();
+    sw('swGeo', on);
+    geoRow.classList.toggle('off', !on);
+
+    if (geoBusy) {
+      geoSub.textContent = 'Παίρνω στίγμα…';
+    } else if (!geoArm) {
+      geoSub.textContent = geoStamp();
+      geoLabel();
+    }
+
+    /* η μία γραμμή που λέει τι λείπει - με σειρά προτεραιότητας */
+    var why = '', tap = false;
+    if (on) {
+      var pm = geoPerm();
+      if (pm === 'none') {
+        why = 'Λείπει η άδεια τοποθεσίας. Πάτα εδώ για να τη δώσεις.'; tap = true;
+      } else if (!has) {
+        why = 'Μην ξεχάσεις να δηλώσεις πού είναι το γραφείο σου';
+      } else if (pm === 'fore') {
+        why = 'Η τοποθεσία επιτρέπεται μόνο με ανοιχτή την εφαρμογή. '
+            + 'Πάτα εδώ και διάλεξε «Να επιτρέπεται πάντα».'; tap = true;
+      }
+    }
+    geoWhy.hidden = !why;
+    geoWhy.textContent = why;
+    geoWhy.classList.toggle('warn', !!why);
+    geoWhy.classList.toggle('tap', tap);
+  }
+
+  geoWhy.onclick = function () {
+    if (!this.classList.contains('tap')) return;
+    if (geoPerm() === 'none') { if (A && A.geoAsk) A.geoAsk(); }
+    else if (A && A.geoSettings) A.geoSettings();
+  };
+
+  /* Reset σε δύο πατήματα, με τη γραμμή να αδειάζει - ίδιο με το ♻️ της κάρτας */
+  function geoDisarm() {
+    geoArm = 0;
+    clearTimeout(geoTick);
+    geoBtn.classList.remove('armed');
+    geoFill.style.transition = 'none';
+    geoFill.style.transform  = 'scaleX(0)';
+    geoLabel();
+  }
+  function geoArmNow() {
+    geoArm = Date.now() + 4000;
+    geoBtn.classList.add('armed');
+    geoFill.style.transition = 'none';
+    geoFill.style.transform  = 'scaleX(1)';
+    void geoFill.offsetWidth;
+    geoFill.style.transition = 'transform 4s linear';
+    geoFill.style.transform  = 'scaleX(0)';
+    clearTimeout(geoTick);
+    geoTick = setTimeout(geoDisarm, 4000);
+  }
+
+  geoBtn.onclick = function () {
+    if (geoBusy) return;
+
+    if (!geoHas()) {                                  /* ορισμός */
+      if (geoPerm() === 'none') { if (A && A.geoAsk) A.geoAsk(); return; }
+      if (!A || !A.geoHere) return;                   /* στον browser δεν παίζει */
+      geoBusy = true;
+      geoPaint();
+      try { A.geoHere(); } catch (e) { geoBusy = false; geoPaint(); }
+      return;
+    }
+
+    if (geoArm && Date.now() < geoArm) {              /* επιβεβαίωση σβησίματος */
+      geoDisarm();
+      if (A && A.geoClear) { try { A.geoClear(); } catch (e) {} }
+      geoPaint();
+      return;
+    }
+    geoArmNow();
+  };
+
+  /* απαντήσεις από το Android */
+  window.__geoReady = function (what) {
+    geoBusy = false;
+    if (what === 'ok') geoPushFlags();
+    geoPaint();
+    if (what === 'fail') {
+      geoWhy.hidden = false;
+      geoWhy.classList.add('warn');
+      geoWhy.classList.remove('tap');
+      geoWhy.textContent = 'Δεν βρέθηκε στίγμα. Βγες για λίγο σε ανοιχτό χώρο και ξαναδοκίμασε.';
+    }
+  };
+  window.__geoPerm = function () {
+    if (!setSheet.hidden) geoPaint();
+  };
 
   /* avatar: όλη η γραμμή είναι πατητή, όχι μόνο το κουμπάκι */
   function pickAv(rowId, val) {
@@ -2188,6 +2767,15 @@
     totAllEl.textContent  = t.used;
     totRestEl.textContent = t.rest;
 
+    /* αλλιώς η οθόνη δείχνει «Σύνολο 0, Υπόλοιπο 3» και δεν εξηγεί πού πήγαν οι άλλες */
+    var heldEl = document.getElementById('heldNote');
+    heldEl.hidden = !t.held;
+    if (t.held) {
+      heldEl.innerHTML = '<b>' + t.held + '</b> '
+        + (t.held === 1 ? 'μέρα κρατήθηκε' : 'μέρες κρατήθηκαν')
+        + ' από το ' + y + '.';
+    }
+
     var restBox = totRestEl.parentNode;
     restBox.classList.toggle('over', t.rest < 0);
     if (t.rest < 0 && shakeRest) {
@@ -2211,16 +2799,30 @@
     }
 
     var sorted = leaves.slice().sort(function (a, b) { return a.from < b.from ? -1 : 1; });
+    /* η πρώτη άδεια που δεν έχει τελειώσει είναι η επόμενη·
+       όσες έκλεισαν ξεθωριάζουν, χωρίς να χάνουν το κράτημα */
+    var tday = ymd(new Date()), nextId = null;
+    for (var q = 0; q < sorted.length; q++) {
+      if (sorted[q].to >= tday) { nextId = sorted[q].id; break; }
+    }
+
     var html = '';
     for (var i = 0; i < sorted.length; i++) {
       var lv = sorted[i], tp = ltype(lv.type), d = workDays(lv.from, lv.to);
-      html += '<div class="lrow" data-full="' + humanFull(lv.from, lv.to) + '">'
+      var mark = (d === 0 ? ' zero' : '')
+               + (lv.to < tday ? ' past' : '')
+               + (lv.id === nextId ? ' next' : '');
+      html += '<div class="lrow' + mark + '" data-full="'
+            + humanFull(lv.from, lv.to) + '">'
             +   '<span class="lico" data-kind="' + esc(tp.name) + '"'
                 + ' style="background:' + tp.bg + ';color:' + tp.col + '">' + tp.icon + '</span>'
             +   '<span class="lmain">'
             +     '<span class="ldate">' + human(lv.from, lv.to) + '</span>'
             +     '<span class="lsep">🔵</span>'
-            +     '<span class="lsub" style="color:' + tp.col + '">' + d + (d === 1 ? ' ημέρα' : ' ημέρες') + '</span>'
+            +     (d === 0
+                      ? '<span class="lsub zero">δεν χρεώνεται</span>'
+                      : '<span class="lsub" style="color:' + tp.col + '">'
+                        + d + (d === 1 ? ' ημέρα' : ' ημέρες') + '</span>')
             +   '</span>'
             +   (lv.note
                   ? '<button class="lnote' + (noteArm === lv.id ? ' arm' : '') + '" data-id="' + lv.id
@@ -2350,7 +2952,7 @@
 
   function nextWorkday(d) {
     var x = new Date(d.getTime()), guard = 0;
-    while ((isWeekend(x) || hol(ymd(x))) && guard++ < 400) x.setDate(x.getDate() + 1);
+    while (!isWorkday(x) && guard++ < 400) x.setDate(x.getDate() + 1);
     return x;
   }
 
@@ -2368,6 +2970,10 @@
     var d = iso.split('-');
     return 'Η ' + (+d[2]) + '/' + (+d[1]) + ' είναι αργία.';
   }
+  function offWhy(iso) {
+    var d = iso.split('-');
+    return 'Η ' + (+d[2]) + '/' + (+d[1]) + ' δεν είναι εργάσιμη.';
+  }
   function checkForm() {
     stampLabels();
     var ok = true;
@@ -2375,22 +2981,26 @@
     fFrom.classList.remove('bad');
     fTo.classList.remove('bad');
 
-    if (!fFrom.value || !fTo.value) ok = false;
-    if (ok && isWeekend(dparse(fFrom.value))) { fFrom.classList.add('bad'); ok = false; }
-    if (ok && isWeekend(dparse(fTo.value)))   { fTo.classList.add('bad');   ok = false; }
-    if (ok && dparse(fTo.value) < dparse(fFrom.value)) { fTo.classList.add('bad'); ok = false; }
-
-    /* αργία δεν γίνεται άκρο της άδειας - ούτε μονοήμερη πάνω σε αργία.
-       Περνάει από το hol(), άρα ακολουθεί τους διακόπτες των ρυθμίσεων. */
-    if (ok) {
-      var badEl = hol(fFrom.value) ? fFrom : (hol(fTo.value) ? fTo : null);
-      if (badEl) {
-        badEl.classList.add('bad');
-        ok = false;
-        fErr.hidden = false;
-        fErr.textContent = holWhy(badEl.value);
-      }
+    /* Κάθε άκρο κρίνεται ΜΟΝΟ ΤΟΥ, χωρίς να περιμένει να συμπληρωθεί το άλλο:
+       αλλιώς διάλεγες ρεπό στο «Από» και η φόρμα σώπαινε μέχρι να αγγίξεις το «Έως».
+       Ο ίδιος κανόνας με την κάρτα - όλα περνάνε από την isWorkday. */
+    var why = '';
+    function badDay(el) {
+      if (!el.value || isWorkday(dparse(el.value))) return;
+      el.classList.add('bad');
+      ok = false;
+      if (!why) why = hol(el.value) ? holWhy(el.value) : offWhy(el.value);
     }
+    badDay(fFrom);
+    badDay(fTo);
+
+    if (fFrom.value && fTo.value && dparse(fTo.value) < dparse(fFrom.value)) {
+      fTo.classList.add('bad');
+      ok = false;
+    }
+    if (!fFrom.value || !fTo.value) ok = false;
+
+    if (why) { fErr.hidden = false; fErr.textContent = why; }
 
     var n = ok ? workDays(fFrom.value, fTo.value) : 0;
     fDays.textContent = n;
@@ -2424,12 +3034,12 @@
   document.getElementById('btnAddLeave').onclick = openForm;
   document.getElementById('fCancel').onclick = function () { renderLeaves(); pane('list'); };
   fFrom.onchange = function () {
-    /* το «Έως» ακολουθεί το «Από», ώστε ο επιλογέας να ανοίγει στον σωστό μήνα */
-    if (fFrom.value && !isWeekend(dparse(fFrom.value))) {
+    /* το «Έως» πηγαίνει ΠΑΝΤΑ στην επόμενη εργάσιμη - ακόμα κι αν το «Από»
+       είναι ρεπό ή αργία, ώστε να μη μένει κολλημένο σε παλιά ημερομηνία */
+    if (fFrom.value) {
       var nx = dparse(fFrom.value);
       nx.setDate(nx.getDate() + 1);
-      nx = nextWorkday(nx);
-      if (!fTo.value || dparse(fTo.value) <= dparse(fFrom.value)) fTo.value = ymd(nx);
+      fTo.value = ymd(nextWorkday(nx));
     }
     checkForm();
   };
@@ -2585,7 +3195,10 @@
   };
 
   loadLeaveData();
+  loadWeek();
   loadSettings();
+  geoPushFlags();
+  geoPushDays();
   applyLogo();
   st = load();
   if (st.start && now() >= st.start + (st.len || SHIFT)) celebrated = false;
@@ -2607,7 +3220,7 @@
       var lvt = leaveOn(ymd(t));
       if (lvt) celebrate(ltype(lvt.type).kind);
       else if (hol(ymd(t))) celebrate(hol(ymd(t)));
-      else if (t.getDay() === 0 || t.getDay() === 6) showWeekend();
+      else if (!isWorkday(t)) showWeekend();
       else if (flagGet('holitest') === '1') { flagSet('holitest', ''); showHoliday(); }
       render();
     }

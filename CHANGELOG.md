@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here. Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## 🏷️ [v4.0.0] - 31/10/26 &nbsp;&nbsp;&nbsp;![Major Release](https://img.shields.io/badge/Major-Release-22c55e?labelColor=166534)
+
+### ✨ Added
+- 🗓️ **Your own working week.** Settings now has seven dots under the shift length - Δ Τ Τ Π Π Σ Κ. Tap the days you work. That is the whole setup. Work Saturdays and the card counts your shift on a Saturday like any other day; take Monday off and Monday behaves the way Sunday used to, with its own artwork and the buttons locked. The weekend stops being special. Your days are.
+- 🧮 **Leave counts itself.** You never work out how many days a leave costs. Put in the first and the last day and the app charges only the days you actually work, skipping your days off and any public holiday inside the range. Change your working days later and everything is counted again on the spot - what each leave took, the total for the year, what carries into the next one. There is nothing to recalculate and nothing to correct by hand.
+- 📍 **It reminds you when you arrive.** You tell it where the office is once: sit at your desk and press «Είμαι εδώ τώρα». The phone takes it from there. As you come near, a notification is waiting so you do not sit down, open your laptop and forget to press Έναρξη. It already knows your schedule, so it stays quiet on a day off, on a public holiday and on a day you are on leave, it never speaks twice in the same day, and it says nothing at all once your shift has started. It only works between 05:00 and 12:00, so driving past in the evening costs you nothing. The office stays inside the phone and goes nowhere else.
+- 🔄 **Changing your days shows you what happens first.** If you already have leave on record, saving a different week opens a window before anything is written: which leaves change, from how many days to how many, and where the year's balance ends up. It also asks whether the new week counts from today on, or over the leave you have already taken - the second one only matters if you had the week wrong from the start. With no leave on record it just saves, without asking.
+
+### 🛠️ Changed
+- 📅 The leave form follows your week as well. It refuses a day you do not work and says which one, and the second date always jumps to the next day you do work, so a range can no longer stay stuck on an old date.
+- 🍂 Leave you have already taken fades in the list, and the one coming next is picked out with a soft outline. The list used to read flat, with the days you took in March looking exactly like the ones next week. A faded row is not switched off: holding it for its note works the same as any other.
+- 🧾 **Days carried over are now extra, not included.** Declare 25 days for the new year and, until the 31st of January, you have those 25 plus whatever came over from the year before. Leave you take in January is charged to the old days first, so what you spend out of that pot never touches the new year's total. On the 1st of February whatever is left of the old days is gone and your 25 are still whole.
+- 🚫 A leave that stops costing days, because the day it sat on became a day off, keeps its place in the list marked "δεν χρεώνεται". It is never deleted on its own.
+
+### 🛡️ Fixed
+- 📆 The balance no longer hides days you have already committed. Book leave in January and this year's balance drops the moment you save it, with a line underneath saying how many are being held. It used to sit unchanged until New Year, which left you reading a number you could not actually spend.
+- 🔢 A date field could show its date twice while being edited, once in the Greek order and once in the browser's own, with the day and the month swapped.
+
 ## 🏷️ [v3.5.0] - 25/10/26 &nbsp;&nbsp;&nbsp;![Release](https://img.shields.io/badge/Release-22c55e)
 
 ### ✨ Added

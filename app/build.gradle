@@ -31,3 +31,10 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 }
+
+dependencies {
+    /* Geofencing: το λειτουργικό κρατάει τον κύκλο γύρω από το γραφείο και
+       ξυπνάει την εφαρμογή μόνο όταν τον περάσεις. Τρέχει μέσα στη συσκευή,
+       δεν φεύγει καμία κλήση προς το internet και δεν χρειάζεται API key. */
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
+}
