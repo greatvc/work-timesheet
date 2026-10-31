@@ -256,13 +256,14 @@ public class MainActivity extends Activity {
                         .addOnSuccessListener(new OnSuccessListener<Location>() {
                             public void onSuccess(Location loc) {
                                 if (loc == null) { toJs("fail"); return; }
+                                /* Το στίγμα μπαίνει σε προσωρινό κλειδί, όπως και το λογότυπο.
+                                   Γίνεται οριστικό μόνο με την Αποθήκευση - αν πατήσεις
+                                   Ακύρωση, η οθόνη δεν αφήνει τίποτα πίσω της. */
                                 getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                                    .putString("flag_geoLat", String.valueOf(loc.getLatitude()))
-                                    .putString("flag_geoLng", String.valueOf(loc.getLongitude()))
-                                    .putString("flag_geoAcc", String.valueOf(Math.round(loc.getAccuracy())))
-                                    .putString("flag_geoAt",  String.valueOf(System.currentTimeMillis()))
+                                    .putString("flag_geo_new",
+                                        loc.getLatitude() + "|" + loc.getLongitude() + "|"
+                                      + Math.round(loc.getAccuracy()) + "|" + System.currentTimeMillis())
                                     .commit();
-                                applyGeofence(MainActivity.this);
                                 toJs("ok");
                             }
                         })

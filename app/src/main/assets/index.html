@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Work TimeSheet · Android build · v4.0.0 · Last update: 31/10/2026 11:50 (ώρα Ελλάδας) -->
+<!-- Work TimeSheet · Android build · v4.0.0 · Last update: 31/10/2026 13:05 (ώρα Ελλάδας) -->
 <html lang="el">
 <head>
 <meta charset="utf-8">
@@ -321,10 +321,13 @@
   #wksheet{z-index:70}
 
   /* μέρες που δουλεύω */
-  .wkrow{justify-content:center}
-  .wkdots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+  /* Επτά κουκκίδες σε μία σειρά. Με 34px και κενό 6 χρειάζονταν ΑΚΡΙΒΩΣ όσο
+     υπήρχε, οπότε η παραμικρή στρογγυλοποίηση στη συσκευή έριχνε το Κ από
+     κάτω. Τώρα περισσεύουν 20 pixel. */
+  .wkrow{justify-content:center;padding-left:8px;padding-right:8px}
+  .wkdots{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
   .wkdots button{
-    width:34px;height:34px;border-radius:50%;padding:0;flex:none;
+    width:32px;height:32px;border-radius:50%;padding:0;flex:none;
     font-size:14px;font-weight:700;
     background:#1b2130;border:1px solid #2c3446;color:#5d6575;
   }
@@ -333,6 +336,10 @@
   .wkdots button:disabled{opacity:.4}
   /* το μοτίβο: γράμμα για μέρα που δουλεύεις, ημερολόγιο για ρεπό.
      Ίδιο πλάτος κελιού και στα δύο, ώστε να πέφτουν σε ευθεία. */
+  @media (max-width:359px){
+    .wkdots{gap:4px}
+    .wkdots button{width:29px;height:29px;font-size:13px}
+  }
   .wkpat{display:flex;gap:7px;justify-content:center;align-items:center;margin-bottom:12px}
   .wkpat span{
     width:26px;height:26px;flex:none;
@@ -816,7 +823,6 @@
     <div class="sheethead">
       <img src="settings.png" alt="" style="width:38px;height:35px;position:relative;top:1px">
       <span>Ρυθμίσεις</span>
-      <button class="xbtn" id="setClose" aria-label="Κλείσιμο">✕</button>
     </div>
 
     <div class="sec secrow">
@@ -2504,6 +2510,17 @@
   function commitSettings(days, mode) {
     if (typeof DRAFT.logo === 'string') flagSet('logo', DRAFT.logo);
     delete DRAFT.logo;
+    if (DRAFT.geo !== undefined) {
+      if (DRAFT.geo) {
+        flagSet('geoLat', DRAFT.geo.lat);  flagSet('geoLng', DRAFT.geo.lng);
+        flagSet('geoAcc', DRAFT.geo.acc);  flagSet('geoAt', String(DRAFT.geo.at));
+        flagSet('geoFired', '');           /* νέο γραφείο, καθαρή μέρα */
+      } else if (A && A.geoClear) {
+        try { A.geoClear(); } catch (e) {}
+      }
+      flagSet('geo_new', '');
+    }
+    delete DRAFT.geo;
     SET = DRAFT; DRAFT = null;
     saveSettings();
     if (days && !sameWeek(days, weekOn(new Date()))) applyWeek(days, mode || 'today');
@@ -2525,7 +2542,6 @@
     applyLogo();                                  // γυρίζει και η εικόνα όπως ήταν
     setSheet.hidden = true;
   }
-  document.getElementById('setClose').onclick = setCancel;
   document.getElementById('setCancel').onclick = setCancel;
 
   document.getElementById('setSave').onclick = function () {
@@ -2576,14 +2592,23 @@
     geoBtn.setAttribute('aria-label', has ? 'Σβήσιμο τοποθεσίας' : 'Είμαι εδώ τώρα');
   }
 
-  function geoHas()  { return !!flagGet('geoLat'); }
+  /* DRAFT.geo: undefined = αμετάβλητο, null = σβήστηκε, αντικείμενο = νέο στίγμα.
+     Ίδιο μοτίβο με το λογότυπο - τίποτα δεν γράφεται πριν την Αποθήκευση. */
+  function geoDraft() { return DRAFT && DRAFT.geo !== undefined ? DRAFT.geo : undefined; }
+  function geoHas() {
+    var d = geoDraft();
+    if (d !== undefined) return !!d;
+    return !!flagGet('geoLat');
+  }
   function geoPerm() {
     if (A && A.geoPerm) { try { return A.geoPerm() || 'none'; } catch (e) {} }
     return 'back';                      /* στον browser δεν υπάρχει το θέμα */
   }
 
   function geoStamp() {
-    var ms = parseInt(flagGet('geoAt'), 10);
+    var g = geoDraft(), ms;
+    if (g !== undefined) ms = g ? g.at : 0;
+    else ms = parseInt(flagGet('geoAt'), 10);
     if (!ms) return 'Δεν έχει οριστεί ακόμα';
     var d = new Date(ms);
     return 'Ορίστηκε ' + d.getDate() + '/' + (d.getMonth() + 1);
@@ -2662,7 +2687,7 @@
 
     if (geoArm && Date.now() < geoArm) {              /* επιβεβαίωση σβησίματος */
       geoDisarm();
-      if (A && A.geoClear) { try { A.geoClear(); } catch (e) {} }
+      if (DRAFT) DRAFT.geo = null;
       geoPaint();
       return;
     }
@@ -2672,7 +2697,12 @@
   /* απαντήσεις από το Android */
   window.__geoReady = function (what) {
     geoBusy = false;
-    if (what === 'ok') geoPushFlags();
+    if (what === 'ok' && DRAFT) {
+      var raw = flagGet('geo_new').split('|');
+      if (raw.length === 4) {
+        DRAFT.geo = { lat: raw[0], lng: raw[1], acc: raw[2], at: parseInt(raw[3], 10) };
+      }
+    }
     geoPaint();
     if (what === 'fail') {
       geoWhy.hidden = false;
