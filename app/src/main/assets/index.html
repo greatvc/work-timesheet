@@ -568,6 +568,7 @@
 
   /* ---------------- υπενθύμιση άφιξης ---------------- */
   .opt .lbl small{display:block;color:#5d6575;font-size:11.5px;margin-top:2px;line-height:1.35}
+  .opt .lbl small.warn{color:#c99a3a}
   .optnote{font-size:11.5px;color:#5d6575;margin:-3px 2px 9px;line-height:1.45}
   .optnote[hidden]{display:none}
   .optnote.warn{color:#c99a3a}
@@ -577,8 +578,9 @@
   .geobtn{
     flex:0 0 auto;position:relative;overflow:hidden;
     background:#23314a;border:1px solid #3a557f;color:#dce9ff;
-    border-radius:9px;padding:10px 12px 12px;font-size:12.5px;font-weight:600;
+    border-radius:9px;padding:11px 12px;font-size:12.5px;font-weight:600;
     min-width:134px;text-align:center;
+    display:flex;align-items:center;justify-content:center;
   }
   .geobtn.armed{background:#7a2030;border-color:#c04358;color:#ffd9de}
   .geobtn .fill{
@@ -586,10 +588,7 @@
     background:#ff7183;box-shadow:0 0 7px rgba(255,113,131,.8);
     transform:scaleX(0);transform-origin:left;pointer-events:none;
   }
-  .geobtn.ico{
-    min-width:0;width:58px;padding:8px 0 10px;
-    display:flex;align-items:center;justify-content:center;
-  }
+  .geobtn.ico{min-width:0;width:58px;padding:9px 0}
   .geobtn.ico .lab{display:flex}
   .geobtn img{width:22px;height:27px;display:block;pointer-events:none}
   .opt.off .geobtn{opacity:.42}
@@ -820,6 +819,16 @@
       <button class="xbtn" id="setClose" aria-label="Κλείσιμο">✕</button>
     </div>
 
+    <div class="sec secrow">
+      <span>ΥΠΕΝΘΥΜΙΣΗ ΑΦΙΞΗΣ</span>
+      <button class="sw" id="swGeo" aria-label="Υπενθύμιση άφιξης"><i></i></button>
+    </div>
+    <div class="optnote" id="geoWhy" hidden></div>
+    <div class="opt" id="geoRow">
+      <span class="lbl">Το γραφείο μου<small id="geoSub">Δεν έχει οριστεί ακόμα</small></span>
+      <button class="geobtn" id="geoBtn"><span class="lab">Είμαι εδώ τώρα</span><i class="fill"></i></button>
+    </div>
+
     <div class="sec">ΒΑΡΔΙΑ</div>
     <div class="opt">
       <span class="lbl">Διάρκεια</span>
@@ -878,15 +887,6 @@
       <button class="sw" id="sw2J" aria-label="2 Ιανουαρίου"><i></i></button>
     </div>
 
-    <div class="sec secrow">
-      <span>ΥΠΕΝΘΥΜΙΣΗ ΑΦΙΞΗΣ</span>
-      <button class="sw" id="swGeo" aria-label="Υπενθύμιση άφιξης"><i></i></button>
-    </div>
-    <div class="optnote" id="geoWhy" hidden></div>
-    <div class="opt" id="geoRow">
-      <span class="lbl">Το γραφείο μου<small id="geoSub">Δεν έχει οριστεί ακόμα</small></span>
-      <button class="geobtn" id="geoBtn"><span class="lab">Είμαι εδώ τώρα</span><i class="fill"></i></button>
-    </div>
     <div class="logobox">
       <div class="prev"><img id="logoPrev" src="brand.png" alt=""></div>
       <div class="logorow">
@@ -2585,10 +2585,8 @@
   function geoStamp() {
     var ms = parseInt(flagGet('geoAt'), 10);
     if (!ms) return 'Δεν έχει οριστεί ακόμα';
-    var d = new Date(ms), acc = flagGet('geoAcc');
-    return 'Ορίστηκε ' + d.getDate() + '/' + (d.getMonth() + 1) + ', '
-         + two(d.getHours()) + ':' + two(d.getMinutes())
-         + (acc ? ', ακρίβεια ±' + acc + ' μ.' : '');
+    var d = new Date(ms);
+    return 'Ορίστηκε ' + d.getDate() + '/' + (d.getMonth() + 1);
   }
 
   function geoPaint() {
@@ -2598,8 +2596,11 @@
 
     if (geoBusy) {
       geoSub.textContent = 'Παίρνω στίγμα…';
+      geoSub.classList.remove('warn');
     } else if (!geoArm) {
       geoSub.textContent = geoStamp();
+      /* όσο λείπει το γραφείο το λέει η ίδια η σειρά, δεν χρειάζεται δεύτερη γραμμή */
+      geoSub.classList.toggle('warn', on && !has);
       geoLabel();
     }
 
@@ -2609,9 +2610,7 @@
       var pm = geoPerm();
       if (pm === 'none') {
         why = 'Λείπει η άδεια τοποθεσίας. Πάτα εδώ για να τη δώσεις.'; tap = true;
-      } else if (!has) {
-        why = 'Μην ξεχάσεις να δηλώσεις πού είναι το γραφείο σου';
-      } else if (pm === 'fore') {
+      } else if (has && pm === 'fore') {
         why = 'Η τοποθεσία επιτρέπεται μόνο με ανοιχτή την εφαρμογή. '
             + 'Πάτα εδώ και διάλεξε «Να επιτρέπεται πάντα».'; tap = true;
       }
